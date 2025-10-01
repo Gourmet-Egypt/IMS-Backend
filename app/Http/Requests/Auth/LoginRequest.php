@@ -1,0 +1,183 @@
+<?php
+
+namespace App\Http\Requests\Auth;
+
+use App\Http\Resources\AdminResource;
+use App\Http\Resources\UserResource;
+use App\Models\Admin;
+use App\Models\User;
+use App\Traits\Responses;
+use Illuminate\Auth\Events\Lockout;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+
+class LoginRequest extends FormRequest
+{
+    use Responses;
+
+    /**
+     * Available guards configuration
+     * Add more guards here as needed
+     */
+    protected array $guardConfig = [
+        'web' => [
+            'model' => User::class,
+            'resource' => UserResource::class,
+        ],
+        'admin' => [
+            'model' => Admin::class,
+            'resource' => AdminResource::class,
+        ],
+    ];
+
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     */
+    public function rules(): array
+    {
+        return [
+            'email' => 'required|string',
+            'password' => 'required|string|min:6',
+            'guard' => 'sometimes|string|in:' . implode(',', array_keys($this->guardConfig)),
+        ];
+    }
+
+    /**
+     * Authenticate the user with the specified guard
+     *
+     * @return mixed User object or JsonResponse on error
+     */
+    public function authenticate()
+    {
+
+        $this->ensureIsNotRateLimited();
+
+
+        $guard = $this->input('guard', 'web');
+
+
+        $credentials = $this->only('email', 'password');
+
+
+        if (!isset($this->guardConfig[$guard])) {
+            RateLimiter::hit($this->throttleKey());
+            return $this->error(401, 'Invalid guard specified.');
+        }
+
+
+        $loginField = filter_var($credentials['email'], FILTER_VALIDATE_EMAIL)
+            ? 'email'
+            : 'user_number';
+
+
+        $modelClass = $this->guardConfig[$guard]['model'];
+
+
+        $user = $modelClass::where($loginField, $credentials['email'])->first();
+
+
+        if (!$user) {
+            RateLimiter::hit($this->throttleKey());
+            return $this->error(401,  $this->messages()['email.exists']);
+        }
+
+
+        if (!Hash::check($credentials['password'], $user->password)) {
+            RateLimiter::hit($this->throttleKey());
+            return $this->error(401, $this->messages()['password.invalid']);
+        }
+
+
+        if (!Auth::guard($guard)->attempt([
+            $loginField => $credentials['email'],
+            'password' => $credentials['password'],
+        ])) {
+            RateLimiter::hit($this->throttleKey());
+            return $this->error(401,  $this->messages()['password.invalid']);
+        }
+
+        RateLimiter::clear($this->throttleKey());
+
+        return Auth::guard($guard)->user();
+    }
+
+    /**
+     * Generate unique throttle key based on email and IP
+     */
+    protected function throttleKey(): string
+    {
+        return Str::transliterate(
+            'login|' . Str::lower($this->input('email', '')) . '|' . $this->ip()
+        );
+    }
+
+    /**
+     * Custom validation messages
+     */
+    public function messages(): array
+    {
+        return [
+            'email.required' => 'Email or username is required.',
+            'email.exists' => 'The provided email or username does not exist.',
+            'password.required' => 'Password is required.',
+            'password.min' => 'Password must be at least 6 characters.',
+            'password.invalid' => 'The provided password is incorrect.',
+            'guard.in' => 'Invalid guard type specified.',
+        ];
+    }
+
+    /**
+     * Ensure the login request is not rate limited
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function ensureIsNotRateLimited(): void
+    {
+        $maxAttempts = 5;
+        $decayMinutes = 1;
+
+        if (!RateLimiter::tooManyAttempts($this->throttleKey(), $maxAttempts)) {
+            return;
+        }
+
+        // Fire lockout event
+        event(new Lockout($this));
+
+        $seconds = RateLimiter::availableIn($this->throttleKey());
+
+        throw ValidationException::withMessages([
+            'email' => trans('auth.throttle', [
+                'seconds' => $seconds,
+                'minutes' => ceil($seconds / 60),
+            ]),
+        ]);
+    }
+
+    /**
+     * Get the resource class for the specified guard
+     */
+    public function getResourceClass(string $guard): string
+    {
+        return $this->guardConfig[$guard]['resource'] ?? \App\Http\Resources\UserResource::class;
+    }
+
+    /**
+     * Get the guard configuration
+     */
+    public function getGuardConfig(): array
+    {
+        return $this->guardConfig;
+    }
+}
