@@ -7,6 +7,7 @@ use App\Models\Cashier;
 use App\Traits\Responses;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Routing\Controller;
 
 class CashierController extends Controller
 {

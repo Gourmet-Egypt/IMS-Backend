@@ -3,10 +3,14 @@
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\CashierController;
+use App\Http\Controllers\GoodTypeController;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\ReasonController;
 use App\Http\Controllers\StoreController;
+use App\Http\Controllers\TemperatureRangeController;
 use App\Http\Controllers\TransferRequestItemController;
 use App\Http\Controllers\TransferRequestController;
+use App\Http\Controllers\VehicleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -73,6 +77,22 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 // Admin Routes
 Route::middleware(['auth:sanctum' , 'admin'])->group(function () {
+
+    // Vehicle Routes
+    Route::apiResource('vehicle-types', VehicleController::class);
+
+
+    // GoodType Routes
+    Route::apiResource('good-types', GoodTypeController::class);
+
+
+
+    // Reason Routes
+    Route::apiResource('reason', ReasonController::class);
+
+
+    // Temperature Range Routes
+    Route::apiResource('temperature-range', TemperatureRangeController::class);
 
 });
 

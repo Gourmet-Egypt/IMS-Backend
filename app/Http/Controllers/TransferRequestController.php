@@ -8,8 +8,10 @@ use App\Http\Requests\TransferRequest\StoreTransferRequest;
 use App\Http\Requests\TransferRequest\UpdateTransferRequest;
 use App\Http\Resources\TransferRequest\ShowTransferRequestResource;
 use App\Http\Resources\TransferRequest\TransferRequestResource;
+use App\Models\PurchaseOrder;
 use App\Models\TransferRequest;
 use App\Traits\Responses;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 
@@ -91,5 +93,13 @@ class TransferRequestController extends Controller
             message: 'TransferRequest status updated successfully',
             data: new TransferRequestResource($transferRequest)
         );
+    }
+
+    public function TransferOutList()
+    {
+        $store_id = auth()->user()->store_id ;
+        $requests = PurchaseOrder::store($store_id) ;
+
+        dd($requests);
     }
 }
