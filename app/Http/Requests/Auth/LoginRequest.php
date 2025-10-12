@@ -48,7 +48,7 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|string',
+            'email' => ['required', 'email' , 'exists:users,email'],
             'password' => 'required|string|min:6',
             'guard' => 'sometimes|string|in:' . implode(',', array_keys($this->guardConfig)),
         ];

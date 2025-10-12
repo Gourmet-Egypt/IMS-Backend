@@ -30,7 +30,7 @@ class Handler extends ExceptionHandler
                 // :bricks: Validation exception
                 if ($e instanceof ValidationException) {
                     return response()->json([
-                        'status' => false,
+                        'status' => 422,
                         'message' => collect($e->errors())->flatten()->first(),
                         'data' => [],
                     ], 422);
@@ -38,7 +38,7 @@ class Handler extends ExceptionHandler
                 // :closed_lock_with_key: Authentication error
                 if ($e instanceof AuthenticationException) {
                     return response()->json([
-                        'status' => false,
+                        'status' => 401,
                         'message' => 'Unauthenticated',
                         'data' => []
                     ], 401);
@@ -46,7 +46,7 @@ class Handler extends ExceptionHandler
                 // :no_entry_sign: Too many requests
                 if ($e instanceof ThrottleRequestsException) {
                     return response()->json([
-                        'status' => false,
+                        'status' => 429,
                         'message' => 'Too many requests. Please try again later.',
                         'data' => []
                     ], 429);
@@ -54,7 +54,7 @@ class Handler extends ExceptionHandler
                 // :x: Model not found (e.g. model binding failure)
                 if ($e instanceof ModelNotFoundException) {
                     return response()->json([
-                        'status' => false,
+                        'status' => 404,
                         'message' => 'Record not found.',
                         'data' => []
                     ], 404);
@@ -62,7 +62,7 @@ class Handler extends ExceptionHandler
                 // :x: Route not found
                 if ($e instanceof NotFoundHttpException) {
                     return response()->json([
-                        'status' => false,
+                        'status' => 404,
                         'message' => 'Resource not found.',
                         'data' => []
                     ], 404);
@@ -70,7 +70,7 @@ class Handler extends ExceptionHandler
                 // :gear: Database errors
                 if ($e instanceof QueryException) {
                     return response()->json([
-                        'status' => false,
+                        'status' => 500,
                         'message' => config('app.debug')
                             ? $e->getMessage()
                             : 'A database error occurred. Please contact support.',
@@ -78,7 +78,7 @@ class Handler extends ExceptionHandler
                 }
                 // :boom: Fallback for any unhandled exception
                 return response()->json([
-                    'status' => false,
+                    'status' => 500,
                     'message' => config('app.debug')
                         ? $e->getMessage()
                         : 'An unexpected error occurred. Please try again later.',
