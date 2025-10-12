@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Query\Builder;
+
+use Illuminate\Support\Facades\Auth;
 
 class PurchaseOrder extends Model
 {
@@ -13,8 +15,27 @@ class PurchaseOrder extends Model
     protected $table = 'PurchaseOrder';
 
 
-    public function scopeStore(Builder $query , $store_id)
+    public function scopeStore(Builder $query)
     {
-        return $query->where(['StoreID' => $store_id ,'POType' => 2 ]);
+        $store_id = Auth::user()->store_id;
+
+        $type = request('type');
+        $status = request('status', 0);
+
+        return $query->where([
+            ['StoreID', $store_id],
+            ['POType', $type],
+            ['SupplierID', '=', 0],
+            ['OtherStoreID', '<>', 0],
+            ['Status', $status],
+        ]);
     }
+
+    public function entries()
+    {
+        return $this->hasMany(PurchaseOrderEntry::class , 'PurchaseOrderID' , 'ID');
+    }
+
+
+
 }

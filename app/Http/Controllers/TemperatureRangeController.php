@@ -15,6 +15,7 @@ class TemperatureRangeController extends Controller
     public function index()
     {
         $packages = TemperatureRange::paginate();
+
         return $this->successPaginated(
             status: Response::HTTP_OK,
             message: 'Data retrieved Successfully',

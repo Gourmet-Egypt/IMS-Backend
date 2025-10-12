@@ -10,11 +10,10 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('transferred_item_infos', function (Blueprint $table) {
+        Schema::create('purchase_order_entry_infos', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('item_transfer_request_id');
-            $table->foreign('item_transfer_request_id')->references('id')->on('transfer_request_item')->onDelete('cascade');
-            $table->decimal('quantity_on_hand', 10, 2);
+            $table->integer('purchase_order_entry_id');
+            $table->foreign('purchase_order_entry_id')->references('ID')->on('PurchaseOrderEntry')->onDelete('cascade');
             $table->decimal('quantity_issued', 10, 2);
             $table->date('production_date');
             $table->date('expire_date');
@@ -26,6 +25,6 @@ return new class extends Migration {
 
     public function down(): void
     {
-        Schema::dropIfExists('transferred_item_infos');
+        Schema::dropIfExists('purchase_order_entry_infos');
     }
 };

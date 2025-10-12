@@ -90,7 +90,7 @@ class LoginRequest extends FormRequest
 
         if (!$user) {
             RateLimiter::hit($this->throttleKey());
-            return $this->error(401,  $this->messages()['email.exists']);
+            return $this->error(404,  $this->messages()['email.exists']);
         }
 
 

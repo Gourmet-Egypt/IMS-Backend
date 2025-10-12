@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transfer_conditions', function (Blueprint $table) {
+        Schema::create('purchase_order_conditions', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('transfer_request_id');
-            $table->foreign('transfer_request_id')->references('id')->on('transfer_requests')->onDelete('cascade');
+            $table->integer('purchase_order_id');
+            $table->foreign('purchase_order_id')->references('ID')->on('PurchaseOrder')->onDelete('cascade');
             $table->string('vehicle_type');
             $table->decimal('vehicle_temp', 5, 2);
             $table->decimal('item_temp', 5, 2);
@@ -24,7 +24,7 @@ return new class extends Migration
             $table->timestamps();
 
 
-            $table->unique('transfer_request_id');
+            $table->unique('purchase_order_id');
             $table->unique('delivery_permit_number');
             $table->index('delivery_permit_number');
         });
@@ -32,6 +32,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('transfer_conditions');
+        Schema::dropIfExists('purchase_order_conditions');
     }
 };

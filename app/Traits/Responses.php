@@ -46,6 +46,30 @@ trait Responses{
         ]);
     }
 
+    public function appSuccessPaginated(int $status = 200, string $message = 'Success', array|object $data)
+    {
+        $currentPage = $data->currentPage();
+        $perPage = $data->perPage();
+        $total = $data->total();
+        $lastPage = $data->lastPage();
+
+        $pagination = [
+            'current_page' => $currentPage,
+            'per_page' => $perPage,
+            'total' => $total,
+            'last_page' => $lastPage,
+            'next_page_url' => $data->nextPageUrl(),
+            'prev_page_url' => $data->previousPageUrl(),
+            'current_page_url' => $data->url($currentPage),
+        ];
+
+        return response()->json([
+            'status' => $status,
+            'message' => $message,
+            'data' => ['page'=> $data->items() , 'pagination' => $pagination],
+        ]);
+    }
+
 
 
 }

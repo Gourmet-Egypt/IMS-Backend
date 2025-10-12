@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\CashierController;
 use App\Http\Controllers\GoodTypeController;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\ReasonController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\TemperatureRangeController;
@@ -68,6 +69,17 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
         Route::get('{lookup}', [ItemController::class, 'show'])
             ->name('item.show');
+
+    });
+
+    // PurchaseOrders Routes
+    Route::prefix('purchase-order')->group(function () {
+
+        Route::get('', [PurchaseOrderController::class, 'index'])
+            ->name('purchase-order.index');
+
+        Route::get('/{purchaseOrder}', [PurchaseOrderController::class, 'show'])
+            ->name('purchase-order.show');
 
     });
 

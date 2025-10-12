@@ -27,7 +27,7 @@ class TransferRequestController extends Controller
     {
         $transferRequests = TransferRequest::paginate(15);
 
-        return $this->successPaginated(
+        return $this->appSuccessPaginated(
             status: Response::HTTP_OK,
             message: 'Transfer Requests Retrieved Successfully',
             data: TransferRequestResource::collection($transferRequests)
@@ -58,7 +58,7 @@ class TransferRequestController extends Controller
         return $this->success(
             status: Response::HTTP_OK,
             message: 'TransferRequest retrieved successfully',
-            data: new ShowTransferRequestResource($transferRequest->load('items'))
+            data: new ShowTransferRequestResource($transferRequest)
         );
     }
 
@@ -95,11 +95,4 @@ class TransferRequestController extends Controller
         );
     }
 
-    public function TransferOutList()
-    {
-        $store_id = auth()->user()->store_id ;
-        $requests = PurchaseOrder::store($store_id) ;
-
-        dd($requests);
-    }
 }

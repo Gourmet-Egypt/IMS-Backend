@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->unsignedBigInteger('from_store_id');
             $table->unsignedBigInteger('to_store_id');
+            $table->unsignedBigInteger('purchase_order_id')->nullable();
             $table->string('status');
             $table->string('type');
             $table->date('delivery_date')->nullable();
