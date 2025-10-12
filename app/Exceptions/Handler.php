@@ -32,7 +32,7 @@ class Handler extends ExceptionHandler
                     return response()->json([
                         'status' => 422,
                         'message' => collect($e->errors())->flatten()->first(),
-                        'data' => [],
+                        'data' => null,
                     ], 422);
                 }
                 // :closed_lock_with_key: Authentication error
@@ -40,7 +40,7 @@ class Handler extends ExceptionHandler
                     return response()->json([
                         'status' => 401,
                         'message' => 'Unauthenticated',
-                        'data' => []
+                        'data' => null,
                     ], 401);
                 }
                 // :no_entry_sign: Too many requests
@@ -48,7 +48,7 @@ class Handler extends ExceptionHandler
                     return response()->json([
                         'status' => 429,
                         'message' => 'Too many requests. Please try again later.',
-                        'data' => []
+                        'data' => null,
                     ], 429);
                 }
                 // :x: Model not found (e.g. model binding failure)
@@ -56,7 +56,7 @@ class Handler extends ExceptionHandler
                     return response()->json([
                         'status' => 404,
                         'message' => 'Record not found.',
-                        'data' => []
+                        'data' => null,
                     ], 404);
                 }
                 // :x: Route not found
@@ -64,7 +64,7 @@ class Handler extends ExceptionHandler
                     return response()->json([
                         'status' => 404,
                         'message' => 'Resource not found.',
-                        'data' => []
+                        'data' => null,
                     ], 404);
                 }
                 // :gear: Database errors
@@ -74,6 +74,7 @@ class Handler extends ExceptionHandler
                         'message' => config('app.debug')
                             ? $e->getMessage()
                             : 'A database error occurred. Please contact support.',
+                            'data' => null,
                     ], 500);
                 }
                 // :boom: Fallback for any unhandled exception
@@ -83,7 +84,7 @@ class Handler extends ExceptionHandler
                         ? $e->getMessage()
                         : 'An unexpected error occurred. Please try again later.',
                     'trace' => config('app.debug') ? $e->getTrace() : null,
-                    'data' => []
+                    'data' => null,
                 ], 500);
             }
         });
