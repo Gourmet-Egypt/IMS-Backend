@@ -15,6 +15,7 @@ class TransferRequestResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id' =>$this->id,
             'title' => $this->title ,
             'from_store_id' => $this->from_store_id ,
             'to_store_id' => $this->to_store_id ,
