@@ -19,6 +19,7 @@ class TransferRequestResource extends JsonResource
             'title' => $this->title ,
             'from_store_id' => $this->from_store_id ,
             'to_store_id' => $this->to_store_id ,
+            'to_store_name' => $this->transferToStore->Name ,
             'status' => $this->status ,
             'type' => $this->type ,
             'delivery_date' => $this->delivery_date ,

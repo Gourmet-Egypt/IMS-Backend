@@ -33,6 +33,13 @@ class TransferRequest extends Model
             ->withTimestamps();
     }
 
+    public function transferToStore(){
+        return $this->belongsTo(Store::class ,'to_store_id' , 'StoreCode' );
+    }
+    public function transferFromStore(){
+        return $this->belongsTo(Store::class ,'from_store_id' , 'StoreCode' );
+}
+
     public function scopeSearch(Builder $query , $id)
     {
         return $query->where(
