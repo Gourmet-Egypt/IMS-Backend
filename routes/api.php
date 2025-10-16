@@ -67,6 +67,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // Items Routes
     Route::prefix('items')->group(function () {
 
+
         Route::get('{lookup}', [ItemController::class, 'show'])
             ->name('item.show');
 
@@ -116,6 +117,10 @@ Route::post('/register', [RegisteredUserController::class, 'store'])
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])
     ->middleware('guest')
     ->name('login');
+
+Route::get('/items', [ItemController::class, 'index'])
+    ->name('item.index');
+
 
 Route::get('/cashiers', [CashierController::class, 'index'])
     ->middleware('guest')

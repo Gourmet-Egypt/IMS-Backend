@@ -2,30 +2,36 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\ItemResource;
+use App\Http\Resources\Item\ItemResource;
+use App\Http\Resources\Item\ShowItemResource;
 use App\Models\Item;
 use App\Traits\Responses;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class ItemController extends Controller
 {
     use Responses ;
+
+    public function index()
+    {
+        $last_updated = request('last_updated');
+        $items = Item::IndexSearch($last_updated)->paginate(2000) ;
+
+        return $this->appSuccessPaginated(
+            status: Response::HTTP_OK,
+            message: 'Items retrieved successfully',
+            data: ItemResource::collection($items)
+        );
+    }
+
     public function show($lookup)
     {
-        $item = Item::search($lookup)->first();
-
-        if(!$item){
-            return $this->error(
-                status: Response::HTTP_UNPROCESSABLE_ENTITY,
-                message: 'Item not found'
-            );
-        }
+        $item = Item::ShowSearch($lookup)->first();
 
         return $this->success(
             status:  Response::HTTP_OK,
             message: 'Item Retrieved Successfully',
-            data: new ItemResource($item),
+            data: new ShowItemResource($item),
         );
     }
 }

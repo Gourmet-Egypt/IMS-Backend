@@ -15,10 +15,6 @@ class Item extends Model
     protected $table = 'Item';
     protected $guarded = [];
 
-    public function infos()
-    {
-        return $this->hasMany(TransferredItemInfo::class) ;
-    }
 
 
     public function transferRequests(): HasMany
@@ -34,9 +30,23 @@ class Item extends Model
     }
 
 
-    public function scopeSearch(Builder $query, $lookupcode) :void
+    public function scopeShowSearch(Builder $query, $lookupcode): void
     {
-        $query->where('ItemLookupCode', $lookupcode);
+        $query->where('ItemLookupCode', 'like', "{$lookupcode}%");
     }
+
+    public function scopeIndexSearch(Builder $query, $last_updated = null): void
+    {
+        $query
+            ->where([
+                ['DoNotOrder', 0]
+                , ['Inactive', 0]
+            ])
+            ->when($last_updated, function ($q) use ($last_updated) {
+                $q->where('LastUpdated', '>', $last_updated);
+            });
+    }
+
+
 
 }
