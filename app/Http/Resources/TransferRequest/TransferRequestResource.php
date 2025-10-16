@@ -23,6 +23,7 @@ class TransferRequestResource extends JsonResource
             'status' => $this->status ,
             'type' => $this->type ,
             'delivery_date' => $this->delivery_date ,
+            'purchase_order_id' => $this->purchase_order_id ,
             'created_at' => $this->created_at ,
             'updated_at' => $this->updated_at ,
         ];

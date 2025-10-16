@@ -14,6 +14,7 @@ use App\Traits\Responses;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 
 class TransferRequestController extends Controller
 {
@@ -86,7 +87,43 @@ class TransferRequestController extends Controller
 
     public function changeStatus(TransferRequest $transferRequest)
     {
-        $transferRequest->update(['status' => TransferRequestStatusEnum::CLOSED]);
+        $data = [
+            "Order" => [
+                "transactionType" => "TransferIN",
+                "StoreID" => (int) $transferRequest->from_store_id,
+                "OtherStoreID" => (int) $transferRequest->to_store_id,
+                "SupplierID" => 0,
+                "HH_ID" => (string) $transferRequest->id,
+                "CashierID" => 73,
+            ],
+            "OrderItems" => $transferRequest->items->map(function ($item) {
+                return [
+                    "ItemLookupcode" => (string) $item->ItemLookupCode,
+                    "QTY" => (float) $item->quantity,
+                ];
+            })->values()->toArray(),
+        ];
+
+
+        $response = Http::withoutVerifying()
+            ->asJson()
+            ->post('http://192.168.23.19/api/create-order', $data);
+
+
+        if ($response->status() === 200) {
+            $body = $response->json();
+
+            $transferRequest->update([
+                'status' => TransferRequestStatusEnum::CLOSED,
+                'purchase_order_id' => $body['id'] ?? null,
+            ]);
+        } else {
+
+            return $this->error(
+                status: Response::HTTP_INTERNAL_SERVER_ERROR,
+                message: $response
+            );
+        }
 
         return $this->success(
             status: Response::HTTP_OK,
@@ -94,5 +131,6 @@ class TransferRequestController extends Controller
             data: new TransferRequestResource($transferRequest)
         );
     }
+
 
 }

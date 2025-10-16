@@ -23,7 +23,7 @@ class TransferRequest extends Model
 
     public function itemTransfers(): HasMany
     {
-        return $this->hasMany(TransferRequestItem::class);
+        return $this->hasMany(TransferRequestItem::class , 'transfer_request_id' , 'id');
     }
 
     public function items(): BelongsToMany
@@ -33,12 +33,16 @@ class TransferRequest extends Model
             ->withTimestamps();
     }
 
-    public function transferToStore(){
+    public function transferToStore()
+    {
         return $this->belongsTo(Store::class ,'to_store_id' , 'StoreCode' );
     }
-    public function transferFromStore(){
+    public function transferFromStore()
+    {
         return $this->belongsTo(Store::class ,'from_store_id' , 'StoreCode' );
-}
+    }
+
+
 
     public function scopeSearch(Builder $query , $id)
     {
@@ -47,4 +51,6 @@ class TransferRequest extends Model
             ['status' , TransferRequestStatusEnum::OPEN]
         );
     }
+
+
 }

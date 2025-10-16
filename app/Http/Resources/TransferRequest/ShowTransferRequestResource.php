@@ -14,19 +14,25 @@ class ShowTransferRequestResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+
         return [
             'id' => $this->id,
             'title' => $this->title,
             'created_at' => $this->created_at,
             'items' => $this->items->map(function ($item) {
+                $pivot = \App\Models\TransferRequestItem::find($item->pivot->id);
+
+
                 return [
-                    'id' => $item->pivot->id,
-                    'item_id' => $item->ID,
+                    'id' => $pivot->id,
+                    'item_id' => $item->id,
                     'LookupCode' => $item->ItemLookupCode,
-                    'quantity' => $item->pivot->quantity,
-                    'notes' => $item->pivot->notes ? utf8_encode($item->pivot->notes) : null,
+                    'quantity' => $pivot->quantity,
+//                    'notes' => $pivot->notes,
+                    'infos' => $pivot->itemInfos,
                 ];
             }),
+
         ];
 
     }

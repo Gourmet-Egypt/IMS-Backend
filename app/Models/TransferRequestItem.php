@@ -31,7 +31,7 @@ class TransferRequestItem extends pivot
 
     public function itemInfos(): HasMany
     {
-        return $this->hasMany(TransferredItemInfo::class);
+        return $this->hasMany(TransferredItemInfo::class , 'item_transfer_request_id' , 'id');
     }
 
 
