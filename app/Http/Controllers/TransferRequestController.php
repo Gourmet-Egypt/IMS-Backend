@@ -8,10 +8,8 @@ use App\Http\Requests\TransferRequest\StoreTransferRequest;
 use App\Http\Requests\TransferRequest\UpdateTransferRequest;
 use App\Http\Resources\TransferRequest\ShowTransferRequestResource;
 use App\Http\Resources\TransferRequest\TransferRequestResource;
-use App\Models\PurchaseOrder;
 use App\Models\TransferRequest;
 use App\Traits\Responses;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
@@ -26,7 +24,7 @@ class TransferRequestController extends Controller
 
     public function index()
     {
-        $transferRequests = TransferRequest::paginate(15);
+        $transferRequests = TransferRequest::with('items')->paginate(15);
 
         return $this->appSuccessPaginated(
             status: Response::HTTP_OK,
@@ -59,7 +57,7 @@ class TransferRequestController extends Controller
         return $this->success(
             status: Response::HTTP_OK,
             message: 'TransferRequest retrieved successfully',
-            data: new ShowTransferRequestResource($transferRequest)
+            data: new ShowTransferRequestResource($transferRequest->load('items'))
         );
     }
 

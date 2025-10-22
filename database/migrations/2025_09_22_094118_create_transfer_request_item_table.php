@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('transfer_request_id');
             $table->foreign('transfer_request_id')->references('id')->on('transfer_requests')->onDelete('cascade');
             $table->integer('item_id');
-            $table->foreign('item_id')->references('ID')->on('Item')->onDelete('cascade');
+//            $table->foreign('item_id')->references('HQID')->on('Item')->onDelete('cascade');
             $table->decimal('quantity', 10, 2);
             $table->text('notes')->nullable();
             $table->timestamps();

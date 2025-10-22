@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\TransferRequest;
 
+use App\Http\Resources\TransferRequestItemResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -26,6 +27,10 @@ class TransferRequestResource extends JsonResource
             'purchase_order_id' => $this->purchase_order_id ,
             'created_at' => $this->created_at ,
             'updated_at' => $this->updated_at ,
+            'items' => $this->whenLoaded('items', function () {
+                return TransferRequestItemResource::collection($this->items);
+            }),
+
         ];
     }
 }

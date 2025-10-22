@@ -37,6 +37,7 @@ class Item extends Model
 
     public function scopeIndexSearch(Builder $query, $last_updated = null): void
     {
+
         $query
             ->where([
                 ['DoNotOrder', 0]

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\TransferRequest;
 
+use App\Http\Resources\TransferRequestItemResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -19,20 +20,9 @@ class ShowTransferRequestResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'created_at' => $this->created_at,
-            'items' => $this->items->map(function ($item) {
-                $pivot = \App\Models\TransferRequestItem::find($item->pivot->id);
-
-
-                return [
-                    'id' => $pivot->id,
-                    'item_id' => $item->id,
-                    'LookupCode' => $item->ItemLookupCode,
-                    'quantity' => $pivot->quantity,
-//                    'notes' => $pivot->notes,
-                    'infos' => $pivot->itemInfos,
-                ];
+            'items' => $this->whenLoaded('items', function () {
+                return TransferRequestItemResource::collection($this->items);
             }),
-
         ];
 
     }

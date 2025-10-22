@@ -15,7 +15,7 @@ class ShowItemResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->ID ,
+            'id' => $this->HQID ,
             'lookupcode' => $this->ItemLookupCode ,
             'description' => $this->Description
         ];

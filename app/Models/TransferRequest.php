@@ -26,12 +26,15 @@ class TransferRequest extends Model
         return $this->hasMany(TransferRequestItem::class , 'transfer_request_id' , 'id');
     }
 
-    public function items(): BelongsToMany
+    public function items()
     {
-        return $this->belongsToMany(Item::class, 'transfer_request_item')
-            ->withPivot('id', 'quantity', 'notes')
+        return $this->belongsToMany(Item::class, 'transfer_request_item', 'transfer_request_id', 'item_id')
+            ->using(TransferRequestItem::class)
+            ->withPivot(['quantity', 'id', 'notes'])
             ->withTimestamps();
     }
+
+
 
     public function transferToStore()
     {
