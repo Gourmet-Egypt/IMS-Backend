@@ -57,7 +57,7 @@ class TransferRequestController extends Controller
         return $this->success(
             status: Response::HTTP_OK,
             message: 'TransferRequest retrieved successfully',
-            data: new ShowTransferRequestResource($transferRequest->load('items'))
+            data: new TransferRequestResource($transferRequest->load('items'))
         );
     }
 
