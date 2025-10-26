@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Auth;
 
-use App\Http\Resources\AdminResource;
-use App\Http\Resources\UserResource;
+use App\Http\Resources\Dashboard\AdminResource;
+use App\Http\Resources\Dashboard\UserResource;
 use App\Models\Admin;
 use App\Models\User;
 use App\Traits\Responses;
@@ -170,7 +170,7 @@ class LoginRequest extends FormRequest
      */
     public function getResourceClass(string $guard): string
     {
-        return $this->guardConfig[$guard]['resource'] ?? \App\Http\Resources\UserResource::class;
+        return $this->guardConfig[$guard]['resource'] ?? \App\Http\Resources\Dashboard\UserResource::class;
     }
 
     /**

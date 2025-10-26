@@ -1,18 +1,17 @@
 <?php
 
+use App\Http\Controllers\App\ItemController;
+use App\Http\Controllers\App\PurchaseOrderController;
+use App\Http\Controllers\App\TransferRequestController;
+use App\Http\Controllers\App\TransferRequestItemController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
-use App\Http\Controllers\CashierController;
-use App\Http\Controllers\GoodTypeController;
-use App\Http\Controllers\ItemController;
-use App\Http\Controllers\PurchaseOrderController;
-use App\Http\Controllers\ReasonController;
-use App\Http\Controllers\StoreController;
-use App\Http\Controllers\TemperatureRangeController;
-use App\Http\Controllers\TransferRequestItemController;
-use App\Http\Controllers\TransferRequestController;
-use App\Http\Controllers\VehicleController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Dashboard\UserController;
+use App\Http\Controllers\Dashboard\GoodTypeController;
+use App\Http\Controllers\Dashboard\ReasonController;
+use App\Http\Controllers\Dashboard\StoreController;
+use App\Http\Controllers\Dashboard\TemperatureRangeController;
+use App\Http\Controllers\Dashboard\VehicleController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -95,6 +94,8 @@ Route::middleware(['auth:sanctum' , 'admin'])->group(function () {
     Route::apiResource('good-types', GoodTypeController::class);
 
 
+    // User Resource
+    Route::apiResource('user', UserController::class)->except(['index']);
 
     // Reason Routes
     Route::apiResource('reason', ReasonController::class);
@@ -118,7 +119,7 @@ Route::get('/items', [ItemController::class, 'index'])
     ->name('item.index');
 
 
-Route::get('/cashiers', [CashierController::class, 'index'])
+Route::get('/cashiers', [UserController::class, 'index'])
     ->middleware('guest')
     ->name('cashiers.index');
 
