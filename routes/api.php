@@ -53,11 +53,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 
         // TransferRequestsItems Routes
-        Route::post('items', [TransferRequestItemController::class, 'store'])
-            ->name('transfer-requests.items.store');
-
-        Route::put('items/{transferRequest}', [TransferRequestItemController::class, 'update'])
-            ->name('transfer-requests.items.update');
+        Route::post('{transferRequest}/items', [TransferRequestItemController::class, 'storeOrUpdate']);
 
         Route::delete('items/{transferRequest}', [TransferRequestItemController::class, 'destroy'])
             ->name('transfer-requests.items.destroy');

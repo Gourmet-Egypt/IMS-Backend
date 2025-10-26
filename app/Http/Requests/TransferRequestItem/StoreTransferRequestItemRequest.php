@@ -22,39 +22,30 @@ class StoreTransferRequestItemRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      */
-    public function rules(): array
+    public function rules()
     {
         return [
-            'transfer_request_id' => ['required', 'exists:transfer_requests,id'],
-            'items' => ['required', 'array', 'min:1'],
-            'items.*.id' => ['required', 'exists:Item,ID'],
-            'items.*.quantity' => ['required', 'numeric', 'min:0.01'],
-            'items.*.notes' => ['nullable', 'string', 'max:1000'],
+            'id' => 'required|exists:Item,HQID',
+            'quantity' => 'required|integer|min:1',
+            'notes' => 'nullable|string|max:1000'
         ];
     }
 
     /**
      * Custom validation messages
      */
-    public function messages(): array
+    public function messages()
     {
         return [
-            'transfer_request_id.required' => 'Transfer request ID is required.',
-            'transfer_request_id.exists' => 'The selected transfer request does not exist.',
+            'id.required' => 'Item ID is required.',
+            'id.exists' => 'The selected item does not exist.',
 
-            'items.required' => 'Items array is required.',
-            'items.array' => 'Items must be an array.',
-            'items.min' => 'At least one item is required.',
+            'quantity.required' => 'Quantity is required.',
+            'quantity.integer' => 'Quantity must be an integer.',
+            'quantity.min' => 'Quantity must be at least 1.',
 
-            'items.*.id.required' => 'Item ID is required for each item.',
-            'items.*.id.exists' => 'One or more items do not exist.',
-
-            'items.*.quantity.required' => 'Quantity is required for each item.',
-            'items.*.quantity.numeric' => 'Quantity must be a number.',
-            'items.*.quantity.min' => 'Quantity must be greater than 0.',
-
-            'items.*.notes.string' => 'Notes must be a valid string.',
-            'items.*.notes.max' => 'Notes cannot exceed 1000 characters.',
+            'notes.string' => 'Notes must be a valid string.',
+            'notes.max' => 'Notes cannot exceed 1000 characters.',
         ];
     }
 

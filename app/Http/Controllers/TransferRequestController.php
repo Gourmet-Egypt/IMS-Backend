@@ -79,7 +79,7 @@ class TransferRequestController extends Controller
         return $this->success(
             status: Response::HTTP_OK,
             message: 'TransferRequest deleted successfully',
-            data: null
+            data: new TransferRequestResource($transferRequest)
         );
     }
 
@@ -129,6 +129,7 @@ class TransferRequestController extends Controller
             data: new TransferRequestResource($transferRequest)
         );
     }
+
 
 
 }

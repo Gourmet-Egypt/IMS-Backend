@@ -17,117 +17,67 @@ class TransferRequestItemController extends Controller
 {
     use Responses;
 
-    public function store(StoreTransferRequestItemRequest $request)
+    public function storeOrUpdate(StoreTransferRequestItemRequest $request, TransferRequest $transferRequest)
     {
-        $transferRequest = TransferRequest::findOrFail($request->input('transfer_request_id'));
-        $items = $request->input('items', []);
+        $itemId = $request->input('id');
+        $exists = $transferRequest->items()->where('item_id', $itemId)->exists();
 
-        $attachedItems = [];
+        $pivotData = [
+            'quantity' => $request->input('quantity'),
+            'notes' => $request->input('notes')
+        ];
 
-        foreach ($items as $itemData) {
-
-            $exists = $transferRequest->items()->where('item_id', $itemData['id'])->exists();
-
-            if ($exists) {
-                return $this->error(
-                    status: Response::HTTP_CONFLICT,
-                    message: "Item with ID {$itemData['id']} is already attached to this transfer request."
-                );
-            }
-
-
-            $transferRequest->items()->attach($itemData['id'], [
-                'quantity' => $itemData['quantity'],
-                'notes' => $itemData['notes'] ?? null
-            ]);
-
-            $attachedItem = $transferRequest->items()
-                ->where('item_id', $itemData['id'])
-                ->first();
-
-            $attachedItems[] = $attachedItem;
+        if ($exists) {
+            $transferRequest->items()->updateExistingPivot($itemId, $pivotData);
+            $message = 'Item updated successfully';
+        } else {
+            $transferRequest->items()->attach($itemId, $pivotData);
+            $message = 'Item added successfully';
         }
 
-        return $this->success(
-            status: Response::HTTP_CREATED,
-            message: 'Items added successfully',
-            data: TransferRequestItemResource::collection($attachedItems)
-        );
-    }
-
-
-    public function update(UpdateTransferRequestItemRequest $request, TransferRequest $transferRequest)
-    {
-
-        $itemPivot = TransferRequestItem::where('item_id', $request->item_id)
-            ->where('transfer_request_id', $transferRequest->id)
+        $item = $transferRequest->items()
+            ->where('item_id', $itemId)
             ->first();
 
-        if (!$itemPivot) {
-            return $this->error(
-                status: Response::HTTP_UNPROCESSABLE_ENTITY,
-                message: 'Item not found in this transfer request'
-            );
-        }
-
-
-        $updateData = [];
-        if ($request->filled('quantity')) {
-            $updateData['quantity'] = $request->quantity;
-        }
-        if ($request->filled('notes')) {
-            $updateData['notes'] = $request->notes;
-        }
-
-        if (empty($updateData)) {
-            return $this->error(
-                status: Response::HTTP_UNPROCESSABLE_ENTITY,
-                message: 'No data provided for update'
-            );
-        }
-
-        $transferRequest->items()->updateExistingPivot($request->item_id, $updateData);
-
-
-        $updatedItem = $transferRequest->items()
-            ->where('item_id', $request->item_id)
-            ->first();
 
         return $this->success(
             status: Response::HTTP_OK,
-            message: 'Item updated successfully',
-            data: new TransferRequestItemResource($updatedItem)
+            message: $message,
+            data: new TransferRequestItemResource($item)
         );
     }
-
 
 
     public function destroy(TransferRequest $transferRequest, Request $request)
     {
-        $itemPivot = TransferRequestItem::where('item_id', $request->item_id)
-            ->where('transfer_request_id', $transferRequest->id)
-            ->first();
+        $request->validate([
+            'item_id' => 'required|integer'
+        ]);
 
-        if (!$itemPivot) {
+        $itemId = $request->input('item_id');
+
+
+        $exists = $transferRequest->items()->where('item_id', $itemId)->exists();
+
+        if (!$exists) {
             return $this->error(
-                status: Response::HTTP_UNPROCESSABLE_ENTITY,
+                status: Response::HTTP_NOT_FOUND,
                 message: 'Item not found in this transfer request'
             );
         }
 
 
-        $itemToDelete = $transferRequest->items()
-            ->where('item_id', $request->item_id)
+        $item = $transferRequest->items()
+            ->where('item_id', $itemId)
             ->first();
 
 
-        $transferRequest->items()->detach($request->item_id);
+        $transferRequest->items()->detach($itemId);
 
         return $this->success(
             status: Response::HTTP_OK,
-            message: 'Item deleted successfully',
-            data: new ShowTransferRequestResource($transferRequest->load('items'))
+            message: 'Item removed successfully',
+            data: new TransferRequestItemResource($item)
         );
     }
-
 }
