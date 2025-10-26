@@ -6,6 +6,7 @@ use App\Http\Controllers\App\TransferRequestController;
 use App\Http\Controllers\App\TransferRequestItemController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Dashboard\CashierController;
 use App\Http\Controllers\Dashboard\UserController;
 use App\Http\Controllers\Dashboard\GoodTypeController;
 use App\Http\Controllers\Dashboard\ReasonController;
@@ -95,7 +96,7 @@ Route::middleware(['auth:sanctum' , 'admin'])->group(function () {
 
 
     // User Resource
-    Route::apiResource('user', UserController::class)->except(['index']);
+    Route::apiResource('user', UserController::class);
 
     // Reason Routes
     Route::apiResource('reason', ReasonController::class);
@@ -119,7 +120,7 @@ Route::get('/items', [ItemController::class, 'index'])
     ->name('item.index');
 
 
-Route::get('/cashiers', [UserController::class, 'index'])
+Route::get('/cashiers', [CashierController::class, 'index'])
     ->middleware('guest')
     ->name('cashiers.index');
 

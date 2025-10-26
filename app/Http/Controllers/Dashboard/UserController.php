@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Dashboard;
 use App\Http\Requests\Dashboard\User\StoreUserRequest;
 use App\Http\Requests\Dashboard\User\UpdateUserRequest;
 use App\Http\Resources\Dashboard\UserResource;
-use App\Models\Cashier;
+
 use App\Models\User;
 use App\Traits\Responses;
-use Illuminate\Http\Request;
+
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Hash;
@@ -17,14 +17,14 @@ class UserController extends Controller
 {
     use Responses ;
 
-    public function index(Request $request)
+    public function index()
     {
-        $cashiers = Cashier::search($request->store_id)->get();
+        $users = User::paginate(15);
 
         return $this->success(
-            status : Response::HTTP_OK,
-            message : 'Cashier List',
-            data    : UserResource::collection($cashiers),
+            status: Response::HTTP_OK,
+            message: 'Users retrieved successfully',
+            data: UserResource::collection($users)
         );
     }
 
