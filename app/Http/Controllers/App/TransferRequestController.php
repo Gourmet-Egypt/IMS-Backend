@@ -8,7 +8,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\TransferRequest\StoreTransferRequest;
 use App\Http\Requests\TransferRequest\UpdateTransferRequest;
 use App\Http\Resources\App\TransferRequest\TransferRequestResource;
-use App\Http\Resources\TransferRequest\ShowTransferRequestResource;
 use App\Models\TransferRequest;
 use App\Traits\Responses;
 use Illuminate\Http\Response;
