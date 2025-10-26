@@ -3,39 +3,81 @@
 namespace App\Http\Requests\Dashboard\User;
 
 use App\Enums\UserRolesEnum;
+use App\Models\User;
+use App\Traits\Responses;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
+
 
 class StoreUserRequest extends FormRequest
 {
+
+    use Responses ;
     /**
      * Determine if the user is authorized to make this request.
      */
 
-    public function rules()
+    public function rules(): array
     {
         return [
-            'name' => 'required|string|max:191',
-            'email' => 'required|email|max:191|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
-            'store_id' => 'required|integer|exists:Store,ID',
-            'user_number' => 'required|string|max:255',
-            'role' => ['required', 'string', 'max:191', Rule::enum(UserRolesEnum::class)],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:' . User::class],
+            'user_number' => ['required', 'unique:' . User::class],
+            'store_id' => ['required', 'exists:App\Models\Store,ID'],
+            'role' => ['required', 'string',
+                Rule::in(array_column(UserRolesEnum::cases(), 'value')),
+            ],
+
         ];
     }
-    public function messages()
+
+    /**
+     * Get custom validation messages
+     */
+    public function messages(): array
     {
         return [
-            'name.required' => 'Name is required.',
-            'email.required' => 'Email is required.',
-            'email.unique' => 'This email is already taken.',
-            'password.required' => 'Password is required.',
-            'password.min' => 'Password must be at least 8 characters.',
-            'password.confirmed' => 'Password confirmation does not match.',
-            'store_id.required' => 'Store ID is required.',
+            'name.required' => 'The name field is required.',
+            'name.string' => 'The name must be a valid string.',
+            'name.max' => 'The name must not exceed 255 characters.',
+
+            'email.required' => 'The email field is required.',
+            'email.email' => 'Please provide a valid email address.',
+            'email.unique' => 'This email is already registered.',
+            'email.max' => 'The email must not exceed 255 characters.',
+
+            'user_number.required' => 'The user_number field is required.',
+            'user_number.unique' => 'This user_number is already registered.',
+
+            'store_id.required' => 'The store field is required.',
             'store_id.exists' => 'The selected store does not exist.',
-            'role.required' => 'Role is required.',
-            'role.in' => 'Invalid role selected.',
+
+            'role.required' => 'The role field is required.',
+            'role.string' => 'The role must be a valid string.',
+            'role.exists' => 'The selected role is invalid.',
         ];
+    }
+
+    /**
+     * Handle a failed validation attempt.
+     *
+     * @param  \Illuminate\Contracts\Validation\Validator  $validator
+     * @return void
+     *
+     * @throws \Illuminate\Http\Exceptions\HttpResponseException
+     */
+    protected function failedValidation(Validator $validator)
+    {
+
+        $firstError = $validator->errors()->first();
+
+        throw new HttpResponseException(
+            $this->error(
+                status: 401 ,
+                message: $firstError,
+            )
+        );
     }
 }

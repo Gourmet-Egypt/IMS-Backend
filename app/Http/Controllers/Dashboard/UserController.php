@@ -30,9 +30,9 @@ class UserController extends Controller
 
     public function store(StoreUserRequest $request)
     {
-        $data = $request->only(['name', 'email', 'store_id', 'user_number', 'role', 'security_level']);
+        $data = $request->only(['name', 'email', 'store_id', 'user_number', 'role']);
 
-        $data['password'] = Hash::make($request->password);
+        $data['password'] = Hash::make('password');
         $data['security_level'] = $data['security_level'] ?? 4;
 
         $user = User::create($data);
