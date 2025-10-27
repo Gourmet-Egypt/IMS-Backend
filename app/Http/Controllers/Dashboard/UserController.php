@@ -19,9 +19,9 @@ class UserController extends Controller
 
     public function index()
     {
-        $users = User::paginate(15);
+        $users = User::paginate(20);
 
-        return $this->success(
+        return $this->successPaginated(
             status: Response::HTTP_OK,
             message: 'Users retrieved successfully',
             data: UserResource::collection($users)
@@ -61,7 +61,7 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user)
     {
-        $updateData = $request->only(['name', 'email', 'store_id', 'user_number', 'role', 'security_level']);
+        $updateData = $request->only(['name', 'email', 'store_id', 'user_number', 'role', 'security_level' , 'password']);
 
         $updateData = array_filter($updateData, fn($value) => !is_null($value));
 

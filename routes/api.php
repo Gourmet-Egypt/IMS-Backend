@@ -5,7 +5,6 @@ use App\Http\Controllers\App\PurchaseOrderController;
 use App\Http\Controllers\App\TransferRequestController;
 use App\Http\Controllers\App\TransferRequestItemController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Dashboard\CashierController;
 use App\Http\Controllers\Dashboard\UserController;
 use App\Http\Controllers\Dashboard\GoodTypeController;

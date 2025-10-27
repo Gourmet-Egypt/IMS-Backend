@@ -26,7 +26,6 @@ class UpdateUserRequest extends FormRequest
                 'max:191',
                 Rule::unique('users', 'email')->ignore($this->user->id)
             ],
-            'password' => 'nullable|string|min:8',
             'store_id' => 'nullable|integer|exists:Store,ID',
             'user_number' => 'nullable|string|max:255',
             'role' => ['nullable', 'string', 'max:191', Rule::enum(UserRolesEnum::class)],
@@ -43,9 +42,6 @@ class UpdateUserRequest extends FormRequest
             'email.max' => 'Email cannot exceed 191 characters.',
             'email.unique' => 'This email is already taken.',
 
-            'password.string' => 'Password must be a valid string.',
-            'password.min' => 'Password must be at least 8 characters.',
-            'password.confirmed' => 'Password confirmation does not match.',
 
             'store_id.integer' => 'Store ID must be a valid number.',
             'store_id.exists' => 'The selected store does not exist.',
