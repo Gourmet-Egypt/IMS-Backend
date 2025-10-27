@@ -59,15 +59,13 @@ class UserController extends Controller
     /**
      * Update the specified user
      */
-    public function update(UpdateUserRequest $request, User $user)
+    public function update(User $user , UpdateUserRequest $request)
     {
-        $updateData = $request->only(['name', 'email', 'store_id', 'user_number', 'role', 'security_level' , 'password']);
+        $updateData = $request->only(['name', 'email', 'store_id', 'user_number', 'role' ]);
 
         $updateData = array_filter($updateData, fn($value) => !is_null($value));
 
-        if ($request->filled('password')) {
-            $updateData['password'] = Hash::make($request->password);
-        }
+        $updateData['password'] = Hash::make('password');
 
         $user->update($updateData);
 

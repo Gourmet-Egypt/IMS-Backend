@@ -52,10 +52,6 @@ class UpdateUserRequest extends FormRequest
             'role.string' => 'Role must be a valid string.',
             'role.max' => 'Role cannot exceed 191 characters.',
             'role.in' => 'Invalid role selected.',
-
-            'security_level.integer' => 'Security level must be a valid number.',
-            'security_level.min' => 'Security level must be at least 1.',
-            'security_level.max' => 'Security level cannot exceed 10.',
         ];
     }
 }

@@ -85,6 +85,14 @@ class TransferRequestController extends Controller
 
     public function changeStatus(TransferRequest $transferRequest)
     {
+        if (!$transferRequest->items()->exists()) {
+            return $this->error(
+                status: Response::HTTP_NOT_ACCEPTABLE,
+                message: 'No items were found' ,
+                data: []
+            );
+        }
+
         $data = [
             "Order" => [
                 "transactionType" => "TransferIN",
