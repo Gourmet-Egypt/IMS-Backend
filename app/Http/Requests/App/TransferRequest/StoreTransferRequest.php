@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\TransferRequest;
+namespace App\Http\Requests\App\TransferRequest;
 
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Traits\Responses;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class StoreTransferRequest extends FormRequest
 {

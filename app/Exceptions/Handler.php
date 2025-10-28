@@ -60,13 +60,13 @@ class Handler extends ExceptionHandler
                     ], 404);
                 }
                 // :x: Route not found
-//                if ($e instanceof NotFoundHttpException) {
-//                    return response()->json([
-//                        'status' => 404,
-//                        'message' => 'Resource not found.',
-//                        'data' => null,
-//                    ], 404);
-//                }
+                if ($e instanceof NotFoundHttpException) {
+                    return response()->json([
+                        'status' => 404,
+                        'message' => 'Resource not found.',
+                        'data' => null,
+                    ], 404);
+                }
                 // :gear: Database errors
                 if ($e instanceof QueryException) {
                     return response()->json([

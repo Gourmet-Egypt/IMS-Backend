@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\TransferRequestItem;
+namespace App\Http\Requests\App\TransferRequestItem;
 
 use App\Traits\Responses;
 use Illuminate\Foundation\Http\FormRequest;

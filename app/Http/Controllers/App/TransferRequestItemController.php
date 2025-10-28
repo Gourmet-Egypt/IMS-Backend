@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\App;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\TransferRequestItem\StoreTransferRequestItemRequest;
+
+use App\Http\Requests\App\TransferRequestItem\StoreTransferRequestItemRequest;
 use App\Http\Resources\App\TransferRequestItemResource;
-use App\Http\Resources\TransferRequest\ShowTransferRequestResource;
 use App\Models\TransferRequest;
 use App\Traits\Responses;
 use Illuminate\Http\Request;
