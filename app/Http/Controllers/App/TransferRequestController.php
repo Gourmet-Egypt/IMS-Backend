@@ -7,7 +7,9 @@ use App\Enums\TransferRequestTypeEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\App\TransferRequest\StoreTransferRequest;
 use App\Http\Requests\App\TransferRequest\UpdateTransferRequest;
+use App\Http\Resources\App\Offline\PurchaseOrderResource;
 use App\Http\Resources\App\TransferRequest\TransferRequestResource;
+use App\Models\PurchaseOrder;
 use App\Models\TransferRequest;
 use App\Traits\Responses;
 use Illuminate\Http\Response;
@@ -29,7 +31,7 @@ class TransferRequestController extends Controller
         return $this->appSuccessPaginated(
             status: Response::HTTP_OK,
             message: 'Transfer Requests Retrieved Successfully',
-            data: TransferRequestResource::collection($transferRequests)
+            data: TransferRequestResource::collection($transferRequests) ,
         );
     }
 
@@ -105,7 +107,7 @@ class TransferRequestController extends Controller
             "OrderItems" => $transferRequest->items->map(function ($item) {
                 return [
                     "ItemLookupcode" => (string) $item->ItemLookupCode,
-                    "QTY" => (float) $item->quantity,
+                    "QTY" => (float) $item->pivot->quantity,
                 ];
             })->values()->toArray(),
         ];
@@ -137,7 +139,6 @@ class TransferRequestController extends Controller
             data: new TransferRequestResource($transferRequest)
         );
     }
-
 
 
 }

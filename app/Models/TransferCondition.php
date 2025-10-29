@@ -10,13 +10,9 @@ class TransferCondition extends Model
 {
     use HasFactory;
 
-    protected $table = 'transfer_conditions' ;
+    protected $table = 'purchase_order_conditions'  ;
 
     protected $guarded = [] ;
 
 
-    public function transferRequest(): BelongsTo
-    {
-        return $this->belongsTo(TransferRequest::class);
-    }
 }

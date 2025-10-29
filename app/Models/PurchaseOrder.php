@@ -37,5 +37,11 @@ class PurchaseOrder extends Model
     }
 
 
+    public function condition()
+    {
+        return $this->hasOne(TransferCondition::class, 'purchase_order_id' , 'ID');
+    }
+
+
 
 }

@@ -16,18 +16,21 @@ class PurchaseOrderEntry extends Model
         return $this->belongsTo(PurchaseOrder::class , 'PurchaseOrderID' , 'ID');
     }
 
+    public function transferRequest()
+    {
+        return $this->belongsTo(TransferRequest::class , 'PurchaseOrderID' , 'purchase_order_id');
+    }
+
     public function item()
     {
         return $this->belongsTo(Item::class , 'ItemID' , 'ID');
     }
 
-    public function transferRequest()
+
+    public function infos()
     {
-        return $this->belongsTo(
-            TransferRequest::class,
-            'PurchaseOrderID',
-            'purchase_order_id'
-        );
+        return $this->hasMany(TransferredItemInfo::class , 'purchase_order_entry_id' , 'ID');
     }
+
 
 }

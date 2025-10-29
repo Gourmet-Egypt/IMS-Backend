@@ -18,7 +18,7 @@ class TransferRequest extends Model
 
     public function conditions(): HasOne
     {
-        return $this->hasOne(TransferCondition::class);
+        return $this->hasOne(TransferCondition::class , 'purchase_order_id' , 'purchase_order_id' );
     }
 
     public function itemTransfers(): HasMany
@@ -53,6 +53,7 @@ class TransferRequest extends Model
             ['status' , TransferRequestStatusEnum::OPEN]
         );
     }
+
 
 
 }

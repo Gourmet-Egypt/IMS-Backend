@@ -25,10 +25,24 @@ class PurchaseOrderController extends Controller
 
     public function show(PurchaseOrder $purchaseOrder)
     {
+        $purchaseOrder = $purchaseOrder->load(['condition' , 'entries' , 'entries.infos' ]);
+
         return $this->success(
             status: Response::HTTP_OK,
             message: 'PurchaseOrder retrieved successfully',
-            data: new PurchaseOrderResource($purchaseOrder->load('entries'))
+            data:new  \App\Http\Resources\App\Offline\PurchaseOrderResource($purchaseOrder) ,
+        );
+    }
+
+
+    public function offline()
+    {
+        $purchaseOrders = PurchaseOrder::with(['condition' , 'entries' , 'entries.infos' ])->where('status' , 0)->paginate(15);
+
+        return $this->AppSuccessPaginated(
+            status: Response::HTTP_OK,
+            message: 'Purchase Orders Retrieved Successfully',
+            data: \App\Http\Resources\App\Offline\PurchaseOrderResource::collection($purchaseOrders) ,
         );
     }
 }

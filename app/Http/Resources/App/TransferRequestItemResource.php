@@ -22,6 +22,9 @@ class TransferRequestItemResource extends JsonResource
             'Description' => $this->pivot->item->Description,
             'quantity' => $this->pivot->quantity ?? $this->quantity,
             'notes' => $this->pivot->notes ?? $this->notes,
+            'infos' => $this->whenLoaded('Infos', function () {
+                return TransferedItemInfoResource::collection($this->infoes) ;
+            }),
             'created_at' => $this->pivot->created_at ?? $this->created_at,
             'updated_at' => $this->pivot->updated_at ?? $this->updated_at,
 

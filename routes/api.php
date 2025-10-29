@@ -51,6 +51,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
             ->name('transfer-request.changeStatus');
 
 
+
         // TransferRequestsItems Routes
         Route::post('{transferRequest}/items', [TransferRequestItemController::class, 'storeOrUpdate']);
 
@@ -76,6 +77,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
         Route::get('/{purchaseOrder}', [PurchaseOrderController::class, 'show'])
             ->name('purchase-order.show');
+
+        Route::get('/all/offline' , [PurchaseOrderController::class, 'offline'])
+            ->name('purchase-order.offline');
 
     });
 
