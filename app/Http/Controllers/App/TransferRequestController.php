@@ -24,7 +24,7 @@ class TransferRequestController extends Controller
 
     public function index()
     {
-        $transferRequests = TransferRequest::with('items')->paginate(15);
+        $transferRequests = TransferRequest::with('items')->where('status' , 'open')->paginate(15);
 
         return $this->appSuccessPaginated(
             status: Response::HTTP_OK,

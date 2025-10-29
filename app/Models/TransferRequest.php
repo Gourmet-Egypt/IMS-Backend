@@ -35,7 +35,6 @@ class TransferRequest extends Model
     }
 
 
-
     public function transferToStore()
     {
         return $this->belongsTo(Store::class ,'to_store_id' , 'StoreCode' );
