@@ -36,6 +36,14 @@ class PurchaseOrder extends Model
         return $this->hasMany(PurchaseOrderEntry::class , 'PurchaseOrderID' , 'ID');
     }
 
+    public function currentStore()
+    {
+        return $this->belongsTo(Store::class ,'StoreID' , 'StoreCode' );
+    }
+    public function otherStore()
+    {
+        return $this->belongsTo(Store::class ,'OtherStoreID' , 'StoreCode' );
+    }
 
     public function condition()
     {

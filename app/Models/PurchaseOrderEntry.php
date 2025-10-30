@@ -23,7 +23,7 @@ class PurchaseOrderEntry extends Model
 
     public function item()
     {
-        return $this->belongsTo(Item::class , 'ItemID' , 'ID');
+        return $this->belongsTo(Item::class , 'ItemID' , 'HQID');
     }
 
 

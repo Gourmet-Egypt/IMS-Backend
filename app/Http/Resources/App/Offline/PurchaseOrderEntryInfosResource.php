@@ -16,6 +16,7 @@ class PurchaseOrderEntryInfosResource extends JsonResource
     {
         return [
             'id' => $this->SN,
+            'po_entry_id' => $this->purchase_order_entry_id,
             'quantity_issued' => $this->quantity_issued,
             'production_date' => $this->production_date ,
             'expire_date' => $this->expire_date ,

@@ -16,6 +16,7 @@ class PurchaseOrderEntryResource extends JsonResource
     {
         return [
             'id' => $this->ID ,
+            'purchase_order_id' => $this->PurchaseOrderID ,
             'LookupCode' => $this->item->ItemLookupCode ,
             'Description' => $this->ItemDescription ,
             'price' => $this->Price ,
