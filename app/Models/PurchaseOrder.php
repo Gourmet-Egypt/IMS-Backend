@@ -17,7 +17,9 @@ class PurchaseOrder extends Model
 
     public function scopeStore(Builder $query)
     {
+
         $store_id = Auth::user()->store_id;
+
 
         $type = request('type');
         $status = request('status', 0);
@@ -48,6 +50,11 @@ class PurchaseOrder extends Model
     public function condition()
     {
         return $this->hasOne(TransferCondition::class, 'purchase_order_id' , 'ID');
+    }
+
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class ,'Supplierid' , 'HQID' );
     }
 
 

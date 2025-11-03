@@ -4,6 +4,7 @@ namespace App\Http\Controllers\App;
 
 use App\Enums\TransferRequestStatusEnum;
 use App\Enums\TransferRequestTypeEnum;
+use App\Events\TransferRequestCommitted;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\App\TransferRequest\StoreTransferRequest;
 use App\Http\Requests\App\TransferRequest\UpdateTransferRequest;
@@ -14,6 +15,7 @@ use App\Models\TransferRequest;
 use App\Traits\Responses;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
 class TransferRequestController extends Controller
@@ -85,7 +87,7 @@ class TransferRequestController extends Controller
         );
     }
 
-    public function changeStatus(TransferRequest $transferRequest)
+    public function createOrder(TransferRequest $transferRequest)
     {
         if (!$transferRequest->items()->exists()) {
             return $this->error(
@@ -140,5 +142,34 @@ class TransferRequestController extends Controller
         );
     }
 
+    public function commitOrder()
+    {
+        // take the data from mahmoud
+
+        // call the endpoint from tony
+        $transferRequest = [
+            'transfer_request' => [] ,
+            'conditions' => [] ,
+            'infos' => [] ,
+        ];
+        // check if the order is committed and the response is 200
+        $response = Http::withoutVerifying()
+            ->asJson()
+            ->post('http://192.168.23.19/api/create-order', $transferRequest);
+
+
+        if ($response->status() === 200) {
+            // fire the event
+            event(new TransferRequestCommitted($transferRequest));
+        }
+        // one event , two listeners , two services
+
+        // first listener for pdf -> pdf service -> create the three pdfs -> will return to mahmoud
+
+        // second listener for mails -> mail service -> create the three mails ( determine the type of the order to choose the temp and the users the temp will send to )
+
+
+
+    }
 
 }

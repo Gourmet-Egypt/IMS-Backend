@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources\App\TransferRequest;
 
-use App\Http\Resources\App\TransferRequestItemResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

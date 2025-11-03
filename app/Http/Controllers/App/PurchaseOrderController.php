@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\App;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\App\PurchaseOrderResource;
+use App\Http\Resources\App\PurchaseOrder\PurchaseOrderResource;
 use App\Models\PurchaseOrder;
 use App\Traits\Responses;
 use Illuminate\Http\Response;

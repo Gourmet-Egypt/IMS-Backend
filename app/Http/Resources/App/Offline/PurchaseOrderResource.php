@@ -23,6 +23,9 @@ class PurchaseOrderResource extends JsonResource
             'from_store_id' => $this->OtherStoreID ,
             'from_store_name' => $this->otherStore?->Name ,
             'created_at' => $this->DateCreated ,
+            'po_number' => $this->PONumber ,
+            'supplier_id' => $this->SupplierID ,
+            'supplier_name' =>  $this->supplier?->SupplierName  ,
             'items' => $this->whenLoaded('entries', function () {
                 return PurchaseOrderEntryResource::collection($this->entries);
             }) ,

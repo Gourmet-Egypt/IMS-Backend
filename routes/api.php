@@ -47,8 +47,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::delete('/{transferRequest}', [TransferRequestController::class, 'destroy'])
             ->name('transfer-request.destroy');
 
-        Route::post('/{transferRequest}/status', [TransferRequestController::class, 'changeStatus'])
-            ->name('transfer-request.changeStatus');
+        Route::post('/{transferRequest}/status', [TransferRequestController::class, 'createOrder'])
+            ->name('transfer-request.createOrder');
 
 
 
