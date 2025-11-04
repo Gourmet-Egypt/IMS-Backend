@@ -57,6 +57,14 @@ class PurchaseOrder extends Model
         return $this->belongsTo(Supplier::class ,'Supplierid' , 'HQID' );
     }
 
+    public function scopeType(Builder $query)
+    {
+        $type = request('type')  ;
+        if($type){
+            return $query->where('POType' , $type );
+        }
+    }
+
 
 
 }

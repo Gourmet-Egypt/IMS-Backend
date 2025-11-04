@@ -160,7 +160,7 @@ class TransferRequestController extends Controller
 
         if ($response->status() === 200) {
             // fire the event
-            event(new TransferRequestCommitted($transferRequest));
+            TransferRequestCommitted::dispatch($transferRequest);
         }
         // one event , two listeners , two services
 

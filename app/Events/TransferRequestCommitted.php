@@ -12,14 +12,16 @@ use Illuminate\Queue\SerializesModels;
 
 class TransferRequestCommitted
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable , SerializesModels;
+
+    public $transferRequest;
 
     /**
      * Create a new event instance.
      */
-    public function __construct()
+    public function __construct($transferRequest)
     {
-
+        $this->trnasferRequest = $transferRequest;
     }
 
     /**

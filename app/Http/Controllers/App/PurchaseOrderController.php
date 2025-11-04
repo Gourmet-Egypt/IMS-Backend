@@ -37,7 +37,7 @@ class PurchaseOrderController extends Controller
 
     public function offline()
     {
-        $purchaseOrders = PurchaseOrder::with(['condition' , 'entries' , 'entries.infos' ])->where('status' , 0)->paginate(15);
+        $purchaseOrders = PurchaseOrder::Type()->with(['condition' , 'entries' , 'entries.infos' ])->where('status' , 0)->paginate(15);
 
         return $this->AppSuccessPaginated(
             status: Response::HTTP_OK,
