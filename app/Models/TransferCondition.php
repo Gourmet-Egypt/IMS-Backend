@@ -10,7 +10,9 @@ class TransferCondition extends Model
 {
     use HasFactory;
 
-    protected $table = 'purchase_order_conditions'  ;
+    protected $hidden = ['DBTimeStamp'];
+
+    protected $table = 'IMS_PurchaseOrder_Conditions'  ;
 
     protected $guarded = [] ;
 

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class TransferredItemInfo extends Model
 {
     use HasFactory;
-    protected $table = 'purchase_order_entry_infos';
+    protected $table = 'IMS_PurchaseOrderEntry_infos';
     protected $guarded = [] ;
 
     public function itemTransferRequest(): BelongsTo

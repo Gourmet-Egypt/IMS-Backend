@@ -11,6 +11,8 @@ class PurchaseOrderEntry extends Model
 
     protected $table = 'PurchaseOrderEntry';
 
+    protected $hidden = ['DBTimeStamp'];
+
     public function purchaseOrder()
     {
         return $this->belongsTo(PurchaseOrder::class , 'PurchaseOrderID' , 'ID');

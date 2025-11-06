@@ -14,6 +14,7 @@ class PurchaseOrder extends Model
 
     protected $table = 'PurchaseOrder';
 
+    protected $hidden = ['DBTimeStamp'];
 
     public function scopeStore(Builder $query)
     {
@@ -63,6 +64,17 @@ class PurchaseOrder extends Model
         if($type){
             return $query->where('POType' , $type );
         }
+    }
+
+
+    public function pdfs()
+    {
+        return $this->hasMany(PurchaseOrderPdf::class, 'purchase_order_id', 'ID');
+    }
+
+    public function emails()
+    {
+        return $this->hasMany(PurchaseOrderEmail::class, 'purchase_order_id', 'ID');
     }
 
 

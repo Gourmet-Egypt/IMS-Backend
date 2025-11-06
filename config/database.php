@@ -90,6 +90,20 @@ return [
             'prefix_indexes' => true,
         ],
 
+        'sqlsrv_rms' => [
+            'driver' => 'sqlsrv',
+            'url' => env('DATABASE_URL_RMS'),
+            'host' => env('DB_HOST_RMS'),
+            'port' => env('DB_PORT_RMS'),
+            'database' => env('DB_DATABASE_RMS'),
+            'username' => env('DB_USERNAME_RMS'),
+            'password' => env('DB_PASSWORD_RMS'),
+            'charset' => 'utf8',
+            'collation' => 'utf8_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+        ],
+
 
 
     ],

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\App;
 
+use App\Events\PurchaseOrderCommitted;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\App\PurchaseOrder\PurchaseOrderResource;
 use App\Models\PurchaseOrder;
@@ -44,5 +45,13 @@ class PurchaseOrderController extends Controller
             message: 'Purchase Orders Retrieved Successfully',
             data: \App\Http\Resources\App\Offline\PurchaseOrderResource::collection($purchaseOrders) ,
         );
+    }
+
+    public function test(PurchaseOrder $purchaseOrder)
+    {
+
+        $purchaseOrder = $purchaseOrder->load(['condition' , 'entries' , 'entries.infos' ]);
+
+        PurchaseOrderCommitted::dispatch($purchaseOrder);
     }
 }

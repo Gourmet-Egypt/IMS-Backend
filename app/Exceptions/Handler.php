@@ -64,6 +64,7 @@ class Handler extends ExceptionHandler
                     return response()->json([
                         'status' => 404,
                         'message' => 'Resource not found.',
+                        'exception' => $e->getMessage(),
                         'data' => null,
                     ], 404);
                 }

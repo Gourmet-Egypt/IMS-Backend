@@ -10,29 +10,17 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class TransferRequestCommitted
+class PurchaseOrderCommitted
 {
     use Dispatchable , SerializesModels;
 
-    public $transferRequest;
+    public $purchaseOrder;
 
     /**
      * Create a new event instance.
      */
-    public function __construct($transferRequest)
+    public function __construct($purchaseOrder)
     {
-        $this->trnasferRequest = $transferRequest;
-    }
-
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
-     */
-    public function broadcastOn(): array
-    {
-        return [
-            new PrivateChannel('channel-name'),
-        ];
+        $this->purchaseOrder = $purchaseOrder;
     }
 }

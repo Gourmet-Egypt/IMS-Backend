@@ -4,7 +4,7 @@ namespace App\Http\Controllers\App;
 
 use App\Enums\TransferRequestStatusEnum;
 use App\Enums\TransferRequestTypeEnum;
-use App\Events\TransferRequestCommitted;
+use App\Events\PurchaseOrderCommitted;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\App\TransferRequest\StoreTransferRequest;
 use App\Http\Requests\App\TransferRequest\UpdateTransferRequest;
@@ -160,7 +160,7 @@ class TransferRequestController extends Controller
 
         if ($response->status() === 200) {
             // fire the event
-            TransferRequestCommitted::dispatch($transferRequest);
+            PurchaseOrderCommitted::dispatch($transferRequest);
         }
         // one event , two listeners , two services
 

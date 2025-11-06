@@ -2,25 +2,35 @@
 
 namespace App\Listeners;
 
-use App\Events\TransferRequestCommitted;
-use App\Services\TransferRequestPdfService;
+use App\Events\PurchaseOrderCommitted;
+use App\Services\PurchaseOrderPdfService;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\Log;
 
 class GeneratePdfsListener
 {
-    protected $pdfService;
+    use InteractsWithQueue;
 
-    public function __construct(TransferRequestPdfService $pdfService)
+    protected $pdfService;
+    public function __construct(PurchaseOrderPdfService $pdfService)
     {
         $this->pdfService = $pdfService;
     }
 
-    public function handle(TransferRequestCommitted $event)
+    public function handle(PurchaseOrderCommitted $event)
     {
-        $transferRequest = $event->transferRequest;
+            $purchaseOrder = $event->purchaseOrder;
+            $pdfs = $this->pdfService->generateAllPdfs($purchaseOrder);
 
+            Log::info("Successfully generated PDFs for Purchase Order #{$purchaseOrder->PONumber}", [
+                'pdfs' => array_keys($pdfs)
+            ]);
+    }
 
-        $pdfs = $this->pdfService->generateAllPdfs($transferRequest);
-
+    public function failed(PurchaseOrderCommitted $event, \Throwable $exception)
+    {
+        Log::error("GeneratePdfsListener failed for Transfer Request #{$event->purchaseOrder->PONumber}: " . $exception->getMessage());
     }
 
 

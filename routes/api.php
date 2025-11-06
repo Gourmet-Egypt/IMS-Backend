@@ -135,7 +135,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 
-
+Route::get('/test/{purchaseOrder}' , [PurchaseOrderController::class, 'test']);
 
 
 
