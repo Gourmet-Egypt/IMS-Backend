@@ -10,6 +10,10 @@ class TransferredItemInfo extends Model
 {
     use HasFactory;
     protected $table = 'IMS_PurchaseOrderEntry_infos';
+
+    protected $hidden = [
+        'DBTimeStamp'
+    ];
     protected $guarded = [] ;
 
     public function itemTransferRequest(): BelongsTo

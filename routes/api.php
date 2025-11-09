@@ -83,6 +83,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     });
 
+    Route::prefix('purchase-order-entry')->group(function () {
+        Route::get('/{purchaseOrderEntry}' , [PurchaseOrderController::class, 'allInfos']) ;
+    });
+
 });
 
 

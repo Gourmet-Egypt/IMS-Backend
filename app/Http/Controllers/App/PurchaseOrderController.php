@@ -4,8 +4,10 @@ namespace App\Http\Controllers\App;
 
 use App\Events\PurchaseOrderCommitted;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\App\Offline\PurchaseOrderEntryResource;
 use App\Http\Resources\App\PurchaseOrder\PurchaseOrderResource;
 use App\Models\PurchaseOrder;
+use App\Models\PurchaseOrderEntry;
 use App\Traits\Responses;
 use Illuminate\Http\Response;
 
@@ -47,11 +49,23 @@ class PurchaseOrderController extends Controller
         );
     }
 
-    public function test(PurchaseOrder $purchaseOrder)
+//    public function test(PurchaseOrder $purchaseOrder)
+//    {
+//
+//        $purchaseOrder = $purchaseOrder->load(['condition' , 'entries' , 'entries.infos' ]);
+//
+//        PurchaseOrderCommitted::dispatch($purchaseOrder);
+//    }
+
+
+    public function allInfos(PurchaseOrderEntry $purchaseOrderEntry)
     {
+        $purchaseOrderEntry = $purchaseOrderEntry->load(['infos']);
 
-        $purchaseOrder = $purchaseOrder->load(['condition' , 'entries' , 'entries.infos' ]);
-
-        PurchaseOrderCommitted::dispatch($purchaseOrder);
+        return $this->success(
+            status: Response::HTTP_OK,
+            message: 'Infos retrieved successfully',
+            data: new PurchaseOrderEntryResource($purchaseOrderEntry) ,
+        );
     }
 }

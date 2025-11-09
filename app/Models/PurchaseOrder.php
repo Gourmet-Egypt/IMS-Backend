@@ -18,21 +18,18 @@ class PurchaseOrder extends Model
 
     public function scopeStore(Builder $query)
     {
-
         $store_id = Auth::user()->store_id;
-
-
         $type = request('type');
         $status = request('status', 0);
 
         return $query->where([
             ['StoreID', $store_id],
-            ['POType', $type],
             ['SupplierID', '=', 0],
             ['OtherStoreID', '<>', 0],
             ['Status', $status],
-        ]);
+        ])->whereIn('POType', (array) $type);
     }
+
 
     public function entries()
     {
@@ -60,11 +57,13 @@ class PurchaseOrder extends Model
 
     public function scopeType(Builder $query)
     {
-        $type = request('type')  ;
-        if($type){
-            return $query->where('POType' , $type );
-        }
+        $type = request('type');
+
+        return $type
+            ? $query->whereIn('POType', (array)$type)
+            : $query;
     }
+
 
 
     public function pdfs()
@@ -75,6 +74,15 @@ class PurchaseOrder extends Model
     public function emails()
     {
         return $this->hasMany(PurchaseOrderEmail::class, 'purchase_order_id', 'ID');
+    }
+
+    public function quantityMaxThousand($purchaseOrder)
+    {
+        $items = $purchaseOrder->whereHas('entries', function ($query) use ($purchaseOrder) {
+            $query->where('QuantityOrdered' , '>' , 1000)->get() ;
+        });
+
+        return $items;
     }
 
 
