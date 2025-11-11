@@ -35,7 +35,7 @@ class PurchaseOrder extends Model
             if (is_string($type)) {
                 $type = json_decode($type, true) ?? explode(',', $type);
             }
-            return $new_query->whereIn('type', (array) $type);
+            return $new_query->whereIn('POType', (array) $type);
         }
     }
 
@@ -77,7 +77,7 @@ class PurchaseOrder extends Model
             $type = json_decode($type, true) ?? explode(',', $type);
         }
 
-        return $query->whereIn('type', (array) $type);
+        return $query->whereIn('POType', (array) $type);
     }
 
 
