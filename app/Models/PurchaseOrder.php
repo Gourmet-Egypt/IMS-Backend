@@ -22,46 +22,62 @@ class PurchaseOrder extends Model
         $type = request('type');
         $status = request('status', 0);
 
-        return $query->where([
+
+        $new_query = $query->where([
             ['StoreID', $store_id],
             ['SupplierID', '=', 0],
             ['OtherStoreID', '<>', 0],
             ['Status', $status],
-        ])->whereIn('POType', (array) $type);
+        ]);
+        if (!$type) {
+            return $new_query;
+        } else {
+            if (is_string($type)) {
+                $type = json_decode($type, true) ?? explode(',', $type);
+            }
+            return $new_query->whereIn('type', (array) $type);
+        }
     }
 
 
     public function entries()
     {
-        return $this->hasMany(PurchaseOrderEntry::class , 'PurchaseOrderID' , 'ID');
+        return $this->hasMany(PurchaseOrderEntry::class, 'PurchaseOrderID', 'ID');
     }
 
     public function currentStore()
     {
-        return $this->belongsTo(Store::class ,'StoreID' , 'StoreCode' );
+        return $this->belongsTo(Store::class, 'StoreID', 'StoreCode');
     }
     public function otherStore()
     {
-        return $this->belongsTo(Store::class ,'OtherStoreID' , 'StoreCode' );
+        return $this->belongsTo(Store::class, 'OtherStoreID', 'StoreCode');
     }
 
     public function condition()
     {
-        return $this->hasOne(TransferCondition::class, 'purchase_order_id' , 'ID');
+        return $this->hasOne(TransferCondition::class, 'purchase_order_id', 'ID');
     }
 
     public function supplier()
     {
-        return $this->belongsTo(Supplier::class ,'Supplierid' , 'HQID' );
+        return $this->belongsTo(Supplier::class, 'Supplierid', 'HQID');
     }
 
     public function scopeType(Builder $query)
     {
         $type = request('type');
 
-        return $type
-            ? $query->whereIn('POType', (array)$type)
-            : $query;
+        if (!$type) {
+            return $query;
+        }
+
+        // Convert string to array if needed
+        if (is_string($type)) {
+            $type = json_decode($type, true) ?? explode(',', $type);
+        }
+
+        return $query->whereIn('type', (array) $type);
     }
 
 
@@ -79,12 +95,9 @@ class PurchaseOrder extends Model
     public function quantityMaxThousand($purchaseOrder)
     {
         $items = $purchaseOrder->whereHas('entries', function ($query) use ($purchaseOrder) {
-            $query->where('QuantityOrdered' , '>' , 1000)->get() ;
+            $query->where('QuantityOrdered', '>', 1000)->get();
         });
 
         return $items;
     }
-
-
-
 }
