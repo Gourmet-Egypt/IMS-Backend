@@ -27,6 +27,10 @@ class PurchaseOrderEntry extends Model
     {
         return $this->belongsTo(Item::class , 'ItemID' , 'HQID');
     }
+    public function HQItem()
+    {
+        return $this->belongsTo(HQItem::class , 'ItemID' , 'HQID');
+    }
 
 
     public function infos()
@@ -34,5 +38,11 @@ class PurchaseOrderEntry extends Model
         return $this->hasMany(TransferredItemInfo::class , 'purchase_order_entry_id' , 'ID');
     }
 
+    public function getTotalCostAttribute()
+    {
+        return $this->entries->sum(function ($entry) {
+            return $entry->HQItem->Cost * $entry->QuantityOrdered;
+        });
+    }
 
 }

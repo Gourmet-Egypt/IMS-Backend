@@ -6,6 +6,7 @@ use App\Http\Controllers\App\TransferRequestController;
 use App\Http\Controllers\App\TransferRequestItemController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Dashboard\CashierController;
+use App\Http\Controllers\Dashboard\ReportController;
 use App\Http\Controllers\Dashboard\UserController;
 use App\Http\Controllers\Dashboard\GoodTypeController;
 use App\Http\Controllers\Dashboard\ReasonController;
@@ -85,6 +86,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::prefix('purchase-order-entry')->group(function () {
         Route::get('/{purchaseOrderEntry}' , [PurchaseOrderController::class, 'allInfos']) ;
+        Route::put('/{purchaseOrderEntry}' , [PurchaseOrderController::class, 'updateInfos']) ;
     });
 
 });
@@ -141,5 +143,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::get('/test/{purchaseOrder}' , [PurchaseOrderController::class, 'test']);
 
-
+Route::prefix('reports')->group(function () {
+    Route::get('/transfer_list/{purchaseOrder}', [ReportController::class, 'TransferList']);
+}) ;
 
