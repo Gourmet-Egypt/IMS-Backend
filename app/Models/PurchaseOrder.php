@@ -16,7 +16,14 @@ class PurchaseOrder extends Model
 
     protected $hidden = ['DBTimeStamp'];
 
-    public function scopeStore(Builder $query)
+    public static function onSecondary()
+    {
+        return static::on('sqlsrv_rms');
+    }
+
+
+
+    public function scopeStore(Builder $query): Builder
     {
         $store_id = Auth::user()->store_id;
         $type = request('type');

@@ -141,9 +141,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 
-Route::get('/test/{purchaseOrder}' , [PurchaseOrderController::class, 'test']);
+//Route::get('/test/{purchaseOrder}' , [PurchaseOrderController::class, 'test']);
 
 Route::prefix('reports')->group(function () {
-    Route::get('/transfer_list/{purchaseOrder}', [ReportController::class, 'TransferList']);
+    Route::get('/transfer_list/{id}', [ReportController::class, 'TransferList']);
 }) ;
 

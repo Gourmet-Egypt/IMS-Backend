@@ -3,17 +3,13 @@
 namespace App\Http\Controllers\App;
 
 use App\Enums\PurchaseOrderTypeEnum;
-use App\Enums\TransferRequestStatusEnum;
-use App\Events\PurchaseOrderCommitted;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\App\PurchaseOrderEntry\UpdatePurchaseOrderEntryInfosRequest;
 use App\Http\Resources\App\Offline\PurchaseOrderEntryResource;
-use App\Http\Resources\App\PurchaseOrder\PurchaseOrderResource;
-use App\Http\Resources\App\TransferRequest\TransferRequestResource;
+use App\Http\Resources\App\Offline\PurchaseOrderResource;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderEntry;
 use App\Traits\Responses;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Http;
 
@@ -21,7 +17,7 @@ class PurchaseOrderController extends Controller
 {
     use Responses;
 
-    public function index()
+    public function index(): \Illuminate\Http\JsonResponse
     {
         $purchaseOrders = PurchaseOrder::store()->get();
 
@@ -32,7 +28,7 @@ class PurchaseOrderController extends Controller
         );
     }
 
-    public function show(PurchaseOrder $purchaseOrder)
+    public function show(PurchaseOrder $purchaseOrder): \Illuminate\Http\JsonResponse
     {
         $purchaseOrder = $purchaseOrder->load(['condition', 'entries', 'entries.infos']);
 
@@ -44,14 +40,14 @@ class PurchaseOrderController extends Controller
     }
 
 
-    public function offline()
+    public function offline(): \Illuminate\Http\JsonResponse
     {
         $purchaseOrders = PurchaseOrder::Type()->with(['condition', 'entries', 'entries.infos'])->where('status', 0)->paginate(15);
 
         return $this->AppSuccessPaginated(
             status: Response::HTTP_OK,
             message: 'Purchase Orders Retrieved Successfully',
-            data: \App\Http\Resources\App\Offline\PurchaseOrderResource::collection($purchaseOrders),
+            data: PurchaseOrderResource::collection($purchaseOrders),
         );
     }
 
@@ -64,7 +60,7 @@ class PurchaseOrderController extends Controller
 //    }
 
 
-    public function allInfos(PurchaseOrderEntry $purchaseOrderEntry)
+    public function allInfos(PurchaseOrderEntry $purchaseOrderEntry): \Illuminate\Http\JsonResponse
     {
         $purchaseOrderEntry = $purchaseOrderEntry->load(['infos']);
 
@@ -76,7 +72,7 @@ class PurchaseOrderController extends Controller
     }
 
 
-    public function updateInfos(UpdatePurchaseOrderEntryInfosRequest $request, PurchaseOrderEntry $purchaseOrderEntry)
+    public function updateInfos(UpdatePurchaseOrderEntryInfosRequest $request, PurchaseOrderEntry $purchaseOrderEntry): \Illuminate\Http\JsonResponse
     {
         $data = [
             "StoreID" => $purchaseOrderEntry->StoreID,

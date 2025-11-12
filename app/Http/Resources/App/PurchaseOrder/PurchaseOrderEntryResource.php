@@ -23,7 +23,6 @@ class PurchaseOrderEntryResource extends JsonResource
             'quantity_received' => $this->QuantityReceived ,
             'purchase_order_id' => $this->PurchaseOrderID ,
             'quantity_issue' => $this->transferRequest->quantity_issue ?? null,
-
         ];
     }
 }

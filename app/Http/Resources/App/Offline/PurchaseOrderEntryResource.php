@@ -20,14 +20,12 @@ class PurchaseOrderEntryResource extends JsonResource
             'LookupCode' => $this->item?->ItemLookupCode ,
             'Description' => $this->ItemDescription ,
             'price' => $this->Price ,
+            'quantity_on_hand' => $this->item?->Quantity ,
             'quantity_ordered' => $this->QuantityOrdered ,
             'quantity_received' => $this->QuantityReceived ,
             'infos' => $this->whenLoaded('infos', function () {
                 return PurchaseOrderEntryInfosResource::collection($this->whenLoaded('infos'));
             })
-
-
-
         ];
     }
 }

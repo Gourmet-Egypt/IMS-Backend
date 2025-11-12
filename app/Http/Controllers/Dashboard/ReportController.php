@@ -11,20 +11,19 @@ use Illuminate\Http\Response;
 class ReportController extends Controller
 {
     use Responses ;
-    public function PO_quantity_max_thousand(PurchaseOrder $purchaseOrder)
-    {
-        $items = PurchaseOrder::quantityMaxThousand($purchaseOrder);
-    }
 
-    public function TransferList(PurchaseOrder $purchaseOrder)
+    public function TransferList($id)
     {
-        $purchaseOrder = $purchaseOrder->load([
+        $purchaseOrder = PurchaseOrder::on('sqlsrv_rms')->with([
             'entries',
             'entries.infos',
-            'entries.HQItem',
-            'entries.HQItem.department',
-            'entries.HQItem.category'
-        ]);
+//            'entries.HQItem',
+//            'entries.HQItem.department',
+//            'entries.HQItem.category'
+        ])->findOrFail($id);
+
+        dd($purchaseOrder);
+
 
         return $this->success(
             status: Response::HTTP_OK,

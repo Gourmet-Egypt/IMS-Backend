@@ -31,7 +31,8 @@ class PurchaseOrderResource extends JsonResource
             }) ,
             'condition' => $this->whenLoaded('condition', function () {
                 return new PurchaseOrderConditionResource($this->condition) ;
-            })
+            }) ,
+
         ];
     }
 }
