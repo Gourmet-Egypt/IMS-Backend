@@ -11,7 +11,7 @@ use Illuminate\Http\Response;
 
 class GoodTypeController extends Controller
 {
-    use Responses ;
+    use Responses;
 
     public function index()
     {
@@ -48,9 +48,9 @@ class GoodTypeController extends Controller
     }
 
 
-    public function update(Request $request , GoodsType $GoodType )
+    public function update(Request $request, GoodsType $GoodType)
     {
-        $GoodType->update(['name'=> $request->post('name') , 'updated_at' => now()]);
+        $GoodType->update(['name' => $request->post('name'), 'updated_at' => now()]);
 
         return $this->success(
             status: Response::HTTP_OK,

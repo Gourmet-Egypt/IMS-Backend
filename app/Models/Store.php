@@ -9,6 +9,7 @@ class Store extends Model
 {
     use HasFactory;
 
+    protected $hidden = ['DBTimeStamp'];
 
     protected $table = 'Store';
     protected $guarded = [];

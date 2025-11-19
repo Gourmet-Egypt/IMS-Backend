@@ -6,12 +6,12 @@ use App\Http\Controllers\App\TransferRequestController;
 use App\Http\Controllers\App\TransferRequestItemController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Dashboard\CashierController;
-use App\Http\Controllers\Dashboard\ReportController;
-use App\Http\Controllers\Dashboard\UserController;
 use App\Http\Controllers\Dashboard\GoodTypeController;
 use App\Http\Controllers\Dashboard\ReasonController;
+use App\Http\Controllers\Dashboard\ReportController;
 use App\Http\Controllers\Dashboard\StoreController;
 use App\Http\Controllers\Dashboard\TemperatureRangeController;
+use App\Http\Controllers\Dashboard\UserController;
 use App\Http\Controllers\Dashboard\VehicleController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,7 +25,6 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
 
 
 Route::middleware(['auth:sanctum'])->group(function () {
@@ -50,7 +49,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
         Route::post('/{transferRequest}/status', [TransferRequestController::class, 'createOrder'])
             ->name('transfer-request.createOrder');
-
 
 
         // TransferRequestsItems Routes
@@ -79,22 +77,24 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/{purchaseOrder}', [PurchaseOrderController::class, 'show'])
             ->name('purchase-order.show');
 
-        Route::get('/all/offline' , [PurchaseOrderController::class, 'offline'])
+        Route::get('/all/offline', [PurchaseOrderController::class, 'offline'])
             ->name('purchase-order.offline');
+
+        Route::post('/{purchaseOrder}/commit', [PurchaseOrderController::class, 'commitOrder'])
+            ->name('purchase-orders.commit');
 
     });
 
     Route::prefix('purchase-order-entry')->group(function () {
-        Route::get('/{purchaseOrderEntry}' , [PurchaseOrderController::class, 'allInfos']) ;
-        Route::put('/{purchaseOrderEntry}' , [PurchaseOrderController::class, 'updateInfos']) ;
+        Route::get('/{purchaseOrderEntry}', [PurchaseOrderController::class, 'allInfos']);
+        Route::put('/{purchaseOrderEntry}', [PurchaseOrderController::class, 'updateInfos']);
     });
 
 });
 
 
-
 // Admin Routes
-Route::middleware(['auth:sanctum' , 'admin'])->group(function () {
+Route::middleware(['auth:sanctum', 'admin'])->group(function () {
 
     // Vehicle Routes
     Route::apiResource('vehicle-types', VehicleController::class);
@@ -135,15 +135,14 @@ Route::get('/stores', [StoreController::class, 'index'])
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
-    ->middleware('auth')->name('logout');;
+        ->middleware('auth')->name('logout');;
 });
 
 
-
-
-//Route::get('/test/{purchaseOrder}' , [PurchaseOrderController::class, 'test']);
+Route::get('/test/{purchaseOrder}', [PurchaseOrderController::class, 'test']);
 
 Route::prefix('reports')->group(function () {
     Route::get('/transfer_list/{id}', [ReportController::class, 'TransferList']);
-}) ;
+    Route::get('/transfer_status/{id}', [ReportController::class, 'TransferStatus']);
+});
 

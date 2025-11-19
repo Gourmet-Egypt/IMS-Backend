@@ -11,13 +11,12 @@ use Illuminate\Http\Response;
 
 class ItemController extends Controller
 {
-    use Responses ;
+    use Responses;
 
     public function index()
     {
         $last_updated = request('last_updated');
-        $items = Item::IndexSearch($last_updated)->paginate(2000) ;
-
+        $items = Item::IndexSearch($last_updated)->paginate(2000);
         return $this->appSuccessPaginated(
             status: Response::HTTP_OK,
             message: 'Items retrieved successfully',
@@ -28,11 +27,12 @@ class ItemController extends Controller
     public function show($lookup)
     {
         $item = Item::ShowSearch($lookup)->first();
-
         return $this->success(
-            status:  Response::HTTP_OK,
+            status: Response::HTTP_OK,
             message: 'Item Retrieved Successfully',
             data: new ShowItemResource($item),
         );
     }
+
+
 }

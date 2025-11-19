@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Builder;
 
 class Item extends Model
 {
@@ -15,6 +15,12 @@ class Item extends Model
     protected $table = 'Item';
     protected $guarded = [];
 
+    protected $hidden = ['DBTimeStamp'];
+
+    public static function onSecondary()
+    {
+        return static::on('sqlsrv_rms');
+    }
 
 
     public function transferRequests(): HasMany
@@ -22,7 +28,7 @@ class Item extends Model
         return $this->hasMany(TransferRequestItem::class);
     }
 
-    public function transfers():BelongsToMany
+    public function transfers(): BelongsToMany
     {
         return $this->belongsToMany(TransferRequest::class, 'transfer_request_item')
             ->withPivot('quantity', 'unit_price', 'notes')
@@ -48,6 +54,16 @@ class Item extends Model
             });
     }
 
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'CategoryID', 'ID');
+    }
+
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'DepartmentID', 'ID');
+    }
 
 
 }

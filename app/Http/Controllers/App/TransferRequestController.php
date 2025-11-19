@@ -4,18 +4,14 @@ namespace App\Http\Controllers\App;
 
 use App\Enums\TransferRequestStatusEnum;
 use App\Enums\TransferRequestTypeEnum;
-use App\Events\PurchaseOrderCommitted;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\App\TransferRequest\StoreTransferRequest;
 use App\Http\Requests\App\TransferRequest\UpdateTransferRequest;
-use App\Http\Resources\App\Offline\PurchaseOrderResource;
 use App\Http\Resources\App\TransferRequest\TransferRequestResource;
-use App\Models\PurchaseOrder;
 use App\Models\TransferRequest;
 use App\Traits\Responses;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
 class TransferRequestController extends Controller
@@ -28,12 +24,12 @@ class TransferRequestController extends Controller
 
     public function index()
     {
-        $transferRequests = TransferRequest::with('items')->where('status' , 'open')->paginate(15);
+        $transferRequests = TransferRequest::with('items')->where('status', 'open')->paginate(15);
 
         return $this->appSuccessPaginated(
             status: Response::HTTP_OK,
             message: 'Transfer Requests Retrieved Successfully',
-            data: TransferRequestResource::collection($transferRequests) ,
+            data: TransferRequestResource::collection($transferRequests),
         );
     }
 
@@ -65,17 +61,6 @@ class TransferRequestController extends Controller
         );
     }
 
-    public function update(UpdateTransferRequest $request, TransferRequest $transferRequest)
-    {
-        $transferRequest->update($request->validated());
-
-        return $this->success(
-            status: Response::HTTP_OK,
-            message: 'TransferRequest updated successfully',
-            data: new TransferRequestResource($transferRequest->fresh())
-        );
-    }
-
     public function destroy(TransferRequest $transferRequest)
     {
         $transferRequest->delete();
@@ -92,10 +77,12 @@ class TransferRequestController extends Controller
         if (!$transferRequest->items()->exists()) {
             return $this->error(
                 status: Response::HTTP_NOT_ACCEPTABLE,
-                message: 'No items were found' ,
+                message: 'No items were found',
                 data: []
             );
         }
+
+        $cashier = auth()->user()->cashier;
 
         $data = [
             "Order" => [
@@ -104,7 +91,7 @@ class TransferRequestController extends Controller
                 "OtherStoreID" => (int) $transferRequest->to_store_id,
                 "SupplierID" => 0,
                 "HH_ID" => (string) $transferRequest->id,
-                "CashierID" => 73,
+                "CashierID" => $cashier->ID,
             ],
             "OrderItems" => $transferRequest->items->map(function ($item) {
                 return [
@@ -120,56 +107,38 @@ class TransferRequestController extends Controller
             ->post('http://192.168.23.19/api/create-order', $data);
 
 
-        if ($response->status() === 200) {
-            $body = $response->json();
-
-            $transferRequest->update([
-                'status' => TransferRequestStatusEnum::CLOSED,
-                'purchase_order_id' => $body['id'] ?? null,
-            ]);
-        } else {
-
+        if ($response->failed()) {
             return $this->error(
-                status: Response::HTTP_INTERNAL_SERVER_ERROR,
-                message: $response
+                status: $response->status() ?? Response::HTTP_INTERNAL_SERVER_ERROR,
+                message: $response->json('message') ?? 'Failed to update transfer request'
             );
         }
 
+        $body = $response->json();
+
+        $transferRequest->update([
+            'status' => TransferRequestStatusEnum::CLOSED,
+            'purchase_order_id' => $body['id'] ?? null,
+        ]);
+
         return $this->success(
             status: Response::HTTP_OK,
-            message: 'TransferRequest status updated successfully',
+            message: 'Transfer request status updated successfully',
             data: new TransferRequestResource($transferRequest)
+        );
+
+    }
+
+    public function update(UpdateTransferRequest $request, TransferRequest $transferRequest)
+    {
+        $transferRequest->update($request->validated());
+
+        return $this->success(
+            status: Response::HTTP_OK,
+            message: 'TransferRequest updated successfully',
+            data: new TransferRequestResource($transferRequest->fresh())
         );
     }
 
-    public function commitOrder()
-    {
-        // take the data from mahmoud
-
-        // call the endpoint from tony
-        $transferRequest = [
-            'transfer_request' => [] ,
-            'conditions' => [] ,
-            'infos' => [] ,
-        ];
-        // check if the order is committed and the response is 200
-        $response = Http::withoutVerifying()
-            ->asJson()
-            ->post('http://192.168.23.19/api/create-order', $transferRequest);
-
-
-        if ($response->status() === 200) {
-            // fire the event
-            PurchaseOrderCommitted::dispatch($transferRequest);
-        }
-        // one event , two listeners , two services
-
-        // first listener for pdf -> pdf service -> create the three pdfs -> will return to mahmoud
-
-        // second listener for mails -> mail service -> create the three mails ( determine the type of the order to choose the temp and the users the temp will send to )
-
-
-
-    }
 
 }

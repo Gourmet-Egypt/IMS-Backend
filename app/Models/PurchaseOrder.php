@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
 use Illuminate\Support\Facades\Auth;
 
 class PurchaseOrder extends Model
@@ -21,6 +20,24 @@ class PurchaseOrder extends Model
         return static::on('sqlsrv_rms');
     }
 
+    public function scopeTransferReports($query, $id)
+    {
+        $store_id = request()->get('store_id');
+
+        return $query->with([
+            'entries',
+            'entries.infos',
+            'condition',
+            'entries.item',
+            'entries.item.category',
+            'entries.item.department'
+        ])
+            ->where([
+                ['PONumber', $id],
+                ['StoreID', $store_id]
+            ])
+            ->first();
+    }
 
 
     public function scopeStore(Builder $query): Builder
@@ -46,7 +63,6 @@ class PurchaseOrder extends Model
         }
     }
 
-
     public function entries()
     {
         return $this->hasMany(PurchaseOrderEntry::class, 'PurchaseOrderID', 'ID');
@@ -56,6 +72,7 @@ class PurchaseOrder extends Model
     {
         return $this->belongsTo(Store::class, 'StoreID', 'StoreCode');
     }
+
     public function otherStore()
     {
         return $this->belongsTo(Store::class, 'OtherStoreID', 'StoreCode');
@@ -86,8 +103,6 @@ class PurchaseOrder extends Model
 
         return $query->whereIn('POType', (array) $type);
     }
-
-
 
     public function pdfs()
     {

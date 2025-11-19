@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\App;
 
 use App\Enums\PurchaseOrderTypeEnum;
+use App\Events\PurchaseOrderCommitted;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\App\PurchaseOrder\CommitOrderRequest;
 use App\Http\Requests\App\PurchaseOrderEntry\UpdatePurchaseOrderEntryInfosRequest;
 use App\Http\Resources\App\Offline\PurchaseOrderEntryResource;
 use App\Http\Resources\App\Offline\PurchaseOrderResource;
@@ -42,7 +44,8 @@ class PurchaseOrderController extends Controller
 
     public function offline(): \Illuminate\Http\JsonResponse
     {
-        $purchaseOrders = PurchaseOrder::Type()->with(['condition', 'entries', 'entries.infos'])->where('status', 0)->paginate(15);
+        $purchaseOrders = PurchaseOrder::Type()->with(['condition', 'entries', 'entries.infos'])->where('status',
+            0)->paginate(15);
 
         return $this->AppSuccessPaginated(
             status: Response::HTTP_OK,
@@ -51,14 +54,77 @@ class PurchaseOrderController extends Controller
         );
     }
 
-//    public function test(PurchaseOrder $purchaseOrder)
-//    {
-//
-//        $purchaseOrder = $purchaseOrder->load(['condition' , 'entries' , 'entries.infos' ]);
-//
-//        PurchaseOrderCommitted::dispatch($purchaseOrder);
-//    }
 
+    public function commitOrder(
+        PurchaseOrder $purchaseOrder,
+        CommitOrderRequest $request
+    ): \Illuminate\Http\JsonResponse {
+        $cashier = auth()->user()->cashier;
+
+        if (!$cashier) {
+            return $this->error(
+                status: Response::HTTP_NOT_FOUND,
+                message: 'Cashier not found'
+            );
+        }
+
+        $poTypeEnum = PurchaseOrderTypeEnum::fromValue((int) $purchaseOrder->POType);
+        $baseData = [
+            "ID" => $purchaseOrder->ID,
+            "transactionType" => $poTypeEnum?->label(),
+            "StoreID" => (int) $purchaseOrder->StoreID,
+            "CashierID" => (int) $cashier->ID
+        ];
+
+        $orderSpecific = match ($purchaseOrder->POType) {
+            '3' => [
+                "VehicleTypeID" => (int) $request->input('VehicleTypeID'),
+                "Vehicle_tempOut" => $request->input('Vehicle_tempOut'),
+                "DeliveryPermitNumber" => $request->input('DeliveryPermitNumber'),
+                "Notes" => $request->input('Notes', ''),
+            ],
+            '2' => [
+                "Vehicle_tempIN" => $request->input('Vehicle_tempIN'),
+            ],
+
+            default => [],
+        };
+
+
+        $data = [
+            "Order" => array_merge($baseData, $orderSpecific),
+        ];
+
+        try {
+            $response = Http::withoutVerifying()
+                ->timeout(30)
+                ->asJson()
+                ->post('http://192.168.23.19/api/commit-order', $data);
+
+            if (!$response->successful()) {
+                return $this->error(
+                    status: Response::HTTP_INTERNAL_SERVER_ERROR,
+                    message: $response->json('message') ?? 'Failed to commit order'
+                );
+            }
+
+            PurchaseOrderCommitted::dispatch($purchaseOrder);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Order committed successfully',
+                'data' => $response->json(),
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Order commit failed: '.$e->getMessage());
+
+            return $this->error(
+                status: Response::HTTP_INTERNAL_SERVER_ERROR,
+                message: 'Failed to commit order'
+            );
+        }
+    }
 
     public function allInfos(PurchaseOrderEntry $purchaseOrderEntry): \Illuminate\Http\JsonResponse
     {
@@ -72,8 +138,10 @@ class PurchaseOrderController extends Controller
     }
 
 
-    public function updateInfos(UpdatePurchaseOrderEntryInfosRequest $request, PurchaseOrderEntry $purchaseOrderEntry): \Illuminate\Http\JsonResponse
-    {
+    public function updateInfos(
+        UpdatePurchaseOrderEntryInfosRequest $request,
+        PurchaseOrderEntry $purchaseOrderEntry
+    ): \Illuminate\Http\JsonResponse {
         $data = [
             "StoreID" => $purchaseOrderEntry->StoreID,
             "transactionType" => PurchaseOrderTypeEnum::fromValue($purchaseOrderEntry->purchaseOrder->POType)?->label(),
@@ -99,6 +167,15 @@ class PurchaseOrderController extends Controller
                 message: $response
             );
         }
+    }
+
+
+    public function test(PurchaseOrder $purchaseOrder)
+    {
+
+        $purchaseOrder = $purchaseOrder->load(['condition', 'entries', 'entries.infos']);
+
+        PurchaseOrderCommitted::dispatch($purchaseOrder);
     }
 }
 

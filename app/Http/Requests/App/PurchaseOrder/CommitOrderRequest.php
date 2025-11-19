@@ -1,0 +1,73 @@
+<?php
+
+namespace App\Http\Requests\App\PurchaseOrder;
+
+use App\Enums\VehicleTypeEnum;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+class CommitOrderRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+
+    public function rules(): array
+    {
+        $transactionType = $this->input('transactionType');
+
+        $rules = [
+            'transactionType' => ['required', 'string', Rule::in(['TransferOut', 'TransferIN'])],
+        ];
+
+        if ($transactionType === 'TransferOut') {
+            $rules['VehicleTypeID'] = [
+                'required',
+                'integer',
+                Rule::in(VehicleTypeEnum::values())
+            ];
+            $rules['Vehicle_tempOut'] = ['required', 'numeric', 'min:-50', 'max:50'];
+            $rules['DeliveryPermitNumber'] = ['required', 'string', 'max:255'];
+            $rules['Notes'] = ['nullable', 'string', 'max:1000'];
+        }
+
+        // TransferIN specific rules
+        if ($transactionType === 'TransferIN') {
+            $rules['Vehicle_tempIN'] = ['required', 'numeric', 'min:-50', 'max:50'];
+        }
+
+        return $rules;
+    }
+
+    public function messages(): array
+    {
+        return [
+            'transactionType.required' => 'Transaction type is required.',
+            'transactionType.in' => 'Transaction type must be either TransferOut or TransferIN.',
+
+            // TransferOut messages
+            'VehicleTypeID.required' => 'Vehicle type is required for TransferOut transactions.',
+            'VehicleTypeID.in' => 'Invalid vehicle type selected.',
+            'Vehicle_tempOut.required' => 'Vehicle temperature (Out) is required for TransferOut transactions.',
+            'DeliveryPermitNumber.required' => 'Delivery permit number is required for TransferOut transactions.',
+
+            // TransferIN messages
+            'Vehicle_tempIN.required' => 'Vehicle temperature (IN) is required for TransferIN transactions.',
+        ];
+    }
+
+    /**
+     * Get custom attributes for validator errors.
+     */
+    public function attributes(): array
+    {
+        return [
+            'Order.VehicleTypeID' => 'vehicle type',
+            'Order.Vehicle_tempOut' => 'vehicle temperature (out)',
+            'Order.Vehicle_tempIN' => 'vehicle temperature (in)',
+            'Order.DeliveryPermitNumber' => 'delivery permit number',
+        ];
+    }
+}

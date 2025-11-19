@@ -4,26 +4,19 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Dashboard\Reports\TransferListResource;
+use App\Http\Resources\Dashboard\Reports\TransferStatusResource;
 use App\Models\PurchaseOrder;
 use App\Traits\Responses;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class ReportController extends Controller
 {
-    use Responses ;
+    use Responses;
 
     public function TransferList($id)
     {
-        $purchaseOrder = PurchaseOrder::on('sqlsrv_rms')->with([
-            'entries',
-            'entries.infos',
-//            'entries.HQItem',
-//            'entries.HQItem.department',
-//            'entries.HQItem.category'
-        ])->findOrFail($id);
-
-        dd($purchaseOrder);
-
+        $purchaseOrder = PurchaseOrder::on('sqlsrv_rms')->transferReports($id);
 
         return $this->success(
             status: Response::HTTP_OK,
@@ -31,4 +24,17 @@ class ReportController extends Controller
             data: new TransferListResource($purchaseOrder),
         );
     }
+
+
+    public function TransferStatus(Request $request, $id)
+    {
+        $purchaseOrder = PurchaseOrder::on('sqlsrv_rms')->transferReports($id);
+
+        return $this->success(
+            status: Response::HTTP_OK,
+            message: 'Transfer Status Report',
+            data: new TransferStatusResource($purchaseOrder),
+        );
+    }
+
 }

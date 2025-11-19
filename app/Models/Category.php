@@ -13,4 +13,10 @@ class Category extends Model
 
     protected $connection = 'sqlsrv_rms';
     protected $hidden = ['DBTimeStamp'];
+
+
+    public function item()
+    {
+        return $this->hasMany(Item::class, 'CategoryID', 'ID');
+    }
 }
