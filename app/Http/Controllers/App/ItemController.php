@@ -16,7 +16,7 @@ class ItemController extends Controller
     public function index()
     {
         $last_updated = request('last_updated');
-        $items = Item::IndexSearch($last_updated)->paginate(2000);
+        $items = Item::IndexSearch($last_updated)->with('aliases')->paginate(2000);
         return $this->appSuccessPaginated(
             status: Response::HTTP_OK,
             message: 'Items retrieved successfully',

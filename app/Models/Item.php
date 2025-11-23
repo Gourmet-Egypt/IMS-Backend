@@ -65,5 +65,10 @@ class Item extends Model
         return $this->belongsTo(Department::class, 'DepartmentID', 'ID');
     }
 
+    public function aliases(): HasMany
+    {
+        return $this->hasMany(Alias::class, 'ItemID', 'ID');
+    }
+
 
 }

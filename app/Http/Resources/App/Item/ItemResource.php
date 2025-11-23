@@ -15,13 +15,14 @@ class ItemResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'ID' => $this->ID ,
-            'ItemLookupCode' => $this->ItemLookupCode ,
-            'Description' => $this->Description ,
-            'HQID' => $this->HQID ,
-            'Price' => $this->Price  ,
-            'Quantity' => $this->Quantity ,
-            'LastUpdated' => $this->LastUpdated ,
+            'ID' => $this->ID,
+            'ItemLookupCode' => $this->ItemLookupCode,
+            'Description' => $this->Description,
+            'HQID' => $this->HQID,
+            'Aliases' => $this->aliases?->pluck('Alias'),
+            'Price' => $this->Price,
+            'Quantity' => $this->Quantity,
+            'LastUpdated' => $this->LastUpdated,
             'DateCreated' => $this->DateCreated
         ];
     }
