@@ -15,14 +15,15 @@ class PurchaseOrderEntryResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->ID ,
-            'purchase_order_id' => $this->PurchaseOrderID ,
-            'LookupCode' => $this->item?->ItemLookupCode ,
-            'Description' => $this->ItemDescription ,
-            'price' => $this->Price ,
-            'quantity_on_hand' => $this->item?->Quantity ,
-            'quantity_ordered' => $this->QuantityOrdered ,
-            'quantity_received' => $this->QuantityReceived ,
+            'id' => $this->ID,
+            'item_id' => $this->ItemID,
+            'purchase_order_id' => $this->PurchaseOrderID,
+            'LookupCode' => $this->item?->ItemLookupCode,
+            'Description' => $this->ItemDescription,
+            'price' => $this->Price,
+            'quantity_on_hand' => $this->item?->Quantity,
+            'quantity_ordered' => $this->QuantityOrdered,
+            'quantity_received' => $this->QuantityReceived,
             'infos' => $this->whenLoaded('infos', function () {
                 return PurchaseOrderEntryInfosResource::collection($this->whenLoaded('infos'));
             })
