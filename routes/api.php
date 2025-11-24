@@ -142,7 +142,9 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::get('/test/{purchaseOrder}', [PurchaseOrderController::class, 'test']);
 
 Route::prefix('reports')->group(function () {
-    Route::get('/transfer_list/{id}', [ReportController::class, 'TransferList']);
-    Route::get('/transfer_status/{id}', [ReportController::class, 'TransferStatus']);
+    Route::get('/transfer_list/{id}', [ReportController::class, 'transferList']);
+    Route::get('/transfer_status/{id}', [ReportController::class, 'transferStatus']);
+    Route::get('/store', [ReportController::class, 'store']);
+
 });
 

@@ -14,7 +14,7 @@ class ReportController extends Controller
 {
     use Responses;
 
-    public function TransferList($id)
+    public function transferList($id)
     {
         $purchaseOrder = PurchaseOrder::on('sqlsrv_rms')->transferReports($id);
 
@@ -26,7 +26,7 @@ class ReportController extends Controller
     }
 
 
-    public function TransferStatus(Request $request, $id)
+    public function transferStatus(Request $request, $id)
     {
         $purchaseOrder = PurchaseOrder::on('sqlsrv_rms')->transferReports($id);
 
@@ -34,6 +34,16 @@ class ReportController extends Controller
             status: Response::HTTP_OK,
             message: 'Transfer Status Report',
             data: new TransferStatusResource($purchaseOrder),
+        );
+    }
+
+    public function store()
+    {
+        $data = PurchaseOrder::storeReport();
+        return $this->success(
+            status: Response::HTTP_OK,
+            message: 'Store Date Successfully',
+            data: $data
         );
     }
 
