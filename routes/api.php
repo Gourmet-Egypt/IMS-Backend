@@ -94,25 +94,17 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 
 // Admin Routes
+Route::get('vehicle-types', [VehicleController::class, 'index']);
+Route::get('good-types', [GoodTypeController::class, 'index']);
+Route::get('reason', [ReasonController::class, 'index']);
+Route::get('temperature-range', [TemperatureRangeController::class, 'index']);
+
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
-
-    // Vehicle Routes
-    Route::apiResource('vehicle-types', VehicleController::class);
-
-
-    // GoodType Routes
-    Route::apiResource('good-types', GoodTypeController::class);
-
-
-    // User Resource
+    Route::apiResource('vehicle-types', VehicleController::class)->except('index');
+    Route::apiResource('good-types', GoodTypeController::class)->except('index');
     Route::apiResource('user', UserController::class);
-
-    // Reason Routes
-    Route::apiResource('reason', ReasonController::class);
-
-
-    // Temperature Range Routes
-    Route::apiResource('temperature-range', TemperatureRangeController::class);
+    Route::apiResource('reason', ReasonController::class)->except('index')->except('index');
+    Route::apiResource('temperature-range', TemperatureRangeController::class)->except('index');
 
 });
 
@@ -145,6 +137,7 @@ Route::prefix('reports')->group(function () {
     Route::get('/transfer_list/{id}', [ReportController::class, 'transferList']);
     Route::get('/transfer_status/{id}', [ReportController::class, 'transferStatus']);
     Route::get('/store', [ReportController::class, 'store']);
+    Route::get('/all-stores', [ReportController::class, 'allStores']);
 
 });
 

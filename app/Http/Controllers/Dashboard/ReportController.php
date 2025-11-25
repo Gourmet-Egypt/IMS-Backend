@@ -39,12 +39,19 @@ class ReportController extends Controller
 
     public function store()
     {
-        $data = PurchaseOrder::storeReport();
+        $data = PurchaseOrder::store();
         return $this->success(
             status: Response::HTTP_OK,
             message: 'Store Date Successfully',
             data: $data
         );
+    }
+
+    public function allStores()
+    {
+        $data = PurchaseOrder::allStores();
+
+        return $data;
     }
 
 }

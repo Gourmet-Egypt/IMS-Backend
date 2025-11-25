@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\PurchaseOrderTypeEnum;
+use App\Traits\Responses;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,40 +12,55 @@ use Illuminate\Support\Facades\DB;
 
 class PurchaseOrder extends Model
 {
-    use HasFactory;
+    use HasFactory, Responses;
 
     protected $table = 'PurchaseOrder';
 
     protected $hidden = ['DBTimeStamp'];
 
-    public static function storeReport()
+    public static function store()
     {
         $storeId = request()->store_id;
         $status = request()->status;
-        $type = request()->type;
+        $types = request()->type;
+        $month = request()->month ?? now()->month;
+        $year = request()->year ?? now()->year;
 
-        $query = self::onSecondary()->where('StoreID', $storeId);
+        if ($month > now()->month) {
+            $year = now()->year - 1;
+        }
+
+        $query = self::onSecondary()
+            ->where('StoreID', $storeId)
+            ->whereMonth('DateCreated', $month)
+            ->whereYear('DateCreated', $year);
 
 
-        if (!is_null($type) && !is_null($status)) {
+        if (!is_null($types) && !is_array($types)) {
+            $types = [(int) $types];
+        }
+
+
+        if (!is_null($types) && !is_null($status)) {
             return [
-                'type' => (int) $type,
+                'type' => $types,
                 'status' => (int) $status,
-                'count' => $query->where('POType', $type)
+                'count' => $query->whereIn('POType', $types)
                     ->where('status', $status)
                     ->count(),
             ];
         }
 
-        if (!is_null($type)) {
+
+        if (!is_null($types)) {
             $statusCounts = $query
-                ->where('POType', $type)
+                ->whereIn('POType', $types)
                 ->select('status', DB::raw('COUNT(*) as count'))
                 ->groupBy('status')
                 ->pluck('count', 'status');
 
             return [
-                'type' => (int) $type,
+                'type' => $types,
                 'open' => $statusCounts->get(0, 0),
                 'partial' => $statusCounts->get(1, 0),
                 'closed' => $statusCounts->get(2, 0),
@@ -63,27 +78,55 @@ class PurchaseOrder extends Model
 
             return [
                 'status' => (int) $status,
-                'local_po_supplier_0' => $typeCounts->get(PurchaseOrderTypeEnum::LOCAL_PO_SUPPLIER_0->value, 0),
-                'local_po_supplier_1' => $typeCounts->get(PurchaseOrderTypeEnum::LOCAL_PO_SUPPLIER_1->value, 0),
-                'transfer_in' => $typeCounts->get(PurchaseOrderTypeEnum::TRANSFER_IN->value, 0),
-                'transfer_out' => $typeCounts->get(PurchaseOrderTypeEnum::TRANSFER_OUT->value, 0),
-                'transfer_in_hq' => $typeCounts->get(PurchaseOrderTypeEnum::TRANSFER_IN_HQ->value, 0),
-                'transfer_out_hq' => $typeCounts->get(PurchaseOrderTypeEnum::TRANSFER_OUT_HQ->value, 0),
+
+                'supplier' =>
+                    ($typeCounts->get(0, 0)) +
+                    ($typeCounts->get(1, 0)),
+                'in' =>
+                    ($typeCounts->get(2, 0)) +
+                    ($typeCounts->get(4, 0)),
+                'out' =>
+                    ($typeCounts->get(3, 0)) +
+                    ($typeCounts->get(5, 0)),
                 'total' => $typeCounts->sum(),
             ];
         }
-
-        // Optional: If only store_id (you can remove this if not needed)
-        return [
-            'error' => 'Please provide at least type or status parameter'
-        ];
     }
+
 
     public static function onSecondary()
     {
         return static::on('sqlsrv_rms');
     }
 
+    public static function allStores()
+    {
+        $month = request()->month ?? now()->month;
+        $year = request()->year ?? now()->year;
+
+        $purchaseOrders = self::onSecondary()
+            ->whereMonth('DateCreated', $month)
+            ->whereYear('DateCreated', $year)
+            ->select('StoreID', 'POType', DB::raw('COUNT(*) as count'))
+            ->groupBy('StoreID', 'POType')
+            ->get();
+
+
+        $stores = Store::select('ID', 'StoreCode', 'Name')->get();
+
+        $result = $stores->map(function ($store) use ($purchaseOrders) {
+            $storePOs = $purchaseOrders->where('StoreID', $store->ID);
+
+            return [
+                'store_id' => $store->ID,
+                'store_name' => $store->Name,
+                'in' => $storePOs->whereIn('POType', [2, 4])->sum('count'),
+                'out' => $storePOs->whereIn('POType', [3, 5])->sum('count'),
+            ];
+        });
+
+        return $result;
+    }
 
     public function scopeTransferReports($query, $id)
     {
@@ -177,14 +220,4 @@ class PurchaseOrder extends Model
     {
         return $this->hasMany(PurchaseOrderEmail::class, 'purchase_order_id', 'ID');
     }
-
-    public function quantityMaxThousand($purchaseOrder)
-    {
-        $items = $purchaseOrder->whereHas('entries', function ($query) use ($purchaseOrder) {
-            $query->where('QuantityOrdered', '>', 1000)->get();
-        });
-
-        return $items;
-    }
-
 }
