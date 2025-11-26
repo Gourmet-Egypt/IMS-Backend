@@ -9,5 +9,7 @@ class VehicleType extends Model
 {
     use HasFactory;
 
+    protected $connection = 'sqlsrv_rms';
+    
     protected $guarded = [];
 }

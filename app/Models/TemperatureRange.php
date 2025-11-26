@@ -9,5 +9,7 @@ class TemperatureRange extends Model
 {
     protected $guarded = [];
 
+    protected $connection = 'sqlsrv_rms';
+
     use HasFactory;
 }
