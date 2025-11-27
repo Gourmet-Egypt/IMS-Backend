@@ -69,20 +69,31 @@ class PurchaseOrderController extends Controller
         }
 
         $poTypeEnum = PurchaseOrderTypeEnum::fromValue((int) $purchaseOrder->POType);
+
+        if (!$poTypeEnum) {
+            return $this->error(
+                status: Response::HTTP_BAD_REQUEST,
+                message: 'Invalid purchase order type'
+            );
+        }
+
         $baseData = [
             "ID" => $purchaseOrder->ID,
-            "transactionType" => $poTypeEnum?->label(),
+            "transactionType" => $poTypeEnum->label(),
             "StoreID" => (int) $purchaseOrder->StoreID,
             "CashierID" => (int) $cashier->ID
         ];
 
         $orderSpecific = match ($purchaseOrder->POType) {
             '3' => [
-                "VehicleTypeID" => (int) $request->input('VehicleTypeID'),
+                "VehicleType" => (string) $request->input('VehicleTypeID'),
                 "Vehicle_tempOut" => $request->input('Vehicle_tempOut'),
                 "DeliveryPermitNumber" => $request->input('DeliveryPermitNumber'),
                 "Notes" => $request->input('Notes', ''),
+                "seal_number" => $request->input('seal_number'),
             ],
+
+
             '2' => [
                 "Vehicle_tempIN" => $request->input('Vehicle_tempIN'),
             ],
@@ -95,6 +106,7 @@ class PurchaseOrderController extends Controller
             "Order" => array_merge($baseData, $orderSpecific),
         ];
 
+
         try {
             $response = Http::withoutVerifying()
                 ->timeout(30)
@@ -102,29 +114,64 @@ class PurchaseOrderController extends Controller
                 ->post('http://192.168.23.19/api/commit-order', $data);
 
             if (!$response->successful()) {
+                $responseData = $response->json();
+                \Log::error('API Error Response:', ['response' => $responseData]);
+
+                $errorMessage = 'Failed to commit order';
+
+                if (isset($responseData['message'])) {
+                    if (is_string($responseData['message'])) {
+                        preg_match('/"message":\s*"([^"]+)"/', $responseData['message'], $matches);
+                        if (!empty($matches[1])) {
+                            $errorMessage = $matches[1];
+                        } else {
+                            $errorMessage = $responseData['message'];
+                        }
+                    } elseif (is_array($responseData['message'])) {
+                        $errorMessage = json_encode($responseData['message']);
+                    } else {
+                        $errorMessage = $responseData['message'];
+                    }
+                }
+
+                if (strpos($errorMessage, ':') !== false) {
+                    $errorMessage = trim(substr($errorMessage, strpos($errorMessage, ':') + 1));
+                }
+
                 return $this->error(
                     status: Response::HTTP_INTERNAL_SERVER_ERROR,
-                    message: $response->json('message') ?? 'Failed to commit order'
+                    message: $errorMessage
                 );
             }
 
             PurchaseOrderCommitted::dispatch($purchaseOrder);
 
+            $purchaseOrder->load(['condition', 'entries', 'entries.infos']);
+
+            $endpointResponse = $response->json();
+
             return response()->json([
                 'success' => true,
-                'message' => 'Order committed successfully',
-                'data' => $response->json(),
+                'message' => $endpointResponse['message'] ?? 'Order committed successfully',
+                'data' => [
+                    'endpoint_response' => $endpointResponse['data'] ?? null,
+                    'purchase_order' => new PurchaseOrderResource($purchaseOrder),
+                ],
             ]);
 
         } catch (\Exception $e) {
-            \Log::error('Order commit failed: '.$e->getMessage());
+            \Log::error('Order commit failed: ', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
 
             return $this->error(
                 status: Response::HTTP_INTERNAL_SERVER_ERROR,
-                message: 'Failed to commit order'
+                message: 'Failed to commit order: '.$e->getMessage()
             );
         }
     }
+
 
     public function allInfos(PurchaseOrderEntry $purchaseOrderEntry): \Illuminate\Http\JsonResponse
     {
@@ -178,4 +225,3 @@ class PurchaseOrderController extends Controller
         PurchaseOrderCommitted::dispatch($purchaseOrder);
     }
 }
-

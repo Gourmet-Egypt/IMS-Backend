@@ -31,6 +31,7 @@ class CommitOrderRequest extends FormRequest
             $rules['Vehicle_tempOut'] = ['required', 'numeric', 'min:-50', 'max:50'];
             $rules['DeliveryPermitNumber'] = ['required', 'string', 'max:255'];
             $rules['Notes'] = ['nullable', 'string', 'max:1000'];
+            $rules['seal_number'] = ['required', 'string', 'max:1000'];
         }
 
         // TransferIN specific rules
@@ -49,6 +50,7 @@ class CommitOrderRequest extends FormRequest
 
             // TransferOut messages
             'VehicleTypeID.required' => 'Vehicle type is required for TransferOut transactions.',
+            'seal_number.required' => 'seal_number is required for TransferOut transactions.',
             'VehicleTypeID.in' => 'Invalid vehicle type selected.',
             'Vehicle_tempOut.required' => 'Vehicle temperature (Out) is required for TransferOut transactions.',
             'DeliveryPermitNumber.required' => 'Delivery permit number is required for TransferOut transactions.',
