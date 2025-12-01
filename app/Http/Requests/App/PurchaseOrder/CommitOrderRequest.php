@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\App\PurchaseOrder;
 
-use App\Enums\VehicleTypeEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -26,7 +25,6 @@ class CommitOrderRequest extends FormRequest
             $rules['VehicleTypeID'] = [
                 'required',
                 'string',
-                Rule::in(VehicleTypeEnum::keys())
             ];
             $rules['Vehicle_tempOut'] = ['required', 'numeric', 'min:-50', 'max:50'];
             $rules['DeliveryPermitNumber'] = ['required', 'string', 'max:255'];
