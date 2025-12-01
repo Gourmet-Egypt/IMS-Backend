@@ -12,8 +12,7 @@ class Cashier extends Model
 
     protected $table = 'Cashier';
     protected $guarded = [];
-
-    protected $connection = 'sqlsrv_rms';
+    
 
     public function scopeSearch(Builder $query, $store_id)
     {

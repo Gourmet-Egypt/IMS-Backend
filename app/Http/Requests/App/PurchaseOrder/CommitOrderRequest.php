@@ -25,8 +25,8 @@ class CommitOrderRequest extends FormRequest
         if ($transactionType === 'TransferOut') {
             $rules['VehicleTypeID'] = [
                 'required',
-                'integer',
-                Rule::in(VehicleTypeEnum::values())
+                'string',
+                Rule::in(VehicleTypeEnum::keys())
             ];
             $rules['Vehicle_tempOut'] = ['required', 'numeric', 'min:-50', 'max:50'];
             $rules['DeliveryPermitNumber'] = ['required', 'string', 'max:255'];
