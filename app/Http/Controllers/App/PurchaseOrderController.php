@@ -149,11 +149,12 @@ class PurchaseOrderController extends Controller
 
             $endpointResponse = $response->json();
 
-            return response()->json([
-                'success' => Response::HTTP_OK,
-                'message' => 'Order committed successfully',
-                'data' => new PurchaseOrderResource($purchaseOrder),
-            ]);
+
+            return $this->success(
+                status: Response::HTTP_OK,
+                message: 'Purchase Order Committed Successfully',
+                data: new PurchaseOrderResource($purchaseOrder),
+            );
 
         } catch (\Exception $e) {
             return $this->error(
