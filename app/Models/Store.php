@@ -9,6 +9,7 @@ class Store extends Model
 {
     use HasFactory;
 
+    protected $connection = 'sqlsrv_rms';
     protected $hidden = ['DBTimeStamp'];
 
     protected $table = 'Store';

@@ -128,23 +128,31 @@ class PurchaseOrder extends Model
         return $result;
     }
 
-    public function scopeTransferReports($query, $id)
+    public function scopeTransferStatus($query, $id)
     {
         $store_id = request()->get('store_id');
 
         return $query->with([
-            'entries',
             'entries.infos',
-            'condition',
-            'entries.item',
-            'entries.item.category',
-            'entries.item.department'
+            'entries.item:Cost,ItemLookupCode',
         ])
             ->where([
                 ['PONumber', $id],
                 ['StoreID', $store_id]
-            ])
-            ->first();
+            ]);
+    }
+
+    public function scopeTransferList($query, $id)
+    {
+        $store_id = request()->get('store_id');
+
+        return $query->with([
+            'entries.item:Cost,ItemLookupCode',
+        ])
+            ->where([
+                ['PONumber', $id],
+                ['StoreID', $store_id]
+            ]);
     }
 
     public function scopeStore(Builder $query): Builder
@@ -220,4 +228,5 @@ class PurchaseOrder extends Model
     {
         return $this->hasMany(PurchaseOrderEmail::class, 'purchase_order_id', 'ID');
     }
+
 }

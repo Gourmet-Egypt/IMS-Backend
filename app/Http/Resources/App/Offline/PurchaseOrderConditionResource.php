@@ -15,14 +15,15 @@ class PurchaseOrderConditionResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'vehicle_type' => $this->vehicle_type ,
-            'purchase_order_id' => $this->purchase_order_id ,
-            'vehicle_tempOut' => $this->vehicle_tempOut ,
-            'vehicle_tempIN' => $this->vehicle_tempIN ,
-            'delivery_permit_number' => $this->delivery_permit_number ,
-            'status' => $this->status ,
-            'notes' => $this->notes ,
-            'created_at' => $this->created_at ,
+            'vehicle_type' => $this->vehicle_type,
+            'purchase_order_id' => $this->purchase_order_id,
+            'vehicle_tempOut' => $this->vehicle_tempOut,
+            'vehicle_tempIN' => $this->vehicle_tempIN,
+            'delivery_permit_number' => $this->delivery_permit_number,
+            'status' => $this->status,
+            'notes' => $this->notes,
+            'serial_number' => $this->seal_number,
+            'created_at' => $this->created_at,
         ];
     }
 }

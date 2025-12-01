@@ -14,18 +14,15 @@ class TransferListResource extends JsonResource
             'title' => $this->POTitle,
             'store_from' => $this->StoreID,
             'store_receive' => $this->OtherStoreID,
+            'date' => $this->DateCreated,
 
             'entries' => $this->whenLoaded('entries', function () {
                 return $this->entries->map(function ($entry) {
                     return [
+                        'id' => $entry->ID,
                         'lookupCode' => $entry->Item->ItemLookupCode ?? '',
                         'description' => $entry->ItemDescription,
-                        'department' => $entry->Item->department->Name ?? '',
-                        'category' => $entry->Item->category->Name ?? '',
                         'total_cost' => ($entry->Item?->Cost ?? 0) * $entry->QuantityOrdered,
-                        'tax_rate' => $entry->TaxRate,
-                        'production_dates' => $entry->infos->pluck('production_date'),
-                        'expired_dates' => $entry->infos->pluck('expire_date'),
                     ];
                 });
             }),

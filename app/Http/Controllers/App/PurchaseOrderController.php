@@ -115,7 +115,6 @@ class PurchaseOrderController extends Controller
 
             if (!$response->successful()) {
                 $responseData = $response->json();
-                \Log::error('API Error Response:', ['response' => $responseData]);
 
                 $errorMessage = 'Failed to commit order';
 
@@ -151,20 +150,12 @@ class PurchaseOrderController extends Controller
             $endpointResponse = $response->json();
 
             return response()->json([
-                'success' => true,
-                'message' => $endpointResponse['message'] ?? 'Order committed successfully',
-                'data' => [
-                    'endpoint_response' => $endpointResponse['data'] ?? null,
-                    'purchase_order' => new PurchaseOrderResource($purchaseOrder),
-                ],
+                'success' => Response::HTTP_OK,
+                'message' => 'Order committed successfully',
+                'data' => new PurchaseOrderResource($purchaseOrder),
             ]);
 
         } catch (\Exception $e) {
-            \Log::error('Order commit failed: ', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-
             return $this->error(
                 status: Response::HTTP_INTERNAL_SERVER_ERROR,
                 message: 'Failed to commit order: '.$e->getMessage()

@@ -134,6 +134,7 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::get('/test/{purchaseOrder}', [PurchaseOrderController::class, 'test']);
 
 Route::prefix('reports')->group(function () {
+    Route::get('/transfer_list/entry_details/{id}', [ReportController::class, 'entryDetails']);
     Route::get('/transfer_list/{id}', [ReportController::class, 'transferList']);
     Route::get('/transfer_status/{id}', [ReportController::class, 'transferStatus']);
     Route::get('/store', [ReportController::class, 'store']);

@@ -7,9 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class PurchaseOrderEntry extends Model
 {
 
-    protected $table = 'PurchaseOrderEntry';
 
+    protected $table = 'PurchaseOrderEntry';
     protected $hidden = ['DBTimeStamp'];
+
 
     public function purchaseOrder()
     {
@@ -37,5 +38,18 @@ class PurchaseOrderEntry extends Model
             return $entry->HQItem->Cost * $entry->QuantityOrdered;
         });
     }
+
+    public function scopeEntryDetails($query, $id)
+    {
+        return $query->with([
+            'infos',
+            'item.category',
+            'item.department'
+        ])->where([
+            ['ID', $id],
+            ['StoreID', request()->input('store_id')]
+        ]);
+    }
+
 
 }
