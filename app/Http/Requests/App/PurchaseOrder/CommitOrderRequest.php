@@ -18,9 +18,6 @@ class CommitOrderRequest extends FormRequest
     {
         $transactionType = $this->input('transactionType');
 
-        $rules = [
-            'transactionType' => ['required', 'string', Rule::in(['TransferOut', 'TransferIN'])],
-        ];
 
         if ($transactionType === 'TransferOut') {
             $rules['VehicleTypeID'] = [

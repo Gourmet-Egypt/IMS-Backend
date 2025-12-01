@@ -15,11 +15,11 @@ class EntryDetailsResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'lookupCode' => $this->item->ItemLookupCode ?? '',
-            'description' => $this->item->Description ?? '',
-            'department' => $this->item->department->Name ?? '',
-            'category' => $this->item->category->Name ?? '',
-            'total_cost' => ($this->item?->Cost ?? 0) * $this->QuantityOrdered,
+            'lookupCode' => $this->HQ_item->ItemLookupCode ?? '',
+            'description' => $this->HQ_item->Description ?? '',
+            'department' => $this->HQ_item->department->Name ?? '',
+            'category' => $this->HQ_item->category->Name ?? '',
+            'total_cost' => ($this->HQ_item?->Cost ?? 0) * $this->QuantityOrdered,
             'tax_rate' => $this->TaxRate,
             'item_data' => $this->infos->map(function ($info) {
                 return [

@@ -27,6 +27,11 @@ class PurchaseOrderEntry extends Model
         return $this->belongsTo(Item::class, 'ItemID', 'HQID');
     }
 
+    public function HQ_item()
+    {
+        return $this->belongsTo(Item::class, 'ItemID', 'ID');
+    }
+
     public function infos()
     {
         return $this->hasMany(TransferredItemInfo::class, 'purchase_order_entry_id', 'ID');
