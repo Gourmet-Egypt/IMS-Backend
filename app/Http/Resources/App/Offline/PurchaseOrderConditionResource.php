@@ -22,7 +22,7 @@ class PurchaseOrderConditionResource extends JsonResource
             'delivery_permit_number' => $this->delivery_permit_number,
             'status' => $this->status,
             'notes' => $this->notes,
-            'serial_number' => $this->seal_number,
+            'seal_number' => $this->seal_number,
             'created_at' => $this->created_at,
         ];
     }
