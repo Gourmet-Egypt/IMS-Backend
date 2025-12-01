@@ -29,7 +29,7 @@ enum PurchaseOrderTypeEnum: int
         return match ($this) {
             self::LOCAL_PO_SUPPLIER_0 => 'LocalPurchaseOrderSupplier(0)',
             self::LOCAL_PO_SUPPLIER_1 => 'LocalPurchaseOrderSupplier(1)',
-            self::TRANSFER_IN => 'TransferIn',
+            self::TRANSFER_IN => 'TransferIN',
             self::TRANSFER_OUT => 'TransferOut',
             self::TRANSFER_IN_HQ => 'TransferInFromHQ',
             self::TRANSFER_OUT_HQ => 'TransferOutFromHQ',
