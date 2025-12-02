@@ -21,13 +21,8 @@ class EntryDetailsResource extends JsonResource
             'category' => $this->HQ_item->category->Name ?? '',
             'total_cost' => ($this->HQ_item?->Cost ?? 0) * $this->QuantityOrdered,
             'tax_rate' => $this->TaxRate,
-            'item_data' => $this->infos->map(function ($info) {
-                return [
-                    'production_date' => $info->production_date,
-                    'expiration_date' => $info->expire_date,
-                    'quantity_issued' => $info->quantity_issued,
-                ];
-            }),
+            'total_quantity_issued' => $this->infos->sum('quantity_issued'),
+            'item_data' => ItemInfoResource::collection($this->infos)
         ];
     }
 }

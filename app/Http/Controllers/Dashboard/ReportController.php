@@ -61,7 +61,7 @@ class ReportController extends Controller
         $entry = PurchaseOrderEntry::on('sqlsrv_rms')
             ->entryDetails($id)
             ->first();
-
+        
         return $this->success(
             status: Response::HTTP_OK,
             message: 'Entry Details Report',

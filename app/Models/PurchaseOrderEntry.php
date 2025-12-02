@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class PurchaseOrderEntry extends Model
 {
 
-
     protected $table = 'PurchaseOrderEntry';
     protected $hidden = ['DBTimeStamp'];
 
@@ -48,8 +47,8 @@ class PurchaseOrderEntry extends Model
     {
         return $query->with([
             'infos',
-            'item.category',
-            'item.department'
+            'HQ_item.category',
+            'HQ_item.department'
         ])->where([
             ['ID', $id],
             ['StoreID', request()->input('store_id')]
