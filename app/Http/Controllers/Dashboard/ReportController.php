@@ -16,14 +16,14 @@ class ReportController extends Controller
 {
     use Responses;
 
-    public function transferList($id)
+    public function transferList()
     {
-        $purchaseOrder = PurchaseOrder::on('sqlsrv_rms')->transferList($id)->first();
+        $purchaseOrders = PurchaseOrder::on('sqlsrv_rms')->transferList()->get();
 
         return $this->success(
             status: Response::HTTP_OK,
             message: 'Transfer In List Report',
-            data: new TransferListResource($purchaseOrder),
+            data: TransferListResource::collection($purchaseOrders),
         );
     }
 
@@ -61,7 +61,7 @@ class ReportController extends Controller
         $entry = PurchaseOrderEntry::on('sqlsrv_rms')
             ->entryDetails($id)
             ->first();
-        
+
         return $this->success(
             status: Response::HTTP_OK,
             message: 'Entry Details Report',

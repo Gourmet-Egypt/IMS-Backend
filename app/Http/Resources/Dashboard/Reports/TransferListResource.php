@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources\Dashboard\Reports;
 
+use App\Enums\PurchaseOrderTypeEnum;
+use App\Enums\TransferRequestStatusEnum;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -10,22 +12,13 @@ class TransferListResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->ID,
+            'po_number' => $this->PONumber,
             'title' => $this->POTitle,
-            'store_from' => $this->StoreID,
-            'store_receive' => $this->OtherStoreID,
+            'store_from' => $this->currentStore->Name,
+            'store_receive' => $this->otherStore?->Name,
             'date' => $this->DateCreated,
-
-            'entries' => $this->whenLoaded('entries', function () {
-                return $this->entries->map(function ($entry) {
-                    return [
-                        'id' => $entry->ID,
-                        'lookupCode' => $entry->Item->ItemLookupCode ?? '',
-                        'description' => $entry->ItemDescription,
-                        'total_cost' => ($entry->Item?->Cost ?? 0) * $entry->QuantityOrdered,
-                    ];
-                });
-            }),
+            'status' => TransferRequestStatusEnum::fromInt($this->Status),
+            'type' => PurchaseOrderTypeEnum::fromValue($this->POType)?->label()
         ];
     }
 }

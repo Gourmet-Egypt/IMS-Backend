@@ -142,17 +142,13 @@ class PurchaseOrder extends Model
             ]);
     }
 
-    public function scopeTransferList($query, $id)
+    public function scopeTransferList($query)
     {
         $store_id = request()->get('store_id');
 
-        return $query->with([
-            'entries.item:Cost,ItemLookupCode',
-        ])
-            ->where([
-                ['PONumber', $id],
-                ['StoreID', $store_id]
-            ]);
+        return $query->where('StoreID', $store_id)
+            ->whereMonth('DateCreated', now()->month)
+            ->whereYear('DateCreated', now()->year);
     }
 
     public function scopeStore(Builder $query): Builder

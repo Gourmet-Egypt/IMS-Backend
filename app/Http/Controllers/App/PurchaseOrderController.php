@@ -105,7 +105,7 @@ class PurchaseOrderController extends Controller
         $data = [
             "Order" => array_merge($baseData, $orderSpecific),
         ];
-
+        
 
         try {
             $response = Http::withoutVerifying()
