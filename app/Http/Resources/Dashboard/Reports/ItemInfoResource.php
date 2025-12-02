@@ -12,6 +12,7 @@ class ItemInfoResource extends JsonResource
         return [
             'production_date' => $this->production_date,
             'expiration_date' => $this->expire_date,
+            'quantity_issued' => $this->quantity_issued,
         ];
     }
 }
