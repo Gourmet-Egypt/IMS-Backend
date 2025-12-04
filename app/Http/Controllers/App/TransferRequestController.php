@@ -86,6 +86,7 @@ class TransferRequestController extends Controller
 
         $data = [
             "Order" => [
+                "POTitle" => $transferRequest->title,
                 "transactionType" => "TransferIN",
                 "StoreID" => (int) $transferRequest->from_store_id,
                 "OtherStoreID" => (int) $transferRequest->to_store_id,
@@ -100,7 +101,6 @@ class TransferRequestController extends Controller
                 ];
             })->values()->toArray(),
         ];
-
 
         $response = Http::withoutVerifying()
             ->asJson()

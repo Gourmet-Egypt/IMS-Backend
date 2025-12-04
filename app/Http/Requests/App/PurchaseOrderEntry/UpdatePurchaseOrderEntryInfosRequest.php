@@ -24,8 +24,8 @@ class UpdatePurchaseOrderEntryInfosRequest extends FormRequest
         return [
             'Batches' => 'required|array|min:1',
             'Batches.*.quantity_issued' => 'required|numeric|min:1',
-            'Batches.*.production_date' => 'required|date',
-            'Batches.*.expire_date' => 'required|date',
+            'Batches.*.production_date' => 'required',
+            'Batches.*.expire_date' => 'required',
         ];
     }
 }

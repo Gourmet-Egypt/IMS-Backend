@@ -12,12 +12,14 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    protected $table = 'IMS_Users';
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
-    protected $guarded = [] ;
+    protected $guarded = [];
 
     /**
      * The attributes that should be hidden for serialization.
