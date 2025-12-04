@@ -181,12 +181,13 @@ class PurchaseOrderController extends Controller
         UpdatePurchaseOrderEntryInfosRequest $request,
         PurchaseOrderEntry $purchaseOrderEntry
     ): \Illuminate\Http\JsonResponse {
+        $validated = $request->validated();
         $data = [
             "StoreID" => $purchaseOrderEntry->StoreID,
             "transactionType" => PurchaseOrderTypeEnum::fromValue($purchaseOrderEntry->purchaseOrder->POType)?->label(),
             "purchase_order_id" => $purchaseOrderEntry->PurchaseOrderID,
             "purchase_order_entry_id" => $purchaseOrderEntry->ID,
-            "Batches" => $request->post('Batches'),
+            "Batches" => $validated['Batches'],
         ];
 
         $response = Http::withoutVerifying()
