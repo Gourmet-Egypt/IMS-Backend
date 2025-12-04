@@ -22,10 +22,29 @@ class UpdatePurchaseOrderEntryInfosRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'Batches' => 'required|array|min:1',
+            'Batches' => 'present|array',
             'Batches.*.quantity_issued' => 'required|numeric|min:1',
-            'Batches.*.production_date' => 'required',
-            'Batches.*.expire_date' => 'required',
+            'Batches.*.production_date' => 'nullable|string',
+            'Batches.*.expire_date' => 'nullable|string',
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $batches = $this->input('Batches', []);
+
+        $batches = collect($batches)->map(function ($batch) {
+            foreach (['production_date', 'expire_date'] as $field) {
+                if (($batch[$field] ?? null) === 'N/A') {
+                    $batch[$field] = "";
+                }
+            }
+
+            return $batch;
+        })->all();
+
+        $this->merge([
+            'Batches' => $batches,
+        ]);
     }
 }
