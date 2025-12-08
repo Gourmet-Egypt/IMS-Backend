@@ -17,7 +17,7 @@ class UserController extends Controller
 
     public function index()
     {
-        $users = User::paginate(10);
+        $users = User::on('sqlsrv_rms')->paginate(10);
 
         return $this->successPaginated(
             status: Response::HTTP_OK,
@@ -98,7 +98,7 @@ class UserController extends Controller
     public function destroy($id)
     {
         $user = User::on('sqlsrv_rms')->find($id);
-        
+
         if (!$user) {
             return $this->error(
                 status: Response::HTTP_NOT_FOUND,

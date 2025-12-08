@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::middleware(['auth:sanctum'])->group(function () {
+Route::middleware(['auth.multi'])->group(function () {
 
     Route::prefix('transfer-requests')->group(function () {
 
@@ -99,13 +99,21 @@ Route::get('good-types', [GoodTypeController::class, 'index']);
 Route::get('reason', [ReasonController::class, 'index']);
 Route::get('temperature-range', [TemperatureRangeController::class, 'index']);
 
-Route::middleware(['auth:sanctum', 'admin'])->group(function () {
+Route::middleware(['auth.multi'])->group(function () {
     Route::apiResource('vehicle-types', VehicleController::class)->except('index');
     Route::apiResource('good-types', GoodTypeController::class)->except('index');
     Route::apiResource('user', UserController::class);
     Route::apiResource('reason', ReasonController::class)->except('index')->except('index');
     Route::apiResource('temperature-range', TemperatureRangeController::class)->except('index');
 
+    Route::prefix('reports')->group(function () {
+        Route::get('/transfer_list/entry_details/{id}', [ReportController::class, 'entryDetails']);
+        Route::get('/transfer_list', [ReportController::class, 'transferList']);
+        Route::get('/transfer_status/{id}', [ReportController::class, 'transferStatus']);
+        Route::get('/store', [ReportController::class, 'store']);
+        Route::get('/all-stores', [ReportController::class, 'allStores']);
+
+    });
 });
 
 
@@ -125,7 +133,7 @@ Route::get('/stores', [StoreController::class, 'index'])
     ->middleware('guest')
     ->name('store.index');
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth.multi')->group(function () {
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
         ->middleware('auth')->name('logout');;
 });
@@ -133,12 +141,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::get('/test/{purchaseOrder}', [PurchaseOrderController::class, 'test']);
 
-Route::prefix('reports')->group(function () {
-    Route::get('/transfer_list/entry_details/{id}', [ReportController::class, 'entryDetails']);
-    Route::get('/transfer_list', [ReportController::class, 'transferList']);
-    Route::get('/transfer_status/{id}', [ReportController::class, 'transferStatus']);
-    Route::get('/store', [ReportController::class, 'store']);
-    Route::get('/all-stores', [ReportController::class, 'allStores']);
 
-});
 
