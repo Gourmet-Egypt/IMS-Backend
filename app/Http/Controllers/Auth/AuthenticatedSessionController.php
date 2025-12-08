@@ -10,10 +10,10 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 
-
 class AuthenticatedSessionController extends Controller
 {
-    use Responses ;
+    use Responses;
+
     /**
      * Handle an incoming authentication request.
      */
@@ -25,7 +25,7 @@ class AuthenticatedSessionController extends Controller
         if ($user instanceof JsonResponse) {
             return $user;
         }
-
+        
         $user->tokens()->delete();
         $token = $user->createToken('auth_token')->plainTextToken;
 

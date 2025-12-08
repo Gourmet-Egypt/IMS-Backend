@@ -68,8 +68,7 @@ class PurchaseOrderController extends Controller
             );
         }
 
-        $poTypeEnum = PurchaseOrderTypeEnum::fromValue((int) $purchaseOrder->POType);
-
+        $poTypeEnum = PurchaseOrderTypeEnum::tryFrom((int) $purchaseOrder->POType);
         if (!$poTypeEnum) {
             return $this->error(
                 status: Response::HTTP_BAD_REQUEST,
@@ -105,7 +104,7 @@ class PurchaseOrderController extends Controller
         $data = [
             "Order" => array_merge($baseData, $orderSpecific),
         ];
-        
+
 
         try {
             $response = Http::withoutVerifying()
@@ -184,7 +183,7 @@ class PurchaseOrderController extends Controller
         $validated = $request->validated();
         $data = [
             "StoreID" => $purchaseOrderEntry->StoreID,
-            "transactionType" => PurchaseOrderTypeEnum::fromValue($purchaseOrderEntry->purchaseOrder->POType)?->label(),
+            "transactionType" => PurchaseOrderTypeEnum::tryFrom($purchaseOrderEntry->purchaseOrder->POType)?->name,
             "purchase_order_id" => $purchaseOrderEntry->PurchaseOrderID,
             "purchase_order_entry_id" => $purchaseOrderEntry->ID,
             "Batches" => $validated['Batches'],

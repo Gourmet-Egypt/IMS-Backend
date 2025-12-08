@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\App;
 
 use App\Enums\TransferRequestStatusEnum;
-use App\Enums\TransferRequestTypeEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\App\TransferRequest\StoreTransferRequest;
 use App\Http\Requests\App\TransferRequest\UpdateTransferRequest;
@@ -35,13 +34,19 @@ class TransferRequestController extends Controller
 
     public function store(StoreTransferRequest $request)
     {
+        $type = $request->input('type');
+        $userStoreId = Auth::user()->store_id;
+
+
         $transferRequest = TransferRequest::create([
             'title' => $request->input('title'),
-            'from_store_id' => Auth::user()->store_id,
-            'to_store_id' => $request->input('to_store_id'),
-            'status' => TransferRequestStatusEnum::OPEN,
-            'type' => TransferRequestTypeEnum::IN,
+            'type' => $type,
+            'store_id' => $userStoreId,
+            'other_store_id' => $request->input('other_store_id'),
+            'status' => TransferRequestStatusEnum::OPEN->value,
             'delivery_date' => $request->input('delivery_date'),
+            'created_at' => now(),
+            'updated_at' => null,
         ]);
 
 
@@ -51,6 +56,7 @@ class TransferRequestController extends Controller
             data: new TransferRequestResource($transferRequest)
         );
     }
+
 
     public function show(TransferRequest $transferRequest)
     {
@@ -87,9 +93,9 @@ class TransferRequestController extends Controller
         $data = [
             "Order" => [
                 "POTitle" => $transferRequest->title,
-                "transactionType" => "TransferIN",
-                "StoreID" => (int) $transferRequest->from_store_id,
-                "OtherStoreID" => (int) $transferRequest->to_store_id,
+                "transactionType" => $transferRequest->type,
+                "StoreID" => (int) $transferRequest->store_id,
+                "OtherStoreID" => (int) $transferRequest->other_store_id,
                 "SupplierID" => 0,
                 "HH_ID" => (string) $transferRequest->id,
                 "CashierID" => $cashier->ID,
@@ -131,6 +137,7 @@ class TransferRequestController extends Controller
 
     public function update(UpdateTransferRequest $request, TransferRequest $transferRequest)
     {
+
         $transferRequest->update($request->validated());
 
         return $this->success(

@@ -18,7 +18,7 @@ class TransferListResource extends JsonResource
             'store_receive' => $this->otherStore?->Name,
             'date' => $this->DateCreated,
             'status' => TransferRequestStatusEnum::fromInt($this->Status),
-            'type' => PurchaseOrderTypeEnum::fromValue($this->POType)?->label()
+            'type' => PurchaseOrderTypeEnum::tryFrom($this->POType)?->name
         ];
     }
 }

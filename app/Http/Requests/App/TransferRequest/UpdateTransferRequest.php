@@ -30,7 +30,7 @@ class UpdateTransferRequest extends FormRequest
 
         return [
             'title' => ['required', 'string'],
-            'to_store_id' => [
+            'other_store_id' => [
                 'required',
                 'exists:Store,ID',
                 function ($attribute, $value, $fail) use ($currentUserStoreId) {
@@ -49,10 +49,10 @@ class UpdateTransferRequest extends FormRequest
     {
         return [
             'title.required' => 'A transfer request must have a title.',
-            'title.string'   => 'The title must be a valid string.',
+            'title.string' => 'The title must be a valid string.',
 
-            'to_store_id.required' => 'You must specify a destination store.',
-            'to_store_id.exists'   => 'The selected store does not exist.',
+            'other_store_id.required' => 'You must specify a destination store.',
+            'other_store_id.exists' => 'The selected store does not exist.',
         ];
     }
 
@@ -67,7 +67,7 @@ class UpdateTransferRequest extends FormRequest
             $this->error(
                 status: 422,
                 message: $first_error,
-                data:null
+                data: null
             )
         );
     }

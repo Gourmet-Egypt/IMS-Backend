@@ -15,17 +15,17 @@ class TransferRequestResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' =>$this->id,
-            'title' => $this->title ,
-            'from_store_id' => $this->from_store_id ,
-            'to_store_id' => $this->to_store_id ,
-            'to_store_name' => $this->transferToStore->Name ,
-            'status' => $this->status ,
-            'type' => $this->type ,
-            'delivery_date' => $this->delivery_date ,
-            'purchase_order_id' => $this->purchase_order_id ,
-            'created_at' => $this->created_at ,
-            'updated_at' => $this->updated_at ,
+            'id' => $this->id,
+            'title' => $this->title,
+            'from_store_id' => $this->store_id,
+            'to_store_id' => $this->other_store_id,
+            'to_store_name' => $this->otherStore->Name,
+            'status' => $this->status,
+            'type' => $this->type,
+            'delivery_date' => $this->delivery_date,
+            'purchase_order_id' => $this->purchase_order_id,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
             'items' => $this->whenLoaded('items', function () {
                 return TransferRequestItemResource::collection($this->items);
             }),
