@@ -60,6 +60,7 @@ class TransferRequestController extends Controller
 
     public function show(TransferRequest $transferRequest)
     {
+
         return $this->success(
             status: Response::HTTP_OK,
             message: 'TransferRequest retrieved successfully',

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\App\TransferRequest;
 
+use App\Enums\TransferRequestTypeEnum;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -21,7 +22,7 @@ class TransferRequestResource extends JsonResource
             'to_store_id' => $this->other_store_id,
             'to_store_name' => $this->otherStore->Name,
             'status' => $this->status,
-            'type' => $this->type,
+            'type' => TransferRequestTypeEnum::from($this->type)->number(),
             'delivery_date' => $this->delivery_date,
             'purchase_order_id' => $this->purchase_order_id,
             'created_at' => $this->created_at,
