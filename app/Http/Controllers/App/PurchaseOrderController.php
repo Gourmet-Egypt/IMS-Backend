@@ -59,7 +59,7 @@ class PurchaseOrderController extends Controller
         PurchaseOrder $purchaseOrder,
         CommitOrderRequest $request
     ): \Illuminate\Http\JsonResponse {
-        $cashier = auth()->user()->cashier;
+        $cashier = $request->user()->cashier;
 
         if (!$cashier) {
             return $this->error(

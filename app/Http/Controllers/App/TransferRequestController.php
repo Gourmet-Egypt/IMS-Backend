@@ -9,8 +9,8 @@ use App\Http\Requests\App\TransferRequest\UpdateTransferRequest;
 use App\Http\Resources\App\TransferRequest\TransferRequestResource;
 use App\Models\TransferRequest;
 use App\Traits\Responses;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
 class TransferRequestController extends Controller
@@ -35,7 +35,7 @@ class TransferRequestController extends Controller
     public function store(StoreTransferRequest $request)
     {
         $type = $request->input('type');
-        $userStoreId = Auth::user()->store_id;
+        $userStoreId = $request->user()->store_id;
 
 
         $transferRequest = TransferRequest::create([
@@ -79,7 +79,7 @@ class TransferRequestController extends Controller
         );
     }
 
-    public function createOrder(TransferRequest $transferRequest)
+    public function createOrder(Request $request, TransferRequest $transferRequest)
     {
         if (!$transferRequest->items()->exists()) {
             return $this->error(
@@ -89,7 +89,7 @@ class TransferRequestController extends Controller
             );
         }
 
-        $cashier = auth()->user()->cashier;
+        $cashier = $request->user()->cashier;
 
         $data = [
             "Order" => [
