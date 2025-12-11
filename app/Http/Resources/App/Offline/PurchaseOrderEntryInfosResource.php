@@ -15,7 +15,7 @@ class PurchaseOrderEntryInfosResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->SN,
+            'id' => $this->ID,
             'po_entry_id' => $this->purchase_order_entry_id,
             'quantity_issued' => $this->quantity_issued,
             'production_date' => $this->production_date ,
