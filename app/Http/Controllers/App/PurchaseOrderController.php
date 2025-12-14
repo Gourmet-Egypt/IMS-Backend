@@ -21,7 +21,7 @@ class PurchaseOrderController extends Controller
 
     public function index(): \Illuminate\Http\JsonResponse
     {
-        $purchaseOrders = PurchaseOrder::store()->get();
+        $purchaseOrders = PurchaseOrder::storeFilter()->get();
 
         return $this->success(
             status: Response::HTTP_OK,
@@ -91,8 +91,7 @@ class PurchaseOrderController extends Controller
                 "Notes" => $request->input('Notes', ''),
                 "seal_number" => $request->input('seal_number'),
             ],
-
-
+            
             '2' => [
                 "Vehicle_tempIN" => $request->input('Vehicle_tempIN'),
             ],

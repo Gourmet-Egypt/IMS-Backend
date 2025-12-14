@@ -6,7 +6,6 @@ use App\Traits\Responses;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 
@@ -128,6 +127,32 @@ class PurchaseOrder extends Model
         return $result;
     }
 
+    public function scopeStoreFilter(Builder $query): Builder
+    {
+        $store_id = request()->user()->store_id;
+        $type = request('type');
+        $status = request('status', 0);
+
+
+        $new_query = $query->where([
+            ['StoreID', $store_id],
+            ['SupplierID', '=', 0],
+            ['OtherStoreID', '<>', 0],
+            ['Status', $status],
+        ]);
+
+        return $new_query;
+
+        if (!$type) {
+            return $new_query;
+        } else {
+            if (is_string($type)) {
+                $type = json_decode($type, true) ?? explode(',', $type);
+            }
+            return $new_query->whereIn('POType', (array) $type);
+        }
+    }
+
     public function scopeTransferStatus($query, $id)
     {
         $store_id = request()->get('store_id');
@@ -149,29 +174,6 @@ class PurchaseOrder extends Model
         return $query->where('StoreID', $store_id)
             ->whereMonth('DateCreated', now()->month)
             ->whereYear('DateCreated', now()->year);
-    }
-
-    public function scopeStore(Builder $query): Builder
-    {
-        $store_id = Auth::user()->store_id;
-        $type = request('type');
-        $status = request('status', 0);
-
-
-        $new_query = $query->where([
-            ['StoreID', $store_id],
-            ['SupplierID', '=', 0],
-            ['OtherStoreID', '<>', 0],
-            ['Status', $status],
-        ]);
-        if (!$type) {
-            return $new_query;
-        } else {
-            if (is_string($type)) {
-                $type = json_decode($type, true) ?? explode(',', $type);
-            }
-            return $new_query->whereIn('POType', (array) $type);
-        }
     }
 
     public function entries()
