@@ -15,7 +15,7 @@ class MultiDatabaseSanctumAuth
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Get the bearer token from request
+
         $token = $request->bearerToken();
 
         if (!$token) {
@@ -27,7 +27,7 @@ class MultiDatabaseSanctumAuth
 
         $accessToken = UserToken::findToken($token);
 
-        // If not found in MySQL, try SQL Server (Admin tokens)
+
         if (!$accessToken) {
             $accessToken = AdminToken::findToken($token);
         }

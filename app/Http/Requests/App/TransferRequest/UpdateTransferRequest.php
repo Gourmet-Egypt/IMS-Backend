@@ -26,7 +26,7 @@ class UpdateTransferRequest extends FormRequest
      */
     public function rules(): array
     {
-        $currentUserStoreId = auth()->user()->store_id;
+        $currentUserStoreId = request()->user()->store_id;
 
         return [
             'title' => ['required', 'string'],

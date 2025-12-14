@@ -1,9 +1,10 @@
 <?php
 
 namespace App\Http\Requests\TransferRequestItem;
+
 use App\Traits\Responses;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
 class UpdateTransferRequestItemRequest extends FormRequest
@@ -25,7 +26,7 @@ class UpdateTransferRequestItemRequest extends FormRequest
     {
         return [
             'transfer_request_id' => ['required', 'exists:transfer_requests,id'],
-            'item_id' => ['required', 'exists:Item,ID'],
+            'item_id' => ['required', 'exists:Item,HQID'],
             'quantity' => ['nullable', 'numeric', 'min:0.01'],
             'notes' => ['nullable', 'string', 'max:1000'],
         ];
