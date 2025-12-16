@@ -13,6 +13,7 @@ use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderEntry;
 use App\Traits\Responses;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
 class PurchaseOrderController extends Controller
@@ -59,6 +60,10 @@ class PurchaseOrderController extends Controller
         PurchaseOrder $purchaseOrder,
         CommitOrderRequest $request
     ): \Illuminate\Http\JsonResponse {
+
+
+        $server = $request->ip();
+        $storeId = DB::table('Configuration')->select('StoreID')->value('StoreID');
         $cashier = $request->user()->cashier;
 
         if (!$cashier) {
@@ -69,6 +74,7 @@ class PurchaseOrderController extends Controller
         }
 
         $poTypeEnum = PurchaseOrderTypeEnum::tryFrom((int) $purchaseOrder->POType);
+
         if (!$poTypeEnum) {
             return $this->error(
                 status: Response::HTTP_BAD_REQUEST,
@@ -78,8 +84,8 @@ class PurchaseOrderController extends Controller
 
         $baseData = [
             "ID" => $purchaseOrder->ID,
-            "transactionType" => $poTypeEnum->label(),
-            "StoreID" => (int) $purchaseOrder->StoreID,
+            "transactionType" => $poTypeEnum->name,
+            "StoreID" => $storeId,
             "CashierID" => (int) $cashier->ID
         ];
 
@@ -91,7 +97,7 @@ class PurchaseOrderController extends Controller
                 "Notes" => $request->input('Notes', ''),
                 "seal_number" => $request->input('seal_number'),
             ],
-            
+
             '2' => [
                 "Vehicle_tempIN" => $request->input('Vehicle_tempIN'),
             ],
@@ -105,61 +111,55 @@ class PurchaseOrderController extends Controller
         ];
 
 
-        try {
-            $response = Http::withoutVerifying()
-                ->timeout(30)
-                ->asJson()
-                ->post('http://192.168.23.19/api/commit-order', $data);
+        $response = Http::withoutVerifying()
+            ->timeout(30)
+            ->asJson()
+            ->post("http://{{$server}}/api/commit-order", $data);
 
-            if (!$response->successful()) {
-                $responseData = $response->json();
 
-                $errorMessage = 'Failed to commit order';
+        if (!$response->successful()) {
+            $responseData = $response->json();
 
-                if (isset($responseData['message'])) {
-                    if (is_string($responseData['message'])) {
-                        preg_match('/"message":\s*"([^"]+)"/', $responseData['message'], $matches);
-                        if (!empty($matches[1])) {
-                            $errorMessage = $matches[1];
-                        } else {
-                            $errorMessage = $responseData['message'];
-                        }
-                    } elseif (is_array($responseData['message'])) {
-                        $errorMessage = json_encode($responseData['message']);
+            $errorMessage = 'Failed to commit order';
+
+            if (isset($responseData['message'])) {
+                if (is_string($responseData['message'])) {
+                    preg_match('/"message":\s*"([^"]+)"/', $responseData['message'], $matches);
+                    if (!empty($matches[1])) {
+                        $errorMessage = $matches[1];
                     } else {
                         $errorMessage = $responseData['message'];
                     }
+                } elseif (is_array($responseData['message'])) {
+                    $errorMessage = json_encode($responseData['message']);
+                } else {
+                    $errorMessage = $responseData['message'];
                 }
-
-                if (strpos($errorMessage, ':') !== false) {
-                    $errorMessage = trim(substr($errorMessage, strpos($errorMessage, ':') + 1));
-                }
-
-                return $this->error(
-                    status: Response::HTTP_INTERNAL_SERVER_ERROR,
-                    message: $errorMessage
-                );
             }
 
-            PurchaseOrderCommitted::dispatch($purchaseOrder);
+            if (strpos($errorMessage, ':') !== false) {
+                $errorMessage = trim(substr($errorMessage, strpos($errorMessage, ':') + 1));
+            }
 
-            $purchaseOrder->load(['condition', 'entries', 'entries.infos']);
-
-            $endpointResponse = $response->json();
-
-
-            return $this->success(
-                status: Response::HTTP_OK,
-                message: 'Purchase Order Committed Successfully',
-                data: new PurchaseOrderResource($purchaseOrder),
-            );
-
-        } catch (\Exception $e) {
             return $this->error(
                 status: Response::HTTP_INTERNAL_SERVER_ERROR,
-                message: 'Failed to commit order: '.$e->getMessage()
+                message: $errorMessage
             );
         }
+
+        PurchaseOrderCommitted::dispatch($purchaseOrder);
+
+        $purchaseOrder->load(['condition', 'entries', 'entries.infos']);
+
+        $endpointResponse = $response->json();
+
+
+        return $this->success(
+            status: Response::HTTP_OK,
+            message: 'Purchase Order Committed Successfully',
+            data: new PurchaseOrderResource($purchaseOrder),
+        );
+
     }
 
 
@@ -180,8 +180,13 @@ class PurchaseOrderController extends Controller
         PurchaseOrderEntry $purchaseOrderEntry
     ): \Illuminate\Http\JsonResponse {
         $validated = $request->validated();
+
+        $server = $request->ip();
+        $storeId = DB::table('Configuration')->select('StoreID')->value('StoreID');
+
         $data = [
-            "StoreID" => $purchaseOrderEntry->StoreID,
+
+            "StoreID" => $storeId,
             "transactionType" => PurchaseOrderTypeEnum::tryFrom($purchaseOrderEntry->purchaseOrder->POType)?->name,
             "purchase_order_id" => $purchaseOrderEntry->PurchaseOrderID,
             "purchase_order_entry_id" => $purchaseOrderEntry->ID,
@@ -190,7 +195,7 @@ class PurchaseOrderController extends Controller
 
         $response = Http::withoutVerifying()
             ->asJson()
-            ->post('http://192.168.23.19/api/update-order-details', $data);
+            ->post("http://{{$server}}/api/update-order-details", $data);
 
         if ($response->status() === 200) {
 

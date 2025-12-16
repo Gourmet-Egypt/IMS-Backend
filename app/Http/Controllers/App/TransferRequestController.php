@@ -90,6 +90,7 @@ class TransferRequestController extends Controller
         }
 
         $cashier = $request->user()->cashier;
+        $server = $request->ip();
 
         $data = [
             "Order" => [
@@ -111,7 +112,7 @@ class TransferRequestController extends Controller
 
         $response = Http::withoutVerifying()
             ->asJson()
-            ->post('http://192.168.23.19/api/create-order', $data);
+            ->post("http://{{$server}}/api/create-order", $data);
 
 
         if ($response->failed()) {
@@ -122,6 +123,7 @@ class TransferRequestController extends Controller
         }
 
         $body = $response->json();
+
 
         $transferRequest->update([
             'status' => TransferRequestStatusEnum::CLOSED,
