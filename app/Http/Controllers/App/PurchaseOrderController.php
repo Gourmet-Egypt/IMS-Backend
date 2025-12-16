@@ -60,9 +60,9 @@ class PurchaseOrderController extends Controller
         PurchaseOrder $purchaseOrder,
         CommitOrderRequest $request
     ): \Illuminate\Http\JsonResponse {
+        
 
-
-        $server = $request->ip();
+        $server = env('DB_HOST');
         $storeId = DB::table('Configuration')->select('StoreID')->value('StoreID');
         $cashier = $request->user()->cashier;
 
@@ -114,7 +114,7 @@ class PurchaseOrderController extends Controller
         $response = Http::withoutVerifying()
             ->timeout(30)
             ->asJson()
-            ->post("http://$server/api/commit-order", $data);
+            ->post("http://".$server."/api/commit-order", $data);
 
 
         if (!$response->successful()) {
@@ -181,7 +181,7 @@ class PurchaseOrderController extends Controller
     ): \Illuminate\Http\JsonResponse {
         $validated = $request->validated();
 
-        $server = $request->ip();
+        $server = env('DB_HOST');
         $storeId = DB::table('Configuration')->select('StoreID')->value('StoreID');
 
         $data = [

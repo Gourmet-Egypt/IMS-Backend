@@ -90,7 +90,7 @@ class TransferRequestController extends Controller
         }
 
         $cashier = $request->user()->cashier;
-        $server = $request->ip();
+        $server = env('DB_HOST');
 
         $data = [
             "Order" => [
@@ -112,7 +112,7 @@ class TransferRequestController extends Controller
 
         $response = Http::withoutVerifying()
             ->asJson()
-            ->post("http://$server/api/create-order", $data);
+            ->post("http://".$server."/api/create-order", $data);
 
 
         if ($response->failed()) {
