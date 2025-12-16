@@ -114,7 +114,7 @@ class PurchaseOrderController extends Controller
         $response = Http::withoutVerifying()
             ->timeout(30)
             ->asJson()
-            ->post("http://{{$server}}/api/commit-order", $data);
+            ->post("http://$server/api/commit-order", $data);
 
 
         if (!$response->successful()) {
@@ -195,7 +195,7 @@ class PurchaseOrderController extends Controller
 
         $response = Http::withoutVerifying()
             ->asJson()
-            ->post("http://{{$server}}/api/update-order-details", $data);
+            ->post("http://$server/api/update-order-details", $data);
 
         if ($response->status() === 200) {
 

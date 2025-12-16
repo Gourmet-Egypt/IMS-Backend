@@ -112,7 +112,7 @@ class TransferRequestController extends Controller
 
         $response = Http::withoutVerifying()
             ->asJson()
-            ->post("http://{{$server}}/api/create-order", $data);
+            ->post("http://$server/api/create-order", $data);
 
 
         if ($response->failed()) {
