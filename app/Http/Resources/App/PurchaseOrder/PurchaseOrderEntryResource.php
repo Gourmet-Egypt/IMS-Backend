@@ -15,13 +15,14 @@ class PurchaseOrderEntryResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->ID ,
-            'lookupcode' => $this->item->ItemLookupCode ,
-            'description' => $this->ItemDescription ,
-            'price' => $this->Price ,
-            'quantity_ordered' => $this->QuantityOrdered ,
-            'quantity_received' => $this->QuantityReceived ,
-            'purchase_order_id' => $this->PurchaseOrderID ,
+            'id' => $this->ID,
+            'lookupcode' => $this->item->ItemLookupCode,
+            'description' => $this->ItemDescription,
+            'price' => $this->Price,
+            'quantity_ordered' => $this->QuantityOrdered,
+            'quantity_received' => $this->QuantityReceived,
+            'quantity_received_to_date ' => $this->QuantityReceivedToDate,
+            'purchase_order_id' => $this->PurchaseOrderID,
             'quantity_issue' => $this->transferRequest->quantity_issue ?? null,
         ];
     }

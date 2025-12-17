@@ -24,6 +24,7 @@ class PurchaseOrderEntryResource extends JsonResource
             'quantity_on_hand' => $this->item?->Quantity,
             'quantity_ordered' => $this->QuantityOrdered,
             'quantity_received' => $this->QuantityReceived,
+            'quantity_received_to_date ' => $this->QuantityReceivedToDate,
             'infos' => $this->whenLoaded('infos', function () {
                 return PurchaseOrderEntryInfosResource::collection($this->whenLoaded('infos'));
             })
