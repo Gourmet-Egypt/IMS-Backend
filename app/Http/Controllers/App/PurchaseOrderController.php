@@ -60,9 +60,9 @@ class PurchaseOrderController extends Controller
         PurchaseOrder $purchaseOrder,
         CommitOrderRequest $request
     ): \Illuminate\Http\JsonResponse {
-        
 
-        $server = env('DB_HOST');
+
+        $server = config('database.connections.sqlsrv.host');
         $storeId = DB::table('Configuration')->select('StoreID')->value('StoreID');
         $cashier = $request->user()->cashier;
 
@@ -181,7 +181,7 @@ class PurchaseOrderController extends Controller
     ): \Illuminate\Http\JsonResponse {
         $validated = $request->validated();
 
-        $server = env('DB_HOST');
+        $server = config('database.connections.sqlsrv.host');
         $storeId = DB::table('Configuration')->select('StoreID')->value('StoreID');
 
         $data = [

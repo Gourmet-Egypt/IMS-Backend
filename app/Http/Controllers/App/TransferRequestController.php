@@ -90,7 +90,7 @@ class TransferRequestController extends Controller
         }
 
         $cashier = $request->user()->cashier;
-        $server = env('DB_HOST');
+        $server = config('database.connections.sqlsrv.host');
 
         $data = [
             "Order" => [
