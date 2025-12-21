@@ -10,7 +10,7 @@ class TransferCondition extends Model
     protected $hidden = ['DBTimeStamp'];
 
     protected $table = 'IMS_PurchaseOrder_Conditions';
-
+    
     protected $guarded = [];
 
 }

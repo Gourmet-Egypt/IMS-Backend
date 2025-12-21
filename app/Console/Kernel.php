@@ -7,12 +7,24 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
 {
+    protected $commands = [
+        \App\Commands\TestPrinterCommand::class,
+        \App\Commands\PrinterStatusCommand::class,
+        \App\Commands\DiscoverPrintersCommand::class,
+    ];
+
     /**
      * Define the application's command schedule.
      */
     protected function schedule(Schedule $schedule): void
     {
         // $schedule->command('inspire')->hourly();
+        $schedule->call(function () {
+            app(\App\Services\PrinterService::class)->cleanupOldFiles();
+        })->daily();
+
+        // Restart queue worker daily to prevent memory leaks
+        $schedule->command('queue:restart')->daily();
     }
 
     /**
@@ -24,4 +36,5 @@ class Kernel extends ConsoleKernel
 
         require base_path('routes/console.php');
     }
+
 }

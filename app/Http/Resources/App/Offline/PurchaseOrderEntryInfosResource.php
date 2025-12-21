@@ -18,9 +18,9 @@ class PurchaseOrderEntryInfosResource extends JsonResource
             'id' => $this->ID,
             'po_entry_id' => $this->purchase_order_entry_id,
             'quantity_issued' => $this->quantity_issued,
-            'production_date' => $this->production_date ,
-            'expire_date' => $this->expire_date ,
-            'created_at' => $this->created_at
+            'production_date' => $this->production_date?->format('Y-m-d'),
+            'expire_date' => $this->expire_date?->format('Y-m-d'),
         ];
+
     }
 }

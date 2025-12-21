@@ -23,10 +23,10 @@ class TransferRequestItemResource extends JsonResource
             'quantity' => $this->pivot->quantity ?? $this->quantity,
             'notes' => $this->pivot->notes ?? $this->notes,
             'infos' => $this->whenLoaded('Infos', function () {
-                return TransferedItemInfoResource::collection($this->infoes) ;
+                return TransferedItemInfoResource::collection($this->infoes);
             }),
-            'created_at' => $this->pivot->created_at ?? $this->created_at,
-            'updated_at' => $this->pivot->updated_at ?? $this->updated_at,
+            'created_at' => $this->pivot->created_at ?? $this->created_at->format('Y-m-d'),
+            'updated_at' => $this->pivot->updated_at ?? $this->updated_at->format('Y-m-d'),
 
         ];
     }

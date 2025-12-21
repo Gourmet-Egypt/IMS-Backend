@@ -11,6 +11,11 @@ class PurchaseOrderEntry extends Model
     protected $hidden = ['DBTimeStamp'];
 
 
+    protected $casts = [
+        'LastUpdated' => 'datetime:Y-m-d',
+    ];
+
+
     public function purchaseOrder()
     {
         return $this->belongsTo(PurchaseOrder::class, 'PurchaseOrderID', 'ID');

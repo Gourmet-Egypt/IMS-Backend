@@ -23,7 +23,7 @@ class PurchaseOrderConditionResource extends JsonResource
             'status' => $this->status,
             'notes' => $this->notes,
             'seal_number' => $this->seal_number,
-            'created_at' => $this->created_at,
+            'created_at' => $this->created_at->format('Y-m-d'),
         ];
     }
 }

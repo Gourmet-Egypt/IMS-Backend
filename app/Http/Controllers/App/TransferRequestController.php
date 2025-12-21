@@ -8,6 +8,7 @@ use App\Http\Requests\App\TransferRequest\StoreTransferRequest;
 use App\Http\Requests\App\TransferRequest\UpdateTransferRequest;
 use App\Http\Resources\App\TransferRequest\TransferRequestResource;
 use App\Models\TransferRequest;
+use App\Services\PurchaseOrderTracker;
 use App\Traits\Responses;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -16,6 +17,11 @@ use Illuminate\Support\Facades\Http;
 class TransferRequestController extends Controller
 {
     use Responses;
+
+    public function __construct(
+        private PurchaseOrderTracker $purchaseOrderTracker
+    ) {
+    }
 
     /**
      * Display a listing of the resource.
@@ -114,7 +120,6 @@ class TransferRequestController extends Controller
             ->asJson()
             ->post("http://".$server."/api/create-order", $data);
 
-
         if ($response->failed()) {
             return $this->error(
                 status: $response->status() ?? Response::HTTP_INTERNAL_SERVER_ERROR,
@@ -124,10 +129,24 @@ class TransferRequestController extends Controller
 
         $body = $response->json();
 
+        if ($data['Order']['transactionType'] == 'TransferIN') {
+
+            $purchaseOrderNumber = sprintf(
+                '%04d_%04d_%s',
+                $transferRequest->store_id,
+                $transferRequest->other_store_id,
+                $body['id']
+            );
+
+            $this->purchaseOrderTracker->expect($purchaseOrderNumber, $transferRequest->id);
+
+        } else {
+            $purchaseOrderId = $body['id'] ?? null;
+        }
 
         $transferRequest->update([
             'status' => TransferRequestStatusEnum::CLOSED,
-            'purchase_order_id' => $body['id'] ?? null,
+            'purchase_order_id' => $purchaseOrderId,
         ]);
 
         return $this->success(
@@ -135,7 +154,6 @@ class TransferRequestController extends Controller
             message: 'Transfer request status updated successfully',
             data: new TransferRequestResource($transferRequest)
         );
-
     }
 
     public function update(UpdateTransferRequest $request, TransferRequest $transferRequest)

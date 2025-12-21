@@ -13,6 +13,7 @@ use App\Http\Controllers\Dashboard\StoreController;
 use App\Http\Controllers\Dashboard\TemperatureRangeController;
 use App\Http\Controllers\Dashboard\UserController;
 use App\Http\Controllers\Dashboard\VehicleController;
+use App\Http\Controllers\PrinterController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -141,5 +142,10 @@ Route::middleware('auth.multi')->group(function () {
 
 Route::get('/test/{purchaseOrder}', [PurchaseOrderController::class, 'test']);
 
-
+Route::prefix('printers')->group(function () {
+    Route::get('/', [PrinterController::class, 'index']);
+    Route::get('/{storeId}/status', [PrinterController::class, 'status']);
+    Route::post('/{storeId}/test', [PrinterController::class, 'test']);
+    Route::get('/queue-status', [PrinterController::class, 'queueStatus']);
+});
 

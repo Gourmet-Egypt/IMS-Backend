@@ -15,11 +15,11 @@ class PurchaseOrderResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->ID ,
-            'title' => $this->POTitle ,
-            'store_id' => $this->OtherStoreID ,
-            'status' => $this->Status ,
-            'created_at' => $this->DateCreated ,
+            'id' => $this->ID,
+            'title' => $this->POTitle,
+            'store_id' => $this->OtherStoreID,
+            'status' => $this->Status,
+            'created_at' => $this->DateCreated->format('Y-m-d'),
             'entities' => PurchaseOrderEntryResource::collection($this->whenLoaded('entries')),
         ];
     }

@@ -22,7 +22,7 @@ class PurchaseOrderResource extends JsonResource
             'from_store_name' => $this->currentStore?->Name,
             'to_store_id' => $this->OtherStoreID,
             'to_store_name' => $this->otherStore?->Name,
-            'created_at' => $this->DateCreated,
+            'created_at' => $this->DateCreated?->format('Y-m-d'),
             'po_number' => $this->PONumber,
             'supplier_id' => $this->SupplierID,
             'supplier_name' => $this->supplier?->SupplierName,

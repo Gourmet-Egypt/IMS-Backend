@@ -17,6 +17,12 @@ class PurchaseOrder extends Model
 
     protected $hidden = ['DBTimeStamp'];
 
+    protected $casts = [
+        'DateCreated' => 'date:Y-m-d',
+        'LastUpdated' => 'date:Y-m-d',
+    ];
+
+
     public static function store()
     {
         $storeId = request()->store_id;

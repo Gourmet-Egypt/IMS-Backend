@@ -25,8 +25,8 @@ class TransferRequestResource extends JsonResource
             'type' => TransferRequestTypeEnum::from($this->type)->number(),
             'delivery_date' => $this->delivery_date,
             'purchase_order_id' => $this->purchase_order_id,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'created_at' => $this->created_at->format('Y-m-d'),
+            'updated_at' => $this->updated_at?->format('Y-m-d'),
             'items' => $this->whenLoaded('items', function () {
                 return TransferRequestItemResource::collection($this->items);
             }),
