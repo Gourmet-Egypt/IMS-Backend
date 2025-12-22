@@ -12,10 +12,9 @@ class EntryResource extends JsonResource
         return [
             'lookupCode' => $this->Item->ItemLookupCode ?? '',
             'description' => $this->ItemDescription,
+            'quantity_ordered' => $this->QuantityOrdered,
             'quantity_received' => $this->QuantityReceived,
-            'supplier_cost' => $this->Item?->Cost ?? 0,
-            'total_cost' => ($this->Item?->Cost ?? 0) * $this->QuantityOrdered,
-            'total_quantity_issued' => $this->infos->sum('quantity_issued'),
+            'difference' => $this->QuantityOrdered - $this->QuantityReceived,
             'item_data' => ItemInfoResource::collection($this->whenLoaded('infos')),
         ];
     }

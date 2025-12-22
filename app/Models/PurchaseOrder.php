@@ -166,6 +166,7 @@ class PurchaseOrder extends Model
         return $query->with([
             'entries.infos',
             'entries.item:Cost,ItemLookupCode',
+            'condition'
         ])
             ->where([
                 ['PONumber', $id],

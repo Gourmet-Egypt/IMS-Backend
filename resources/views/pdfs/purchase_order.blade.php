@@ -212,6 +212,7 @@
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
+        }
     </style>
 </head>
 <body>
@@ -263,7 +264,7 @@
                     Contact (Dispatcher):<br>
                     Address: {{ $purchaseOrder->otherStore->Address1 ?? '6 Massane Hadidya Str.' }}<br>
                     Phone: {{ $purchaseOrder->otherStore->PhoneNumber ?? '02-33050882' }}<br>
-                    Fax:
+                    Fax: {{ $purchaseOrder->otherStore->FaxNumber ?? '192.168.34.6' }}
                 </div>
             </td>
         </tr>
@@ -274,7 +275,7 @@
         <h3>Vehicle & Condition Information</h3>
         <div class="vgrid">
             <div class="vrow">
-                <div class="vcell">Vehicle Type: <strong>{{ $condition->type ?? 'N/A' }}</strong></div>
+                <div class="vcell">Vehicle Type: <strong>{{ $condition->vehicle_type ?? 'N/A' }}</strong></div>
                 <div class="vcell">Delivery Permit Number:
                     <strong>{{ $condition->delivery_permit_number ?? 'N/A' }}</strong></div>
             </div>
