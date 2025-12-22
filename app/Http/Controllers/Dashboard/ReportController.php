@@ -31,7 +31,7 @@ class ReportController extends Controller
     public function transferStatus(Request $request, $id)
     {
         $purchaseOrder = PurchaseOrder::on('sqlsrv_rms')->transferStatus($id)->first();
-
+        
         return $this->success(
             status: Response::HTTP_OK,
             message: 'Transfer Status Report',

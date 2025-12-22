@@ -164,6 +164,9 @@ class PurchaseOrder extends Model
         $store_id = request()->get('store_id');
 
         return $query->with([
+            'entries' => function ($query) use ($store_id) {
+                $query->where('StoreID', $store_id);
+            },
             'entries.infos',
             'entries.item:Cost,ItemLookupCode',
             'condition'

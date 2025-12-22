@@ -10,7 +10,7 @@ class EntryResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'lookupCode' => $this->Item->ItemLookupCode ?? '',
+            'lookupCode' => $this->HQ_item->ItemLookupCode ?? '',
             'description' => $this->ItemDescription,
             'quantity_ordered' => $this->QuantityOrdered,
             'quantity_received' => $this->QuantityReceived,

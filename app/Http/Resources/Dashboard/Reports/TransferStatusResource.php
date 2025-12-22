@@ -15,25 +15,12 @@ class TransferStatusResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-//        return [
-//            'id' => $this->ID,
-//            'title' => $this->POTitle,
-//            'store_from' => $this->StoreID,
-//            'store_from_name' => $this->currentStore->Name,
-//            'store_receive' => $this->OtherStoreID,
-//            'store_receive_name' => $this->otherStore->Name,
-//            'date' => $this->DateCreated,
-//            'order_number' => $this->PONumber,
-//            'status' => TransferRequestStatusEnum::fromInt($this->Status)->value,
-//            'entries' => EntryResource::collection($this->whenLoaded('entries')),
-//        ];
-
         return [
             'purchase_order' => [
                 'id' => $this->ID,
                 'title' => $this->POtitle,
                 'number' => $this->PONumber,
-                'type' => PurchaseOrderTypeEnum::tryFrom($this->POType),
+                'type' => PurchaseOrderTypeEnum::tryFrom($this->POType)->name,
                 'created_at' => $this->DateCreated->format('Y-m-d H:i:s'),
             ],
 
