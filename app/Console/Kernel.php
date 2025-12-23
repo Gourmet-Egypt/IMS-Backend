@@ -20,7 +20,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->call(function () {
-            app(\App\Services\PrinterService::class)->cleanupOldFiles();
+            app(\App\Services\PurchaseOrderPrintService::class)->cleanupOldFiles();
         })->daily();
 
         // Restart queue worker daily to prevent memory leaks

@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Services\PrinterService;
+use App\Services\PurchaseOrderPrintService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -30,7 +30,7 @@ class PrintDocumentJob implements shouldQueue
         $this->copies = $copies;
     }
 
-    public function handle(PrinterService $printerService): void
+    public function handle(PurchaseOrderPrintService $printerService): void
     {
         Log::info("Processing print job", [
             'store_id' => $this->storeId,
@@ -66,7 +66,7 @@ class PrintDocumentJob implements shouldQueue
                 'store_id' => $this->storeId,
                 'printer' => $printerConfig['name'],
             ]);
-            
+
 
         } catch (\Exception $e) {
             Log::error("Print job failed", [

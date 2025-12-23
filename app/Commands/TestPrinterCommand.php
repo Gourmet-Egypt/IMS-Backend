@@ -2,7 +2,7 @@
 
 namespace App\Commands;
 
-use App\Services\PrinterService;
+use App\Services\PurchaseOrderPrintService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 
@@ -16,7 +16,7 @@ class TestPrinterCommand extends Command
 
     protected $description = 'Test network printer connection and print a test page';
 
-    public function handle(PrinterService $printerService): int
+    public function handle(PurchaseOrderPrintService $printerService): int
     {
         $storeId = (int) $this->argument('store_id');
 

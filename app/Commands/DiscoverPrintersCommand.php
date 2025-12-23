@@ -70,7 +70,7 @@ class DiscoverPrintersCommand extends Command
     // 10. ADVANCED PRINTER SERVICE ADDITIONS
     // ============================================
 
-    // Add these methods to PrinterService class:
+    // Add these methods to PurchaseOrderPrintService class:
 
     /**
      * Test printer connection without printing

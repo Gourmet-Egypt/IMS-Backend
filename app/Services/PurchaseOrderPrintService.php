@@ -6,18 +6,13 @@ use App\Jobs\PrintDocumentJob;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 
-class PrinterService
+class PurchaseOrderPrintService
 {
     /**
      * Queue a print job
      */
     public function queuePrint(string $pdfPath, int $storeId, int $copies = 1): bool
     {
-        if (!config('printing.enabled')) {
-            Log::info('Auto-print disabled, skipping print job');
-            return false;
-        }
-
         $printerConfig = $this->getPrinterConfig($storeId);
 
         if (!$printerConfig) {

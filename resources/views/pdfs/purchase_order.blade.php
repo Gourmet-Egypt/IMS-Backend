@@ -340,6 +340,10 @@
         Total Units Received: <strong>{{ number_format($items->sum('quantity_received'), 1) }}</strong>
     </div>
 
+</div>
+</body>
+
+<footer>
     <div class="signatures">
         <div class="sig">
             Receiver/WMS Operator Signature:<br><br>
@@ -350,7 +354,5 @@
             <span class="line"></span>
         </div>
     </div>
-
-</div>
-</body>
+</footer>
 </html>
