@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\App;
 
 use App\Enums\TransferRequestStatusEnum;
+use App\Enums\TransferRequestTypeEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\App\TransferRequest\StoreTransferRequest;
 use App\Http\Requests\App\TransferRequest\UpdateTransferRequest;
@@ -79,7 +80,7 @@ class TransferRequestController extends Controller
         );
     }
 
-    public function createOrder(Request $request, TransferRequest $transferRequest)
+    public function createOrder(TransferRequest $transferRequest, Request $request)
     {
         if (!$transferRequest->items()->exists()) {
             return $this->error(
@@ -96,23 +97,23 @@ class TransferRequestController extends Controller
             "Order" => [
                 "POTitle" => $transferRequest->title,
                 "transactionType" => $transferRequest->type,
-                "StoreID" => (int) $transferRequest->store_id,
-                "OtherStoreID" => (int) $transferRequest->other_store_id,
+                "StoreID" => (int)$transferRequest->store_id,
+                "OtherStoreID" => (int)$transferRequest->other_store_id,
                 "SupplierID" => 0,
-                "HH_ID" => (string) $transferRequest->id,
+                "HH_ID" => (string)$transferRequest->id,
                 "CashierID" => $cashier->ID,
             ],
             "OrderItems" => $transferRequest->items->map(function ($item) {
                 return [
-                    "ItemLookupcode" => (string) $item->ItemLookupCode,
-                    "QTY" => (float) $item->pivot->quantity,
+                    "ItemLookupcode" => (string)$item->ItemLookupCode,
+                    "QTY" => (float)$item->pivot->quantity,
                 ];
             })->values()->toArray(),
         ];
 
         $response = Http::withoutVerifying()
             ->asJson()
-            ->post("http://".$server."/api/create-order", $data);
+            ->post("http://" . $server . "/api/create-order", $data);
 
 
         if ($response->failed()) {
@@ -124,10 +125,25 @@ class TransferRequestController extends Controller
 
         $body = $response->json();
 
+        if ($transferRequest->type == TransferRequestTypeEnum::TransferIN) {
+            $purchaseOrderNumber = sprintf(
+                '%05d_%05d_%s',
+                $transferRequest->store_id,
+                $transferRequest->other_store_id,
+                $body['id']
+            );
+
+            \App\Jobs\SyncPurchaseOrderJob::dispatch($transferRequest->id, $purchaseOrderNumber)
+                ->delay(now()->addMinutes(3));
+
+            $purchaseOrderId = null;
+        } else {
+            $purchaseOrderId = $body['id'] ?? null;
+        }
 
         $transferRequest->update([
             'status' => TransferRequestStatusEnum::CLOSED,
-            'purchase_order_id' => $body['id'] ?? null,
+            'purchase_order_id' => $purchaseOrderId ?? null,
         ]);
 
         return $this->success(
