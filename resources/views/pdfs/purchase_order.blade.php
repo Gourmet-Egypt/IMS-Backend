@@ -245,28 +245,34 @@
                 Vehicle Type: {{ $condition->vehicle_type ?? 'N/A' }}
             </td>
             <td class="bold1">
-                GE Receiver name : {{ $vehicle['permit_number'] ?? '' }}
+                Driver Name: {{ $vehicle['driver_name'] ?? '' }}
             </td>
         </tr>
         <tr>
             <td class="bold1">Item Temp: {{ $vehicle['item_temp'] ?? '' }}</td>
-            <td class="bold1">
-                TRF Division: {{ $vehicle['TRF Division'] ?? '' }}
+             <td class="bold1">
+                GE Receiver name : {{ $vehicle['permit_number'] ?? '' }}
             </td>
         </tr>
         <tr>
             <td class="bold1">
-                Car Temperature: {{ $vehicle['temperature_out'] ?? '' }}
+                Car Temperature (Out): {{ $vehicle['temperature_out'] ?? '' }}
             </td>
             <td class="bold1">
-                Driver Name: {{ $vehicle['temperature_in'] ?? '' }}
+                Car Temperature (In): {{ $vehicle['temperature_in'] ?? '' }}
             </td>
         </tr>
         <tr>
             <td class="bold1">
-                Stander Temp: {{ $vehicle['temperature_out'] ?? '' }}
+                Delivery Permit Number: {{ $vehicle['permit_number'] ?? '' }}
             </td>
-            <td class="bold1">Seel # : {{ $vehicle['temperature_in'] ?? '' }}</td>
+            <td class="bold1">Seel # : {{ $vehicle['seel_number'] ?? '' }}</td>
+        </tr>
+        <tr>
+
+            <td class="bold1">
+                TRF Division: {{ $vehicle['trf_division'] ?? '' }}
+            </td>
         </tr>
     </table>
     <div class="footer">
