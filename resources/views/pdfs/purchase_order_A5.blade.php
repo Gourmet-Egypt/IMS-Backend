@@ -2,21 +2,19 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <title>Goods Transfer Receiving Note</title>
+    <meta charset="UTF-8">
+    <title>Purchase Order #{{ $purchaseOrder->PONumber }}</title>
+
     <style>
         @page {
-            margin: 0.5in;
-            size: A4 portrait;
+            size: A5 portrait;
+            margin: 0.15in;
         }
 
-        * {
-            box-sizing: border-box;
-        }
 
         body {
             font-family: Helvetica, Arial, sans-serif;
-            font-size: 10px;
+            font-size: 8px;
             margin: 0;
             padding: 0;
             color: #000;
@@ -34,6 +32,7 @@
         /* ================= HEADER ================= */
         .header-table {
             width: 100%;
+            height: auto;
             border-collapse: collapse;
             margin-bottom: 6mm;
         }
@@ -48,13 +47,13 @@
         .header-left {
             width: 30%;
             text-align: left;
-            font-size: 9px;
+            font-size: 7px;
         }
 
         .header-title {
             width: 40%;
             text-align: center;
-            font-size: 16px;
+            font-size: 10px;
             font-weight: bold;
             color: #1E3A8A;
         }
@@ -62,7 +61,7 @@
         .header-right {
             width: 30%;
             text-align: right;
-            font-size: 9px;
+            font-size: 7px;
         }
 
         .box {
@@ -86,20 +85,20 @@
             font-weight: bold;
             padding: 4px;
             text-align: left;
-            font-size: 12px;
+            font-size: 10px;
         }
 
         .ship-content {
             border: 1px solid #000;
             padding: 4px;
-            font-size: 10px;
+            font-size: 8px;
             height: 8mm;
             vertical-align: top;
         }
 
         .bold1 {
             font-weight: bold;
-            font-size: 10px;
+            font-size: 8px;
         }
 
         /* ================= VEHICLE ================= */
@@ -107,13 +106,13 @@
             font-weight: bold;
             margin-top: 6mm;
             padding-top: 2mm;
-            font-size: 16px;
+            font-size: 10px;
         }
 
         .info-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 10px;
+            font-size: 8px;
             margin-top: 2mm;
         }
 
@@ -126,7 +125,7 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 5mm;
-            font-size: 10px;
+            font-size: 8px;
         }
 
         table.items th {
@@ -162,7 +161,7 @@
 
         /* ================= FOOTER ================= */
         .footer {
-            font-size: 10px;
+            font-size: 8px;
             font-weight: bold;
             margin-bottom: 20px;
             margin-top: 50px;
