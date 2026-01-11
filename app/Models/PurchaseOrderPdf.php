@@ -10,7 +10,7 @@ class PurchaseOrderPdf extends Model
 {
     use HasFactory, Prunable;
 
-//    protected $table = 'IMS_Purchase_order_pdfs';
+    protected $table = 'purchase_order_pdfs';
 
     protected $guarded = [];
 

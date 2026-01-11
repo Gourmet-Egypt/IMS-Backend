@@ -15,7 +15,7 @@ class TransferRequestItem extends pivot
 
     public $timestamps = true;
 
-//    protected $table = 'IMS_Transfer_request_item';
+    protected $table = 'transfer_request_item';
 
 
     public function transferRequest(): BelongsTo
