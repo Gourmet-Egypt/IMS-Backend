@@ -27,7 +27,7 @@ class UpdateTransferRequestItemRequest extends FormRequest
         return [
             'transfer_request_id' => ['required', 'exists:transfer_requests,id'],
             'item_id' => ['required', 'exists:Item,HQID'],
-            'quantity' => ['nullable', 'numeric', 'min:0.01'],
+            'quantity' => ['nullable', 'numeric'],
             'notes' => ['nullable', 'string', 'max:1000'],
         ];
     }

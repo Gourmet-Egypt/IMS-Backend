@@ -3,8 +3,8 @@
 namespace App\Http\Requests\App\TransferRequestItem;
 
 use App\Traits\Responses;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
 class StoreTransferRequestItemRequest extends FormRequest
@@ -26,7 +26,7 @@ class StoreTransferRequestItemRequest extends FormRequest
     {
         return [
             'id' => 'required|exists:Item,HQID',
-            'quantity' => 'required|integer|min:1',
+            'quantity' => 'required|numeric',
             'notes' => 'nullable|string|max:1000'
         ];
     }
@@ -58,7 +58,7 @@ class StoreTransferRequestItemRequest extends FormRequest
 
         throw new HttpResponseException(
             $this->error(
-                status: 422 ,
+                status: 422,
                 message: 'Validation failed',
                 data: $first_error
             )

@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('purchase_order_pdfs', function (Blueprint $table) {
+        Schema::create('IMS_Purchase_order_pdfs', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('purchase_order_id');
             $table->string('file_path');
@@ -24,6 +24,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('purchase_order_pdfs');
+        Schema::dropIfExists('IMS_Purchase_order_pdfs');
     }
 };

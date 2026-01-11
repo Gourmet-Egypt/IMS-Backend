@@ -4,14 +4,13 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::create('transfer_request_item', function (Blueprint $table) {
+        Schema::create('IMS_Transfer_request_item', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('transfer_request_id');
             $table->foreign('transfer_request_id')->references('id')->on('transfer_requests')->onDelete('cascade');
@@ -32,6 +31,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('item_transfer_request');
+        Schema::dropIfExists('IMS_Transfer_request_item');
     }
 };

@@ -13,6 +13,9 @@ class TransferRequest extends Model
 {
     use HasFactory;
 
+//    protected $table = 'IMS_Transfer_requests';
+
+    protected $table = 'transfer_requests';
     protected $guarded = [];
 
     public function conditions(): HasOne
@@ -27,9 +30,15 @@ class TransferRequest extends Model
 
     public function items()
     {
-        return $this->belongsToMany(Item::class, 'transfer_request_item', 'transfer_request_id', 'item_id')
+        return $this->belongsToMany(Item::class,
+            'transfer_request_item',
+            'transfer_request_id',
+            'item_id',
+            'id',
+            'HQID'
+        )
             ->using(TransferRequestItem::class)
-            ->withPivot(['quantity', 'id', 'notes'])
+            ->withPivot(['id', 'quantity', 'notes'])
             ->withTimestamps();
     }
 

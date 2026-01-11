@@ -9,6 +9,8 @@ class Reason extends Model
 {
     use HasFactory;
 
+
+//    protected $table = 'IMS_Reasons';
     protected $connection = 'sqlsrv_rms';
 
 

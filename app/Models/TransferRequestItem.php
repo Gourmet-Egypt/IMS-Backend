@@ -13,9 +13,10 @@ class TransferRequestItem extends pivot
 {
     use HasFactory;
 
-    protected $table = 'transfer_request_item';
-
     public $timestamps = true;
+
+//    protected $table = 'IMS_Transfer_request_item';
+
 
     public function transferRequest(): BelongsTo
     {
@@ -31,7 +32,7 @@ class TransferRequestItem extends pivot
 
     public function itemInfos(): HasMany
     {
-        return $this->hasMany(TransferredItemInfo::class , 'item_transfer_request_id' , 'id');
+        return $this->hasMany(TransferredItemInfo::class, 'item_transfer_request_id', 'id');
     }
 
 

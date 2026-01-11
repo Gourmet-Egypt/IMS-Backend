@@ -142,10 +142,4 @@ Route::middleware('auth.multi')->group(function () {
 
 Route::get('/test/{purchaseOrder}', [PurchaseOrderController::class, 'test']);
 
-Route::prefix('printers')->group(function () {
-    Route::get('/', [PrinterController::class, 'index']);
-    Route::get('/{storeId}/status', [PrinterController::class, 'status']);
-    Route::post('/{storeId}/test', [PrinterController::class, 'test']);
-    Route::get('/queue-status', [PrinterController::class, 'queueStatus']);
-});
 

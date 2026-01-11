@@ -11,7 +11,7 @@ class PurchaseOrderEmail extends Model
 
     protected $connection = 'sqlsrv_rms';
 
-    protected $table = 'purchase_order_emails';
+//    protected $table = 'IMS_Purchase_order_emails';
 
     protected $guarded = [];
 }

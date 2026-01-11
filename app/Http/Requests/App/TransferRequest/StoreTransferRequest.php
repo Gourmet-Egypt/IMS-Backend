@@ -30,7 +30,7 @@ class StoreTransferRequest extends FormRequest
         $type = $this->input('type');
 
         return [
-            'title' => ['required', 'string', 'max:255'],
+            'title' => ['sometimes', 'string', 'max:255'],
 
             'type' => [
                 'required',

@@ -34,3 +34,4 @@ class TransferRequestResource extends JsonResource
         ];
     }
 }
+

@@ -11,6 +11,7 @@ class GoodsType extends Model
 
     protected $connection = 'sqlsrv_rms';
 
+//    protected $table = 'IMS_Goods_types';
 
     protected $guarded = [];
 }
