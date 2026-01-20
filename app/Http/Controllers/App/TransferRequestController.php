@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\App\TransferRequest\StoreTransferRequest;
 use App\Http\Requests\App\TransferRequest\UpdateTransferRequest;
 use App\Http\Resources\App\TransferRequest\TransferRequestResource;
+use App\Models\Store;
 use App\Models\TransferRequest;
 use App\Traits\Responses;
 use Illuminate\Http\Request;
@@ -35,32 +36,52 @@ class TransferRequestController extends Controller
 
     public function store(StoreTransferRequest $request)
     {
+        $user = $request->user();
         $type = $request->input('type');
-        $userStoreId = $request->user()->store_id;
+        $otherStoreId = $request->input('other_store_id');
 
+        $stores = Store::whereIn('ID', [$user->store_id, $otherStoreId])
+            ->pluck('Name', 'ID');
 
+        $userStoreName = $stores[$user->store_id];
+        $otherStoreName = $stores[$otherStoreId];
+
+        // Generate title with proper logic
+        $title = $request->input('title') ?? $this->generateTransferTitle(
+            $type,
+            $userStoreName,
+            $otherStoreName
+        );
+
+        // Create transfer request
         $transferRequest = TransferRequest::create([
-            'title' => $request->input('title')
-                ? $request->input('title')
-                : "{$type} from Store #{$userStoreId} to Store #{$request->input('other_store_id')}",
-
+            'title' => $title,
             'type' => $type,
-            'store_id' => $userStoreId,
-            'other_store_id' => $request->input('other_store_id'),
+            'store_id' => $user->store_id,
+            'other_store_id' => $otherStoreId,
             'status' => TransferRequestStatusEnum::OPEN->value,
             'delivery_date' => $request->input('delivery_date'),
-            'created_at' => now(),
-            'updated_at' => null,
         ]);
-
 
         return $this->success(
             status: Response::HTTP_CREATED,
-            message: 'TransferRequest Created successfully',
+            message: 'Transfer request created successfully',
             data: new TransferRequestResource($transferRequest)
         );
     }
 
+    /**
+     * Generate a default title for the transfer request
+     */
+    private function generateTransferTitle(
+        string $type,
+        string $fromStore,
+        string $toStore
+    ): string {
+        return $type === 'TransferIN'
+            ? "Request from {$fromStore} to {$toStore}"
+            : "Transfer Out from {$fromStore} to {$toStore}";
+    }
 
     public function show(TransferRequest $transferRequest)
     {
@@ -167,6 +188,5 @@ class TransferRequestController extends Controller
             data: new TransferRequestResource($transferRequest->fresh())
         );
     }
-
-
 }
+
