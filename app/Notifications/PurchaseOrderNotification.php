@@ -49,13 +49,13 @@ class PurchaseOrderNotification extends Mailable
      */
     protected function getFromStoreName()
     {
-        if ($this->purchaseOrder->POType == 2) {
+        if ((int)$this->purchaseOrder->POType == 2) {
             return $this->perspective === 'to_store'
                 ? $this->purchaseOrder->currentStore->Name ?? 'Unknown Store'
                 : $this->purchaseOrder->otherStore->Name ?? 'Unknown Store';
         }
 
-        if ($this->purchaseOrder->POType == 3) {
+        if ((int)$this->purchaseOrder->POType == 3) {
             return $this->perspective === 'from_store'
                 ? $this->purchaseOrder->currentStore->Name ?? 'Unknown Store'
                 : $this->purchaseOrder->otherStore->Name ?? 'Unknown Store';
@@ -110,7 +110,7 @@ class PurchaseOrderNotification extends Mailable
         $currentStoreName = $this->purchaseOrder->currentStore->Name ?? 'Unknown';
         $otherStoreName = $this->purchaseOrder->otherStore->Name ?? 'Unknown';
 
-        if ($this->purchaseOrder->POType == 2) {
+        if ((int)$this->purchaseOrder->POType == 2) {
             return [$otherStoreName, $currentStoreName];
         }
 

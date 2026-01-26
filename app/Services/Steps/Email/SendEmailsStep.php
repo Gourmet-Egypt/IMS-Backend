@@ -15,7 +15,7 @@ class SendEmailsStep
         }
 
         $purchaseOrder = $payload->purchaseOrder;
-        $isTransfer = in_array($purchaseOrder->POType, [2, 3]);
+        $isTransfer = in_array((int)$purchaseOrder->POType, [2, 3]);
 
         foreach ($payload->emailRecipients as $storeId => $recipients) {
             $recipientStoreId = $storeId;
@@ -49,14 +49,14 @@ class SendEmailsStep
         $isCreatorStore = $recipientStoreId == $purchaseOrder->StoreID;
         $isOtherStore = $recipientStoreId == $purchaseOrder->OtherStoreID;
 
-        if ($purchaseOrder->POType == 2) {
+        if ((int)$purchaseOrder->POType == 2) {
             if ($isOtherStore) {
                 return 'from_store';
             }
             return 'to_store';
         }
 
-        if ($purchaseOrder->POType == 3) {
+        if ((int)$purchaseOrder->POType == 3) {
             return $isCreatorStore ? 'from_store' : 'to_store';
         }
 
