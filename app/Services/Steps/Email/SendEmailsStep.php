@@ -14,16 +14,52 @@ class SendEmailsStep
             return $next($payload);
         }
 
-        foreach ($payload->emailRecipients as $emailRecord) {
-            Mail::to($emailRecord->email)
-                ->send(new PurchaseOrderNotification($payload->purchaseOrder, $payload->pdfs));
+        $purchaseOrder = $payload->purchaseOrder;
+        $isTransfer = in_array($purchaseOrder->POType, [2, 3]);
 
-            $payload->sentCount++;
-            Log::info("Email sent to {$emailRecord->email} for Purchase Order #{$payload->purchaseOrder->ID}");
+        foreach ($payload->emailRecipients as $storeId => $recipients) {
+            $recipientStoreId = $storeId;
+
+            foreach ($recipients as $emailRecord) {
+                $perspective = $this->determinePerspective($purchaseOrder, $recipientStoreId, $isTransfer);
+
+                Mail::to($emailRecord->email)
+                    ->send(new PurchaseOrderNotification(
+                        $purchaseOrder,
+                        $payload->pdfs,
+                        $perspective
+                    ));
+
+                $payload->sentCount++;
+                Log::info("Email sent to {$emailRecord->email} (Store #{$recipientStoreId}, {$perspective}) for Purchase Order #{$purchaseOrder->ID}");
+            }
         }
 
-        Log::info("Sent {$payload->sentCount} emails for Purchase Order #{$payload->purchaseOrder->ID}");
+        Log::info("Sent {$payload->sentCount} emails for Purchase Order #{$purchaseOrder->ID}");
 
         return $next($payload);
+    }
+
+    private function determinePerspective($purchaseOrder, $recipientStoreId, $isTransfer)
+    {
+        if (!$isTransfer) {
+            return 'default';
+        }
+
+        $isCreatorStore = $recipientStoreId == $purchaseOrder->StoreID;
+        $isOtherStore = $recipientStoreId == $purchaseOrder->OtherStoreID;
+
+        if ($purchaseOrder->POType == 2) {
+            if ($isOtherStore) {
+                return 'from_store';
+            }
+            return 'to_store';
+        }
+
+        if ($purchaseOrder->POType == 3) {
+            return $isCreatorStore ? 'from_store' : 'to_store';
+        }
+
+        return 'default';
     }
 }

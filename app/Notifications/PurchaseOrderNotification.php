@@ -18,14 +18,16 @@ class PurchaseOrderNotification extends Mailable
 
     public $purchaseOrder;
     public $pdfs;
+    public $perspective;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct($purchaseOrder, $pdfs)
+    public function __construct($purchaseOrder, $pdfs, $perspective = 'default')
     {
         $this->purchaseOrder = $purchaseOrder;
         $this->pdfs = $pdfs;
+        $this->perspective = $perspective;
     }
 
     /**
@@ -33,31 +35,50 @@ class PurchaseOrderNotification extends Mailable
      */
     public function envelope(): Envelope
     {
-        $fromStore = $this->purchaseOrder->currentStore->Name ?? 'Unknown Store';
+        $fromStoreName = $this->getFromStoreName();
         $subject = $this->getEmailSubject();
 
         return new Envelope(
-            from: new Address(config('mail.from.address'), $fromStore),
+            from: new Address(config('mail.from.address'), $fromStoreName),
             subject: $subject,
         );
     }
 
     /**
-     * Build the email subject based on purchase order type
+     * Get the email sender store name based on recipient
+     */
+    protected function getFromStoreName()
+    {
+        if ($this->purchaseOrder->POType == 2) {
+            return $this->perspective === 'to_store'
+                ? $this->purchaseOrder->currentStore->Name ?? 'Unknown Store'
+                : $this->purchaseOrder->otherStore->Name ?? 'Unknown Store';
+        }
+
+        if ($this->purchaseOrder->POType == 3) {
+            return $this->perspective === 'from_store'
+                ? $this->purchaseOrder->currentStore->Name ?? 'Unknown Store'
+                : $this->purchaseOrder->otherStore->Name ?? 'Unknown Store';
+        }
+
+        return $this->purchaseOrder->currentStore->Name ?? 'Unknown Store';
+    }
+
+    /**
+     * Build the email subject based on purchase order type and perspective
      */
     protected function getEmailSubject()
     {
-        $fromStore = $this->purchaseOrder->currentStore->Name ?? 'Unknown Store';
-        $toStore = $this->purchaseOrder->otherStore->Name ?? 'Unknown Store';
+        [$fromStore, $toStore] = $this->getStoreNamesForFlow();
         $title = $this->purchaseOrder->title;
         $id = $this->purchaseOrder->ID;
 
-        if ($this->purchaseOrder->type == 2) {
-            return "Transfer IN from {$fromStore} - #{$id} - {$title}";
+        if ($this->perspective === 'from_store') {
+            return "Transfer OUT from {$fromStore} to {$toStore} - #{$id} - {$title}";
         }
 
-        if ($this->purchaseOrder->type == 3) {
-            return "Transfer OUT to {$toStore} - #{$id} - {$title}";
+        if ($this->perspective === 'to_store') {
+            return "Transfer IN from {$fromStore} to {$toStore} - #{$id} - {$title}";
         }
 
         return "Purchase Order #{$id} - {$title}";
@@ -68,14 +89,32 @@ class PurchaseOrderNotification extends Mailable
      */
     public function content(): Content
     {
+        [$fromStore, $toStore] = $this->getStoreNamesForFlow();
+
         return new Content(
             view: 'emails.purchase_order',
             with: [
                 'purchaseOrder' => $this->purchaseOrder,
-                'fromStore' => $this->purchaseOrder->currentStore->Name ?? 'Unknown',
-                'toStore' => $this->purchaseOrder->otherStore->Name ?? 'Unknown',
+                'fromStore' => $fromStore,
+                'toStore' => $toStore,
+                'perspective' => $this->perspective,
             ],
         );
+    }
+
+    /**
+     * Get the from/to store names based on goods flow direction
+     */
+    protected function getStoreNamesForFlow()
+    {
+        $currentStoreName = $this->purchaseOrder->currentStore->Name ?? 'Unknown';
+        $otherStoreName = $this->purchaseOrder->otherStore->Name ?? 'Unknown';
+
+        if ($this->purchaseOrder->POType == 2) {
+            return [$otherStoreName, $currentStoreName];
+        }
+
+        return [$currentStoreName, $otherStoreName];
     }
 
     /**

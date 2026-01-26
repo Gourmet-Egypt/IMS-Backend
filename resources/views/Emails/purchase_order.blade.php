@@ -13,33 +13,39 @@
             margin: 0;
             padding: 0;
         }
+
         .email-container {
             max-width: 600px;
             margin: 20px auto;
             background-color: #ffffff;
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         .email-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #ffffff;
             padding: 30px 20px;
             text-align: center;
         }
+
         .email-header h1 {
             margin: 0;
             font-size: 24px;
             font-weight: bold;
         }
+
         .email-header p {
             margin: 10px 0 0 0;
             font-size: 14px;
             opacity: 0.9;
         }
+
         .email-body {
             padding: 30px 20px;
         }
+
         .info-section {
             background-color: #f8f9fa;
             border-left: 4px solid #667eea;
@@ -47,18 +53,22 @@
             margin: 20px 0;
             border-radius: 4px;
         }
+
         .info-row {
             margin: 8px 0;
         }
+
         .info-label {
             font-weight: bold;
             color: #555;
             display: inline-block;
             min-width: 120px;
         }
+
         .info-value {
             color: #333;
         }
+
         .attachments-section {
             background-color: #e8f4f8;
             border: 2px dashed #667eea;
@@ -67,16 +77,19 @@
             margin: 25px 0;
             text-align: center;
         }
+
         .attachments-section h3 {
             margin: 0 0 15px 0;
             color: #667eea;
             font-size: 18px;
         }
+
         .attachments-list {
             list-style: none;
             padding: 0;
             margin: 15px 0;
         }
+
         .attachments-list li {
             padding: 10px;
             margin: 8px 0;
@@ -85,10 +98,12 @@
             font-weight: 500;
             color: #667eea;
         }
+
         .attachments-list li:before {
             content: "📎 ";
             margin-right: 8px;
         }
+
         .email-footer {
             background-color: #f8f9fa;
             padding: 20px;
@@ -103,10 +118,10 @@
 <div class="email-container">
     <div class="email-header">
         <h1>
-            @if($purchaseOrder->type == 2)
-                🔄 Transfer IN Notification
-            @elseif($purchaseOrder->type == 3)
+            @if($perspective === 'from_store')
                 📤 Transfer OUT Notification
+            @elseif($perspective === 'to_store')
+                🔄 Transfer IN Notification
             @else
                 📋 Purchase Order Notification
             @endif
@@ -118,10 +133,12 @@
     <div class="email-body">
         <p>Hello,</p>
 
-        @if($purchaseOrder->POType == 2)
-            <p>A new <strong>Transfer IN</strong> request has been created from <strong>{{ $fromStore }}</strong> to <strong>{{ $toStore }}</strong>.</p>
-        @elseif($purchaseOrder->POType == 3)
-            <p>A new <strong>Transfer OUT</strong> request has been created from <strong>{{ $fromStore }}</strong> to <strong>{{ $toStore }}</strong>.</p>
+        @if($perspective === 'from_store')
+            <p>A new <strong>Transfer OUT</strong> request has been created from <strong>{{ $fromStore }}</strong> to
+                <strong>{{ $toStore }}</strong>.</p>
+        @elseif($perspective === 'to_store')
+            <p>A new <strong>Transfer IN</strong> request has been created from <strong>{{ $fromStore }}</strong> to
+                <strong>{{ $toStore }}</strong>.</p>
         @else
             <p>A new <strong>Purchase Order</strong> has been created.</p>
         @endif
@@ -156,18 +173,6 @@
             </div>
         </div>
 
-        <!-- Attachments Section -->
-        <div class="attachments-section">
-            <h3>📎 Attached Documents</h3>
-            <p style="margin: 0 0 10px 0; color: #666;">
-                Please review the attached PDF documents for complete details:
-            </p>
-            <ul class="attachments-list">
-                <li>Main Purchase Order Document</li>
-                <li>Items Information & Details</li>
-                <li>Condition & Delivery Information</li>
-            </ul>
-        </div>
 
         <p style="color: #666; font-size: 14px;">
             If you have any questions or concerns, please contact the relevant department.

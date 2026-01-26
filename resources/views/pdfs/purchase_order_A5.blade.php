@@ -209,38 +209,69 @@
         <!-- SHIP -->
         <table class="ship-table">
             <tr>
-                <td class="ship-title">SHIP TO</td>
                 <td class="ship-title">SHIP FROM</td>
+                <td class="ship-title">SHIP TO</td>
             </tr>
             <tr>
-                <td class="ship-content">
-                    <span class="bold1">Store ID: </span>
-                    {{ $purchaseOrder->StoreID }}<br />
-                    <span class="bold1">Contact or Department: </span>
-                    <!-- {{ $purchaseOrder->StoreID }} --><br />
-                    <span class="bold1">Store Name: </span>
-                    {{ $purchaseOrder->currentStore->Name ?? '' }}<br />
-                    <span class="bold1">Address: </span>
-                    {{ $purchaseOrder->currentStore->Address1 ?? '' }}<br />
-                    <span class="bold1">Phone: </span>
-                    {{ $purchaseOrder->currentStore->PhoneNumber ?? '' }}<br />
-                    <span class="bold1">Fax: </span>
-                    {{ $purchaseOrder->currentStore->FaxNumber ?? '' }}
-                </td>
-                <td class="ship-content">
-                    <span class="bold1">Store ID: </span>
-                    {{ $purchaseOrder->otherStore->ID ?? '' }}<br />
-                    <span class="bold1">Contact or Department: </span>
-                    <!-- {{ $purchaseOrder->StoreID }} --><br />
-                    <span class="bold1">Store Name: </span>
-                    {{ $purchaseOrder->otherStore->Name ?? '' }}<br />
-                    <span class="bold1">Address: </span>
-                    {{ $purchaseOrder->otherStore->Address1 ?? '' }}<br />
-                    <span class="bold1">Phone: </span>
-                    {{ $purchaseOrder->otherStore->PhoneNumber ?? '' }}<br />
-                    <span class="bold1">Fax: </span>
-                    {{ $purchaseOrder->otherStore->FaxNumber ?? '' }}
-                </td>
+                @if($purchaseOrder->POType == 2)
+                    <td class="ship-content">
+                        <span class="bold1">Store ID: </span>
+                        {{ $purchaseOrder->otherStore->ID ?? '' }}<br />
+                        <span class="bold1">Contact or Department: </span>
+                        <!-- {{ $purchaseOrder->OtherStoreID }} --><br />
+                        <span class="bold1">Store Name: </span>
+                        {{ $purchaseOrder->otherStore->Name ?? '' }}<br />
+                        <span class="bold1">Address: </span>
+                        {{ $purchaseOrder->otherStore->Address1 ?? '' }}<br />
+                        <span class="bold1">Phone: </span>
+                        {{ $purchaseOrder->otherStore->PhoneNumber ?? '' }}<br />
+                        <span class="bold1">Fax: </span>
+                        {{ $purchaseOrder->otherStore->FaxNumber ?? '' }}
+                    </td>
+                    <td class="ship-content">
+                        <span class="bold1">Store ID: </span>
+                        {{ $purchaseOrder->StoreID }}<br />
+                        <span class="bold1">Contact or Department: </span>
+                        <!-- {{ $purchaseOrder->StoreID }} --><br />
+                        <span class="bold1">Store Name: </span>
+                        {{ $purchaseOrder->currentStore->Name ?? '' }}<br />
+                        <span class="bold1">Address: </span>
+                        {{ $purchaseOrder->currentStore->Address1 ?? '' }}<br />
+                        <span class="bold1">Phone: </span>
+                        {{ $purchaseOrder->currentStore->PhoneNumber ?? '' }}<br />
+                        <span class="bold1">Fax: </span>
+                        {{ $purchaseOrder->currentStore->FaxNumber ?? '' }}
+                    </td>
+                @else
+                    <td class="ship-content">
+                        <span class="bold1">Store ID: </span>
+                        {{ $purchaseOrder->StoreID }}<br />
+                        <span class="bold1">Contact or Department: </span>
+                        <!-- {{ $purchaseOrder->StoreID }} --><br />
+                        <span class="bold1">Store Name: </span>
+                        {{ $purchaseOrder->currentStore->Name ?? '' }}<br />
+                        <span class="bold1">Address: </span>
+                        {{ $purchaseOrder->currentStore->Address1 ?? '' }}<br />
+                        <span class="bold1">Phone: </span>
+                        {{ $purchaseOrder->currentStore->PhoneNumber ?? '' }}<br />
+                        <span class="bold1">Fax: </span>
+                        {{ $purchaseOrder->currentStore->FaxNumber ?? '' }}
+                    </td>
+                    <td class="ship-content">
+                        <span class="bold1">Store ID: </span>
+                        {{ $purchaseOrder->otherStore->ID ?? '' }}<br />
+                        <span class="bold1">Contact or Department: </span>
+                        <!-- {{ $purchaseOrder->OtherStoreID }} --><br />
+                        <span class="bold1">Store Name: </span>
+                        {{ $purchaseOrder->otherStore->Name ?? '' }}<br />
+                        <span class="bold1">Address: </span>
+                        {{ $purchaseOrder->otherStore->Address1 ?? '' }}<br />
+                        <span class="bold1">Phone: </span>
+                        {{ $purchaseOrder->otherStore->PhoneNumber ?? '' }}<br />
+                        <span class="bold1">Fax: </span>
+                        {{ $purchaseOrder->otherStore->FaxNumber ?? '' }}
+                    </td>
+                @endif
             </tr>
         </table>
         <!-- SHIP -->

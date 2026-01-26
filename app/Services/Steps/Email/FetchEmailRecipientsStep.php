@@ -12,15 +12,29 @@ class FetchEmailRecipientsStep
     {
         $configuration = DB::table('Configuration')->first();
 
-        $emails = PurchaseOrderEmail::where('store_id', $configuration->StoreID)
+        if (!$configuration) {
+            $payload->emailRecipients = collect();
+            return $next($payload);
+        }
+
+        $purchaseOrder = $payload->purchaseOrder;
+        $configStoreId = $configuration->StoreID;
+
+        $storeIds = match ($purchaseOrder->POType) {
+            2 => [$purchaseOrder->StoreID, $purchaseOrder->OtherStoreID, $configStoreId],
+            3 => [$purchaseOrder->StoreID, $purchaseOrder->OtherStoreID],
+            default => [$configStoreId],
+        };
+
+        $emails = PurchaseOrderEmail::whereIn('store_id', $storeIds)
             ->where('is_active', true)
             ->get();
 
         if ($emails->isEmpty()) {
-            Log::warning("No active emails found for store #{$configuration->StoreID}");
+            Log::warning("No active emails found for store #{$configStoreId}");
         }
 
-        $payload->emailRecipients = $emails;
+        $payload->emailRecipients = $emails->groupBy('store_id');
 
         return $next($payload);
     }
