@@ -126,14 +126,123 @@ class PurchaseOrderNotification extends Mailable
     {
         $attachments = [];
 
-        foreach ($this->pdfs as $pdf) {
-            if (Storage::exists($pdf->file_path)) {
-                $attachments[] = Attachment::fromStorage($pdf->file_path)
-                    ->as($pdf->file_name)
-                    ->withMime('application/pdf');
-            }
+        // Generate PDF on-demand based on perspective
+        $pdf = $this->generatePdfForPerspective();
+
+        if ($pdf) {
+            $fileName = "transfer_request_{$this->purchaseOrder->PONumber}_{$this->perspective}.pdf";
+            $attachments[] = Attachment::fromData(fn () => $pdf->output(), $fileName)
+                ->withMime('application/pdf');
         }
 
         return $attachments;
+    }
+
+    /**
+     * Generate PDF based on recipient perspective
+     */
+    protected function generatePdfForPerspective()
+    {
+        // Load necessary relationships including transfer request
+        $this->purchaseOrder->load([
+            'condition',
+            'entries.infos',
+            'entries.item',
+            'entries.transferRequest' => function($query) {
+                $query->with('items');
+            },
+            'currentStore',
+            'otherStore'
+        ]);
+
+        \Illuminate\Support\Facades\Log::info("Generating PDF with perspective: {$this->perspective} for PO #{$this->purchaseOrder->ID}");
+
+        // Transform items data - one row per item with summed quantities
+        $items = $this->purchaseOrder->entries->map(function ($entry) {
+            $infos = $entry->infos;
+
+            // Get quantity from transfer request item
+            $quantityRequested = $entry->QuantityOrdered ?? 0; // Default
+
+            \Illuminate\Support\Facades\Log::info("Processing entry", [
+                'entry_id' => $entry->ID,
+                'item_id' => $entry->ItemID,
+                'has_transfer_request' => $entry->transferRequest ? 'yes' : 'no',
+                'transfer_request_id' => $entry->transferRequest?->id,
+                'items_count' => $entry->transferRequest?->items?->count(),
+            ]);
+
+            if ($entry->transferRequest && $entry->transferRequest->items) {
+                // Match by Item.ID since:
+                // - transfer_request_item.item_id -> Item.HQID
+                // - PurchaseOrderEntry.ItemID -> Item.ID
+                // Both refer to the same item but use different keys
+
+                $matchingItem = $entry->transferRequest->items->first(function($item) use ($entry) {
+                    // item.ID (from transfer request via HQID) should equal entry.ItemID (Item.ID)
+                    return $item->ID === $entry->ItemID;
+                });
+
+                if ($matchingItem && isset($matchingItem->pivot->quantity)) {
+                    $quantityRequested = $matchingItem->pivot->quantity;
+                }
+            }
+
+            // Sum quantity_issued for all infos of the same item
+            $totalQuantityIssued = $infos->sum('quantity_issued');
+            $totalQuantityReceived = $entry->QuantityReceivedToDate ?? 0;
+
+            // Set values based on perspective AND POType
+            $poType = (int)$this->purchaseOrder->POType;
+
+            if ($poType == 3) {
+                // TransferOUT: Goods are being sent out
+                if ($this->perspective === 'from_store') {
+                    // FROM store (sending): show what was issued
+                    $displayQuantityIssued = $totalQuantityIssued;
+                    $displayQuantityReceived = 0;
+                } else {
+                    // TO store (receiving): nothing received yet at commit time
+                    $displayQuantityIssued = 0;
+                    $displayQuantityReceived = 0;
+                }
+            } elseif ($poType == 2) {
+                // TransferIN: Goods are being received
+                if ($this->perspective === 'to_store') {
+                    // TO store (receiving): show what was received
+                    $displayQuantityIssued = 0;
+                    $displayQuantityReceived = $totalQuantityReceived;
+                } else {
+                    // FROM store (sending from other store): nothing from their perspective
+                    $displayQuantityIssued = 0;
+                    $displayQuantityReceived = 0;
+                }
+            } else {
+                // Default: show both actual values
+                $displayQuantityIssued = $totalQuantityIssued;
+                $displayQuantityReceived = $totalQuantityReceived;
+            }
+
+            $itemData = (object)[
+                'lookupcode' => $entry->item->ItemLookupCode ?? 'N/A',
+                'description' => $entry->ItemDescription ?? 'N/A',
+                'quantity_requested' => $quantityRequested,
+                'quantity_received' => $displayQuantityReceived,
+                'quantity_issued' => $displayQuantityIssued,
+                'production_date' => $infos->first()?->production_date ?? null,
+                'expire_date' => $infos->first()?->expire_date ?? null,
+            ];
+
+            return $itemData;
+        });
+
+        $data = [
+            'purchaseOrder' => $this->purchaseOrder,
+            'items' => $items,
+            'condition' => $this->purchaseOrder->condition,
+            'perspective' => $this->perspective
+        ];
+
+        return \Barryvdh\DomPDF\Facade\Pdf::loadView('pdfs.purchase_order', $data);
     }
 }

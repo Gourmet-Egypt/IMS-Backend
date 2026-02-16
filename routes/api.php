@@ -81,6 +81,9 @@ Route::middleware(['auth.multi'])->group(function () {
         Route::get('/all/offline', [PurchaseOrderController::class, 'offline'])
             ->name('purchase-order.offline');
 
+        Route::post('/{purchaseOrder}/start-process', [PurchaseOrderController::class, 'startProcess'])
+            ->name('purchase-order.start-process');
+
         Route::post('/{purchaseOrder}/commit', [PurchaseOrderController::class, 'commitOrder'])
             ->name('purchase-orders.commit');
 

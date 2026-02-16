@@ -36,6 +36,18 @@ class FetchEmailRecipientsStep
 
         $payload->emailRecipients = $emails->groupBy('store_id');
 
+        // Log the stores that will receive emails
+        $storeList = $payload->emailRecipients->keys()->map(function($storeId) use ($payload) {
+            $store = \App\Models\Store::find($storeId);
+            return $store ? "#{$storeId} ({$store->Name})" : "#{$storeId}";
+        })->join(', ');
+
+        Log::info("Email recipients fetched for Purchase Order #{$purchaseOrder->ID}", [
+            'store_count' => $payload->emailRecipients->count(),
+            'stores' => $storeList,
+            'total_recipients' => $emails->count(),
+        ]);
+
         return $next($payload);
     }
 }

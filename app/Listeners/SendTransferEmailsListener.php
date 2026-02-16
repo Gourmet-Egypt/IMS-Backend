@@ -21,16 +21,25 @@ class SendTransferEmailsListener
     public function handle(PurchaseOrderCommitted $event)
     {
         try {
-
             $purchaseOrder = $event->purchaseOrder;
+
+            Log::info("SendTransferEmailsListener triggered for Purchase Order", [
+                'purchase_order_id' => $purchaseOrder->ID,
+                'po_number' => $purchaseOrder->PONumber,
+                'po_type' => $purchaseOrder->POType,
+            ]);
 
             $this->emailService->sendNotifications($purchaseOrder);
 
-            Log::info("Successfully sent email notifications for Purchase Order #{$purchaseOrder->PONumber}");
+            Log::info("Successfully completed email notification process for Purchase Order #{$purchaseOrder->PONumber}");
 
         } catch (\Exception $e) {
-            Log::error("Error in SendTransferEmailsListener: " . $e->getMessage());
-
+            Log::error("Error in SendTransferEmailsListener", [
+                'purchase_order_id' => $purchaseOrder->ID ?? 'unknown',
+                'po_number' => $purchaseOrder->PONumber ?? 'unknown',
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
         }
     }
 

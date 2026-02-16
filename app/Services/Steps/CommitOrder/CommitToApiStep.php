@@ -14,6 +14,13 @@ class CommitToApiStep
     {
         $server = config('database.connections.sqlsrv.host');
 
+        \Illuminate\Support\Facades\Log::info("Committing order to API for Purchase Order #{$payload->purchaseOrder->ID}", [
+            'purchase_order_id' => $payload->purchaseOrder->ID,
+            'po_number' => $payload->purchaseOrder->PONumber,
+            'api_endpoint' => "http://{$server}/api/commit-order",
+            'order_data' => $payload->orderData,
+        ]);
+
         $response = Http::withoutVerifying()
             ->timeout(30)
             ->asJson()
@@ -23,11 +30,26 @@ class CommitToApiStep
             $responseData = $response->json();
             $errorMessage = $this->parseErrorMessage($responseData);
 
+            \Illuminate\Support\Facades\Log::error("API commit failed for Purchase Order #{$payload->purchaseOrder->ID}", [
+                'purchase_order_id' => $payload->purchaseOrder->ID,
+                'po_number' => $payload->purchaseOrder->PONumber,
+                'status_code' => $response->status(),
+                'error_message' => $errorMessage,
+                'response_data' => $responseData,
+            ]);
+
             return $this->error(
                 status: Response::HTTP_INTERNAL_SERVER_ERROR,
                 message: $errorMessage
             );
         }
+
+        \Illuminate\Support\Facades\Log::info("API commit successful for Purchase Order #{$payload->purchaseOrder->ID}", [
+            'purchase_order_id' => $payload->purchaseOrder->ID,
+            'po_number' => $payload->purchaseOrder->PONumber,
+            'status_code' => $response->status(),
+            'response_data' => $response->json(),
+        ]);
 
         $payload->apiResponse = $response;
 

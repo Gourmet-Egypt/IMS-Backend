@@ -10,6 +10,7 @@ use App\Http\Resources\App\Offline\PurchaseOrderEntryResource;
 use App\Http\Resources\App\Offline\PurchaseOrderResource;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderEntry;
+use App\Models\PurchaseOrderProcessStart;
 use App\Services\CommitOrderService;
 use App\Traits\Responses;
 use Illuminate\Http\Response;
@@ -56,6 +57,32 @@ class PurchaseOrderController extends Controller
     }
 
 
+    public function startProcess(PurchaseOrder $purchaseOrder): \Illuminate\Http\JsonResponse
+    {
+        $existingStart = PurchaseOrderProcessStart::where('purchase_order_id', $purchaseOrder->ID)->first();
+
+        if ($existingStart) {
+            return $this->error(
+                status: Response::HTTP_BAD_REQUEST,
+                message: 'Process already started'
+            );
+        }
+
+        $processStart = PurchaseOrderProcessStart::create([
+            'purchase_order_id' => $purchaseOrder->ID,
+            'start_date' => now(),
+        ]);
+
+        return $this->success(
+            status: Response::HTTP_OK,
+            message: 'Process started successfully',
+            data: [
+                'purchase_order_id' => $processStart->purchase_order_id,
+                'start_date' => $processStart->start_date,
+            ]
+        );
+    }
+
     public function commitOrder(
         PurchaseOrder $purchaseOrder,
         CommitOrderRequest $request,
@@ -87,7 +114,6 @@ class PurchaseOrderController extends Controller
         $storeId = DB::table('Configuration')->select('StoreID')->value('StoreID');
 
         $data = [
-
             "StoreID" => $storeId,
             "transactionType" => PurchaseOrderTypeEnum::tryFrom($purchaseOrderEntry->purchaseOrder->POType)?->name,
             "purchase_order_id" => $purchaseOrderEntry->PurchaseOrderID,

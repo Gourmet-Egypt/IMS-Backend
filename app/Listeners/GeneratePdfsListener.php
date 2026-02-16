@@ -21,10 +21,18 @@ class GeneratePdfsListener
     public function handle(PurchaseOrderCommitted $event)
     {
         $purchaseOrder = $event->purchaseOrder;
+
+        Log::info("GeneratePdfsListener triggered for Purchase Order", [
+            'purchase_order_id' => $purchaseOrder->ID,
+            'po_number' => $purchaseOrder->PONumber,
+            'po_type' => $purchaseOrder->POType,
+        ]);
+
         $pdf = $this->pdfService->generatePdf($purchaseOrder);
 
         Log::info("Successfully generated PDF for Purchase Order #{$purchaseOrder->PONumber}", [
-            'pdf' => $pdf
+            'purchase_order_id' => $purchaseOrder->ID,
+            'pdf_info' => $pdf
         ]);
     }
 
