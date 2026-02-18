@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\App;
 
 use App\Enums\PurchaseOrderTypeEnum;
+use App\Events\PurchaseOrderCommitted;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\App\PurchaseOrder\CommitOrderRequest;
 use App\Http\Requests\App\PurchaseOrderEntry\UpdatePurchaseOrderEntryInfosRequest;

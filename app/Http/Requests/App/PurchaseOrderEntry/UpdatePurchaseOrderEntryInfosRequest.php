@@ -23,7 +23,7 @@ class UpdatePurchaseOrderEntryInfosRequest extends FormRequest
     {
         return [
             'Batches' => 'present|array',
-            'Batches.*.quantity_issued' => 'required|numeric|min:1',
+            'Batches.*.quantity_issued' => 'required|numeric|min:0',
             'Batches.*.production_date' => 'nullable|string',
             'Batches.*.expire_date' => 'nullable|string',
         ];
