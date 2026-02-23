@@ -104,16 +104,14 @@ class PurchaseOrderNotification extends Mailable
 
     /**
      * Get the from/to store names based on goods flow direction
+     * Flow is ALWAYS: FROM CurrentStore TO OtherStore
      */
     protected function getStoreNamesForFlow()
     {
         $currentStoreName = $this->purchaseOrder->currentStore->Name ?? 'Unknown';
         $otherStoreName = $this->purchaseOrder->otherStore->Name ?? 'Unknown';
 
-        if ((int)$this->purchaseOrder->POType == 2) {
-            return [$otherStoreName, $currentStoreName];
-        }
-
+        // Direction is always FROM CurrentStore TO OtherStore, regardless of POType
         return [$currentStoreName, $otherStoreName];
     }
 
@@ -155,22 +153,12 @@ class PurchaseOrderNotification extends Mailable
             'otherStore'
         ]);
 
-        \Illuminate\Support\Facades\Log::info("Generating PDF with perspective: {$this->perspective} for PO #{$this->purchaseOrder->ID}");
-
         // Transform items data - one row per item with summed quantities
         $items = $this->purchaseOrder->entries->map(function ($entry) {
             $infos = $entry->infos;
 
             // Get quantity from transfer request item
             $quantityRequested = $entry->QuantityOrdered ?? 0; // Default
-
-            \Illuminate\Support\Facades\Log::info("Processing entry", [
-                'entry_id' => $entry->ID,
-                'item_id' => $entry->ItemID,
-                'has_transfer_request' => $entry->transferRequest ? 'yes' : 'no',
-                'transfer_request_id' => $entry->transferRequest?->id,
-                'items_count' => $entry->transferRequest?->items?->count(),
-            ]);
 
             if ($entry->transferRequest && $entry->transferRequest->items) {
                 // Match by Item.ID since:

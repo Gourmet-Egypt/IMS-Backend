@@ -9,8 +9,6 @@ class BuildOrderDataStep
 {
     public function handle($payload, \Closure $next)
     {
-        \Illuminate\Support\Facades\Log::info("Building order data for Purchase Order #{$payload->purchaseOrder->ID}");
-
         $storeId = DB::table('Configuration')->select('StoreID')->value('StoreID');
 
         // // Fetch start_date from process start table
@@ -48,14 +46,6 @@ class BuildOrderDataStep
         $payload->orderData = [
             "Order" => array_merge($baseData, $orderSpecific),
         ];
-
-        \Illuminate\Support\Facades\Log::info("Order data built successfully for Purchase Order #{$payload->purchaseOrder->ID}", [
-            'purchase_order_id' => $payload->purchaseOrder->ID,
-            'store_id' => $storeId,
-            'cashier_id' => $payload->cashier->ID,
-            'transaction_type' => $payload->poTypeEnum,
-            // 'has_start_date' => $startDate !== null,
-        ]);
 
         return $next($payload);
     }

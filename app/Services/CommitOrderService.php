@@ -26,14 +26,6 @@ class CommitOrderService
 
     public function commit(PurchaseOrder $purchaseOrder, Request $request): JsonResponse
     {
-        \Illuminate\Support\Facades\Log::info("Starting commit process for Purchase Order", [
-            'purchase_order_id' => $purchaseOrder->ID,
-            'po_number' => $purchaseOrder->PONumber,
-            'po_type' => $purchaseOrder->POType,
-            'store_id' => $purchaseOrder->StoreID,
-            'other_store_id' => $purchaseOrder->OtherStoreID,
-        ]);
-
         $payload = (object) [
             'purchaseOrder' => $purchaseOrder,
             'request' => $request,
@@ -53,20 +45,12 @@ class CommitOrderService
             ->thenReturn();
 
         if ($result instanceof JsonResponse) {
-            \Illuminate\Support\Facades\Log::warning("Commit process returned error response for Purchase Order #{$purchaseOrder->ID}");
             return $result;
         }
-
-        \Illuminate\Support\Facades\Log::info("Commit to API successful, dispatching PurchaseOrderCommitted event for PO #{$purchaseOrder->ID}");
 
         PurchaseOrderCommitted::dispatch($purchaseOrder);
 
         $purchaseOrder->load(['condition', 'entries', 'entries.infos']);
-
-        \Illuminate\Support\Facades\Log::info("Purchase Order committed successfully", [
-            'purchase_order_id' => $purchaseOrder->ID,
-            'po_number' => $purchaseOrder->PONumber,
-        ]);
 
         return $this->success(
             status: Response::HTTP_OK,
