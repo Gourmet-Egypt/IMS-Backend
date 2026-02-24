@@ -200,10 +200,6 @@
                     Transfer Request OUT
                 @elseif(isset($perspective) && $perspective === 'to_store')
                     Transfer Request IN
-                @elseif($purchaseOrder->POType == 2)
-                    Transfer Request IN
-                @elseif($purchaseOrder->POType == 3)
-                    Transfer Request OUT
                 @else
                     Transfer Request
                 @endif
@@ -357,7 +353,7 @@
         <tr>
             <th>ITEM</th>
             <th>DESCRIPTION</th>
-            @if((isset($perspective) && $perspective === 'from_store') || (!isset($perspective) && $purchaseOrder->POType == 3))
+            @if(isset($perspective) && $perspective === 'from_store')
                 <th>Qty Ordered</th>
                 <th>Qty Issued</th>
                 <th>Diff</th>
@@ -375,7 +371,7 @@
             <tr>
                 <td>{{ $item->lookupcode }}</td>
                 <td>{{ $item->description }}</td>
-                @if((isset($perspective) && $perspective === 'from_store') || (!isset($perspective) && $purchaseOrder->POType == 3))
+                @if(isset($perspective) && $perspective === 'from_store')
                     {{-- Transfer OUT: Show Ordered, Issued, Diff (Ordered - Issued) --}}
                     <td>{{ number_format($item->quantity_requested, 1) }}</td>
                     <td>{{ $item->quantity_issued ?? '0.0' }}</td>

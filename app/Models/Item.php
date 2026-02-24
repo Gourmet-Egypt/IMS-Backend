@@ -47,7 +47,9 @@ class Item extends Model
         $query
             ->where([
                 ['DoNotOrder', 0]
-                , ['Inactive', 0]
+                , ['Inactive', 0],
+                ['HQID', '<>', 0]
+
             ])
             ->when($last_updated, function ($q) use ($last_updated) {
                 $q->where('LastUpdated', '>', $last_updated);

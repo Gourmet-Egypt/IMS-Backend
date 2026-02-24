@@ -4,7 +4,6 @@ namespace App\Services\Steps\Email;
 
 use App\Models\PurchaseOrderEmail;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class FetchEmailRecipientsStep
 {
@@ -26,27 +25,9 @@ class FetchEmailRecipientsStep
             default => [$configStoreId],
         };
 
-        $emails = PurchaseOrderEmail::whereIn('store_id', $storeIds)
-            ->where('is_active', true)
-            ->get();
-
-        if ($emails->isEmpty()) {
-            Log::warning("No active emails found for store #{$configStoreId}");
-        }
+        $emails = PurchaseOrderEmail::forStores($storeIds)->get();
 
         $payload->emailRecipients = $emails->groupBy('store_id');
-
-        // Log the stores that will receive emails
-        $storeList = $payload->emailRecipients->keys()->map(function($storeId) use ($payload) {
-            $store = \App\Models\Store::find($storeId);
-            return $store ? "#{$storeId} ({$store->Name})" : "#{$storeId}";
-        })->join(', ');
-
-        Log::info("Email recipients fetched for Purchase Order #{$purchaseOrder->ID}", [
-            'store_count' => $payload->emailRecipients->count(),
-            'stores' => $storeList,
-            'total_recipients' => $emails->count(),
-        ]);
 
         return $next($payload);
     }

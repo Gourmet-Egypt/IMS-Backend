@@ -89,6 +89,7 @@ class PurchaseOrderController extends Controller
         CommitOrderRequest $request,
         CommitOrderService $service
     ): \Illuminate\Http\JsonResponse {
+
         return $service->commit($purchaseOrder, $request);
     }
 

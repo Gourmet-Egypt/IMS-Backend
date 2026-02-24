@@ -3,7 +3,6 @@
 namespace App\Http\Requests\App\PurchaseOrder;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class CommitOrderRequest extends FormRequest
 {
@@ -15,29 +14,27 @@ class CommitOrderRequest extends FormRequest
 
     public function rules(): array
     {
-        $transactionType = $this->input('transactionType');
+        // Get PurchaseOrder from route parameter (matches {purchaseOrder} in route)
+        $purchaseOrder = $this->route('purchaseOrder');
+        $poType = $purchaseOrder ? (int) $purchaseOrder->POType : null;
 
-        $rules = [
-            'transactionType' => ['required', 'string', Rule::in(['TransferOut', 'TransferIN'])],
-        ];
+        $rules = [];
 
-        // if ($transactionType === 'TransferOut') {
-        //     $rules['VehicleTypeID'] = [
-        //         'required',
-        //         'string',
-        //     ];
-        //     $rules['Vehicle_tempOut'] = ['required', 'numeric', 'min:-50', 'max:50'];
-        //     $rules['DeliveryPermitNumber'] = ['required', 'string', 'max:255'];
-        //     $rules['Notes'] = ['nullable', 'string', 'max:1000'];
-        //     $rules['seal_number'] = ['required', 'string', 'max:1000'];
-        //     $rules['driver_name'] = ['required', 'string', 'max:255'];
-        // }
+        // POType 3 = TransferOut validation
+        if ($poType === 3) {
+            $rules['VehicleTypeID'] = ['required', 'string'];
+            $rules['Vehicle_tempOut'] = ['required', 'numeric', 'min:-50', 'max:50'];
+            $rules['DeliveryPermitNumber'] = ['required', 'string', 'max:255'];
+            $rules['Notes'] = ['nullable', 'string', 'max:1000'];
+            $rules['seal_number'] = ['required', 'string', 'max:1000'];
+            $rules['driver_name'] = ['nullable', 'string', 'max:255'];
+        }
 
-        // // TransferIN specific rules
-        // if ($transactionType === 'TransferIN') {
-        //     $rules['Vehicle_tempIN'] = ['required', 'numeric', 'min:-50', 'max:50'];
-        //     $rules['receiver_name'] = ['required', 'string', 'max:255'];
-        // }
+        // POType 2 = TransferIN validation
+        if ($poType === 2) {
+            $rules['Vehicle_tempIN'] = ['required', 'numeric', 'min:-50', 'max:50'];
+            $rules['receiver_name'] = ['nullable', 'string', 'max:255'];
+        }
 
         return $rules;
     }
@@ -48,17 +45,17 @@ class CommitOrderRequest extends FormRequest
             'transactionType.required' => 'Transaction type is required.',
             'transactionType.in' => 'Transaction type must be either TransferOut or TransferIN.',
 
-            // // TransferOut messages
-            // 'VehicleTypeID.required' => 'Vehicle type is required for TransferOut transactions.',
-            // 'seal_number.required' => 'seal_number is required for TransferOut transactions.',
-            // 'VehicleTypeID.in' => 'Invalid vehicle type selected.',
-            // 'Vehicle_tempOut.required' => 'Vehicle temperature (Out) is required for TransferOut transactions.',
-            // 'DeliveryPermitNumber.required' => 'Delivery permit number is required for TransferOut transactions.',
-            // 'driver_name.required' => 'Driver name is required for TransferOut transactions.',
+            // TransferOut messages
+            'VehicleTypeID.required' => 'Vehicle type is required for TransferOut transactions.',
+            'seal_number.required' => 'seal_number is required for TransferOut transactions.',
+            'VehicleTypeID.in' => 'Invalid vehicle type selected.',
+            'Vehicle_tempOut.required' => 'Vehicle temperature (Out) is required for TransferOut transactions.',
+            'DeliveryPermitNumber.required' => 'Delivery permit number is required for TransferOut transactions.',
+//            'driver_name.required' => 'Driver name is required for TransferOut transactions.',
 
-            // // TransferIN messages
-            // 'Vehicle_tempIN.required' => 'Vehicle temperature (IN) is required for TransferIN transactions.',
-            // 'receiver_name.required' => 'Receiver name is required for TransferIN transactions.',
+            // TransferIN messages
+            'Vehicle_tempIN.required' => 'Vehicle temperature (IN) is required for TransferIN transactions.',
+//            'receiver_name.required' => 'Receiver name is required for TransferIN transactions.',
         ];
     }
 
