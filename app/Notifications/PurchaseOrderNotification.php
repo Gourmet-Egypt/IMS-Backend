@@ -179,7 +179,7 @@ class PurchaseOrderNotification extends Mailable
 
             // Sum quantity_issued for all infos of the same item
             $totalQuantityIssued = $infos->sum('quantity_issued');
-            $totalQuantityReceived = $entry->QuantityReceivedToDate ?? 0;
+            $totalQuantityReceived = $infos->sum('quantity_issued');
 
             // Set values based on perspective AND POType
             $poType = (int)$this->purchaseOrder->POType;
