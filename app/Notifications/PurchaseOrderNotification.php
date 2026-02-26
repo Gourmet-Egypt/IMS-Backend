@@ -111,7 +111,7 @@ class PurchaseOrderNotification extends Mailable
         $currentStoreName = $this->purchaseOrder->currentStore->Name ?? 'Unknown';
         $otherStoreName = $this->purchaseOrder->otherStore->Name ?? 'Unknown';
 
-        // Direction is always FROM CurrentStore TO OtherStore, regardless of POType
+        // Always FROM CurrentStore TO OtherStore
         return [$currentStoreName, $otherStoreName];
     }
 
