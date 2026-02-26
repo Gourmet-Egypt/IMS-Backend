@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8"/>
-    <title>Transfer Request From</title>
+    <title>@if(isset($perspective) && $perspective === 'from_store')Transfer OUT @elseif(isset($perspective) && $perspective === 'to_store')Transfer IN @else Transfer @endif</title>
     <style>
         @page {
             margin: 0.5in;
@@ -197,11 +197,11 @@
             </td>
             <td class="header-title">
                 @if(isset($perspective) && $perspective === 'from_store')
-                    Transfer Request OUT
+                    Transfer OUT
                 @elseif(isset($perspective) && $perspective === 'to_store')
-                    Transfer Request IN
+                    Transfer IN
                 @else
-                    Transfer Request
+                    Transfer
                 @endif
             </td>
             <td class="header-right">

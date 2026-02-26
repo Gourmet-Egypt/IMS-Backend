@@ -20,8 +20,7 @@ class FetchEmailRecipientsStep
         $configStoreId = $configuration->StoreID;
 
         $storeIds = match ((int)$purchaseOrder->POType) {
-            2 => [$purchaseOrder->StoreID, $purchaseOrder->OtherStoreID, $configStoreId],
-            3 => [$purchaseOrder->StoreID, $purchaseOrder->OtherStoreID],
+            2, 3 => [$purchaseOrder->StoreID],
             default => [$configStoreId],
         };
 

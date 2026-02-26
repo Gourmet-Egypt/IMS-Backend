@@ -134,10 +134,10 @@
         <p>Hello,</p>
 
         @if($perspective === 'from_store')
-            <p>A new <strong>Transfer OUT</strong> request has been created from <strong>{{ $fromStore }}</strong> to
+            <p>A new <strong>Transfer OUT</strong> has been created from <strong>{{ $fromStore }}</strong> to
                 <strong>{{ $toStore }}</strong>.</p>
         @elseif($perspective === 'to_store')
-            <p>A new <strong>Transfer IN</strong> request has been created from <strong>{{ $fromStore }}</strong> to
+            <p>A new <strong>Transfer IN</strong> has been created from <strong>{{ $fromStore }}</strong> to
                 <strong>{{ $toStore }}</strong>.</p>
         @else
             <p>A new <strong>Purchase Order</strong> has been created.</p>

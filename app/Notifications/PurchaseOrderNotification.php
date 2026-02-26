@@ -128,7 +128,8 @@ class PurchaseOrderNotification extends Mailable
         $pdf = $this->generatePdfForPerspective();
 
         if ($pdf) {
-            $fileName = "transfer_request_{$this->purchaseOrder->PONumber}_{$this->perspective}.pdf";
+            $perspectiveLabel = $this->perspective === 'from_store' ? 'out' : 'in';
+            $fileName = "transfer_{$perspectiveLabel}_{$this->purchaseOrder->PONumber}.pdf";
             $attachments[] = Attachment::fromData(fn () => $pdf->output(), $fileName)
                 ->withMime('application/pdf');
         }
@@ -212,7 +213,7 @@ class PurchaseOrderNotification extends Mailable
             }
 
             $itemData = (object)[
-                'lookupcode' => $entry->item->ItemLookupCode ?? 'N/A',
+                'lookupcode' => \App\Models\Item::where('ID', $entry->ItemID)->value('ItemLookupCode') ?? 'N/A',
                 'description' => $entry->ItemDescription ?? 'N/A',
                 'quantity_requested' => $quantityRequested,
                 'quantity_received' => $displayQuantityReceived,
