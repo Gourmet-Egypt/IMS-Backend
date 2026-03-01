@@ -111,7 +111,12 @@ class PurchaseOrderNotification extends Mailable
         $currentStoreName = $this->purchaseOrder->currentStore->Name ?? 'Unknown';
         $otherStoreName = $this->purchaseOrder->otherStore->Name ?? 'Unknown';
 
-        // Direction is always FROM CurrentStore TO OtherStore, regardless of POType
+        // Transfer IN (POType 2): goods flow FROM OtherStore TO CurrentStore
+        if ((int)$this->purchaseOrder->POType == 2) {
+            return [$otherStoreName, $currentStoreName];
+        }
+
+        // Transfer OUT (POType 3): goods flow FROM CurrentStore TO OtherStore
         return [$currentStoreName, $otherStoreName];
     }
 
@@ -128,7 +133,8 @@ class PurchaseOrderNotification extends Mailable
         $pdf = $this->generatePdfForPerspective();
 
         if ($pdf) {
-            $fileName = "transfer_request_{$this->purchaseOrder->PONumber}_{$this->perspective}.pdf";
+            $perspectiveLabel = $this->perspective === 'from_store' ? 'out' : 'in';
+            $fileName = "transfer_{$perspectiveLabel}_{$this->purchaseOrder->PONumber}.pdf";
             $attachments[] = Attachment::fromData(fn () => $pdf->output(), $fileName)
                 ->withMime('application/pdf');
         }
@@ -178,7 +184,7 @@ class PurchaseOrderNotification extends Mailable
 
             // Sum quantity_issued for all infos of the same item
             $totalQuantityIssued = $infos->sum('quantity_issued');
-            $totalQuantityReceived = $entry->QuantityReceivedToDate ?? 0;
+            $totalQuantityReceived = $infos->sum('quantity_issued');
 
             // Set values based on perspective AND POType
             $poType = (int)$this->purchaseOrder->POType;
@@ -212,7 +218,7 @@ class PurchaseOrderNotification extends Mailable
             }
 
             $itemData = (object)[
-                'lookupcode' => $entry->item->ItemLookupCode ?? 'N/A',
+                'lookupcode' => \App\Models\Item::where('ID', $entry->ItemID)->value('ItemLookupCode') ?? 'N/A',
                 'description' => $entry->ItemDescription ?? 'N/A',
                 'quantity_requested' => $quantityRequested,
                 'quantity_received' => $displayQuantityReceived,
