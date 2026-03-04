@@ -28,6 +28,7 @@ class CommitOrderRequest extends FormRequest
             $rules['Notes'] = ['nullable', 'string', 'max:1000'];
             $rules['seal_number'] = ['required', 'string', 'max:1000'];
             $rules['driver_name'] = ['nullable', 'string', 'max:255'];
+            $rules['vehicle_number'] = ['nullable', 'string', 'max:50'];
         }
 
         // POType 2 = TransferIN validation

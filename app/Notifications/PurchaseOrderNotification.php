@@ -91,6 +91,9 @@ class PurchaseOrderNotification extends Mailable
     {
         [$fromStore, $toStore] = $this->getStoreNamesForFlow();
 
+        // Load condition for email template
+        $this->purchaseOrder->load(['condition']);
+
         return new Content(
             view: 'emails.purchase_order',
             with: [
@@ -237,6 +240,10 @@ class PurchaseOrderNotification extends Mailable
             'perspective' => $this->perspective
         ];
 
-        return \Barryvdh\DomPDF\Facade\Pdf::loadView('pdfs.purchase_order', $data);
+        // Get paper size from config (A4 or A5)
+        $paperSize = config('app.pdf_paper_size', 'A4');
+        $viewName = $paperSize === 'A5' ? 'pdfs.purchase_order_A5' : 'pdfs.purchase_order';
+
+        return \Barryvdh\DomPDF\Facade\Pdf::loadView($viewName, $data);
     }
 }
