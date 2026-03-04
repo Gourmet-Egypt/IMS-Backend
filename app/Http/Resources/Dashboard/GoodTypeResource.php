@@ -15,9 +15,11 @@ class GoodTypeResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id ,
-            'name' => $this->name ,
-            'created_at' => $this->created_at ,
+            'id' => $this->id,
+            'name' => $this->name,
+            'min_temp' => $this->min_temp,
+            'max_temp' => $this->max_temp,
+            'created_at' => $this->created_at,
             'updated_at' => $this->updated_at
         ];
     }

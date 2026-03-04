@@ -25,8 +25,16 @@ class GoodTypeController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'name' => 'required|string|max:100',
+            'min_temp' => 'nullable|numeric|min:-50|max:50',
+            'max_temp' => 'nullable|numeric|min:-50|max:50',
+        ]);
+
         $GoodType = GoodsType::create([
             'name' => $request->post('name'),
+            'min_temp' => $request->post('min_temp'),
+            'max_temp' => $request->post('max_temp'),
         ]);
 
         return $this->success(
@@ -50,14 +58,24 @@ class GoodTypeController extends Controller
 
     public function update(Request $request, GoodsType $GoodType)
     {
-        $GoodType->update(['name' => $request->post('name'), 'updated_at' => now()]);
+        $request->validate([
+            'name' => 'required|string|max:100',
+            'min_temp' => 'nullable|numeric|min:-50|max:50',
+            'max_temp' => 'nullable|numeric|min:-50|max:50',
+        ]);
+
+        $GoodType->update([
+            'name' => $request->post('name'),
+            'min_temp' => $request->post('min_temp'),
+            'max_temp' => $request->post('max_temp'),
+            'updated_at' => now()
+        ]);
 
         return $this->success(
             status: Response::HTTP_OK,
             message: 'GoodType Updated Successfully',
             data: new GoodTypeResource($GoodType)
         );
-
 
     }
 
