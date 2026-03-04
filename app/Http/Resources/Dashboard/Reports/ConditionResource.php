@@ -14,7 +14,9 @@ class ConditionResource extends JsonResource
             'temperature_out' => $this->vehicle_tempOut,
             'temperature_in' => $this->vehicle_tempIN,
             'permit_number' => $this->delivery_permit_number,
-            'seal_number' => $this->seal_number
+            'seal_number' => $this->seal_number,
+            'driver_name' => $this->Driver_name,
+            'vehicle_number' => $this->Vehicle_number,
         ];
     }
 }
