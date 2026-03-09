@@ -34,6 +34,7 @@ class BuildOrderDataStep
                 "DeliveryPermitNumber" => $payload->request->input('DeliveryPermitNumber', ''),
                 "Notes" => $payload->request->input('Notes', ''),
                 "seal_number" => $payload->request->input('seal_number', ''),
+                "Goods_type" => (int) $payload->request->input('goods_type', 0),
                 "Driver_name" => $payload->request->input('driver_name', ''),
                 "Vehicle_number" => $payload->request->input('vehicle_number', ''),
             ],
