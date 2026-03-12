@@ -16,7 +16,11 @@ class GeneratePdfStep
             'perspective' => 'default'
         ];
 
-        $payload->pdf = Pdf::loadView('pdfs.purchase_order', $data);
+        // Get paper size from config (A4 or A5)
+        $paperSize = config('app.pdf_paper_size', 'A4');
+        $viewName = $paperSize === 'A5' ? 'pdfs.purchase_order_A5' : 'pdfs.purchase_order';
+
+        $payload->pdf = Pdf::loadView($viewName, $data);
 
         return $next($payload);
     }

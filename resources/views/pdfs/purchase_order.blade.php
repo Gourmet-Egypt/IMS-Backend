@@ -306,7 +306,15 @@
             </td>
             <td>
                 <span class="bold1">Driver Name: </span>
-                {{ $condition->driver_name ?? '' }}
+                {{ $condition->Driver_name ?? '' }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span class="bold1">Vehicle Number: </span>
+                {{ $condition->Vehicle_number ?? '' }}
+            </td>
+            <td>
             </td>
         </tr>
         <tr>

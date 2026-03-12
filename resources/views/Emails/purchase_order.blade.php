@@ -171,6 +171,22 @@
                 <span class="info-label">Created At:</span>
                 <span class="info-value">{{ $purchaseOrder->DateCreated }}</span>
             </div>
+
+            @if($purchaseOrder->condition)
+                @if($purchaseOrder->condition->Driver_name)
+                    <div class="info-row">
+                        <span class="info-label">Driver Name:</span>
+                        <span class="info-value">{{ $purchaseOrder->condition->Driver_name }}</span>
+                    </div>
+                @endif
+
+                @if($purchaseOrder->condition->Vehicle_number)
+                    <div class="info-row">
+                        <span class="info-label">Vehicle Number:</span>
+                        <span class="info-value">{{ $purchaseOrder->condition->Vehicle_number }}</span>
+                    </div>
+                @endif
+            @endif
         </div>
 
 

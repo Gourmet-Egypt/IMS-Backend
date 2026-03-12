@@ -1,0 +1,508 @@
+{
+	"info": {
+		"_postman_id": "commit-order-collection",
+		"name": "IMS - Commit Order API",
+		"description": "Collection for the Purchase Order Commit endpoint in IMS system",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost",
+			"type": "string"
+		},
+		{
+			"key": "purchase_order_id",
+			"value": "1",
+			"type": "string"
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{auth_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"item": [
+		{
+			"name": "Commit Order - TransferOut (POType 3)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"transactionType\": \"TransferOut\",\n  \"VehicleType\": \"1\",\n  \"Vehicle_tempOut\": 12,\n  \"DeliveryPermitNumber\": \"DP-445566\",\n  \"Notes\": \"Optional notes here\",\n  \"seal_number\": \"10\",\n  \"goods_type\": 1,\n  \"driver_name\": \"John Doe\",\n  \"vehicle_number\": \"ABC-1234\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/purchase-order/{{purchase_order_id}}/commit",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"purchase-order",
+						"{{purchase_order_id}}",
+						"commit"
+					]
+				},
+				"description": "Commit a TransferOut (POType 3) purchase order.\n\n**Required Fields:**\n- transactionType (string): Must be 'TransferOut'\n- VehicleType (string): Vehicle type identifier\n- Vehicle_tempOut (numeric): Vehicle temperature, range -50 to 50\n- DeliveryPermitNumber (string): Delivery permit number, max 255 chars\n- seal_number (string): Seal number, max 1000 chars\n- goods_type (integer): Goods type\n\n**Optional Fields:**\n- Notes (string): Additional notes, max 1000 chars\n- driver_name (string): Driver's name, max 255 chars\n- vehicle_number (string): Vehicle number/plate, max 50 chars"
+			},
+			"response": [
+				{
+					"name": "Success Response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"transactionType\": \"TransferOut\",\n  \"VehicleType\": \"1\",\n  \"Vehicle_tempOut\": 12,\n  \"DeliveryPermitNumber\": \"DP-445566\",\n  \"Notes\": \"Optional notes here\",\n  \"seal_number\": \"10\",\n  \"goods_type\": 1,\n  \"driver_name\": \"John Doe\",\n  \"vehicle_number\": \"ABC-1234\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/purchase-order/{{purchase_order_id}}/commit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"purchase-order",
+								"{{purchase_order_id}}",
+								"commit"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"status\": 200,\n    \"message\": \"Purchase Order Committed Successfully\",\n    \"data\": {\n        \"id\": 1,\n        \"title\": \"Transfer Order #001\",\n        \"type\": 3,\n        \"from_store_id\": 1,\n        \"from_store_name\": \"Main Store\",\n        \"to_store_id\": 2,\n        \"to_store_name\": \"Branch Store\",\n        \"created_at\": \"2024-01-15\",\n        \"po_number\": \"PO-2024-001\",\n        \"supplier_id\": 0,\n        \"supplier_name\": null,\n        \"items\": [\n            {\n                \"id\": 1,\n                \"item_id\": 100,\n                \"purchase_order_id\": 1,\n                \"LookupCode\": \"ITEM001\",\n                \"Description\": \"Product A\",\n                \"price\": 10.5,\n                \"quantity_on_hand\": 50,\n                \"quantity_ordered\": 100,\n                \"quantity_received\": 0,\n                \"quantity_received_to_date \": 0,\n                \"infos\": []\n            }\n        ],\n        \"condition\": {\n            \"vehicle_type\": \"Truck\",\n            \"purchase_order_id\": 1,\n            \"vehicle_tempOut\": 12,\n            \"vehicle_tempIN\": null,\n            \"delivery_permit_number\": \"DP-445566\",\n            \"status\": null,\n            \"notes\": \"Optional notes here\",\n            \"seal_number\": \"10\",\n            \"driver_name\": \"John Doe\",\n            \"vehicle_number\": \"ABC-1234\",\n            \"goods_type\": 1,\n            \"receiver_name\": null,\n            \"created_at\": \"2024-01-15\"\n        }\n    }\n}"
+				},
+				{
+					"name": "Validation Error - Missing Required Fields",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"transactionType\": \"TransferOut\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/purchase-order/{{purchase_order_id}}/commit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"purchase-order",
+								"{{purchase_order_id}}",
+								"commit"
+							]
+						}
+					},
+					"status": "Unprocessable Entity",
+					"code": 422,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"status\": 422,\n    \"message\": \"Vehicle type is required for TransferOut transactions.\",\n    \"data\": null\n}"
+				},
+				{
+					"name": "Error - Cashier Not Found",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"transactionType\": \"TransferOut\",\n  \"VehicleType\": \"1\",\n  \"Vehicle_tempOut\": 12,\n  \"DeliveryPermitNumber\": \"DP-445566\",\n  \"seal_number\": \"10\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/purchase-order/{{purchase_order_id}}/commit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"purchase-order",
+								"{{purchase_order_id}}",
+								"commit"
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"status\": 404,\n    \"message\": \"Cashier not found\",\n    \"data\": null\n}"
+				},
+				{
+					"name": "Error - Invalid Purchase Order Type",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/purchase-order/{{purchase_order_id}}/commit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"purchase-order",
+								"{{purchase_order_id}}",
+								"commit"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"status\": 400,\n    \"message\": \"Invalid purchase order type\",\n    \"data\": null\n}"
+				},
+				{
+					"name": "Error - API Commit Failed",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"transactionType\": \"TransferOut\",\n  \"VehicleType\": \"1\",\n  \"Vehicle_tempOut\": 12,\n  \"DeliveryPermitNumber\": \"DP-445566\",\n  \"seal_number\": \"10\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/purchase-order/{{purchase_order_id}}/commit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"purchase-order",
+								"{{purchase_order_id}}",
+								"commit"
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"status\": 500,\n    \"message\": \"Failed to commit order\",\n    \"data\": null\n}"
+				},
+				{
+					"name": "Error - Unauthorized",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/purchase-order/{{purchase_order_id}}/commit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"purchase-order",
+								"{{purchase_order_id}}",
+								"commit"
+							]
+						}
+					},
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"status\": 401,\n    \"message\": \"Unauthenticated.\",\n    \"data\": null\n}"
+				}
+			]
+		},
+		{
+			"name": "Commit Order - TransferIn (POType 2)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"transactionType\": \"TransferIN\",\n  \"Vehicle_tempIN\": 8\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/purchase-order/{{purchase_order_id}}/commit",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"purchase-order",
+						"{{purchase_order_id}}",
+						"commit"
+					]
+				},
+				"description": "Commit a TransferIn (POType 2) purchase order.\n\n**Required Fields:**\n- transactionType (string): Must be 'TransferIN'\n- Vehicle_tempIN (numeric): Vehicle temperature at receiving, range -50 to 50"
+			},
+			"response": [
+				{
+					"name": "Success Response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"transactionType\": \"TransferIN\",\n  \"Vehicle_tempIN\": 8\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/purchase-order/{{purchase_order_id}}/commit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"purchase-order",
+								"{{purchase_order_id}}",
+								"commit"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"status\": 200,\n    \"message\": \"Purchase Order Committed Successfully\",\n    \"data\": {\n        \"id\": 2,\n        \"title\": \"Transfer Order #002\",\n        \"type\": 2,\n        \"from_store_id\": 2,\n        \"from_store_name\": \"Branch Store\",\n        \"to_store_id\": 1,\n        \"to_store_name\": \"Main Store\",\n        \"created_at\": \"2024-01-15\",\n        \"po_number\": \"PO-2024-002\",\n        \"supplier_id\": 0,\n        \"supplier_name\": null,\n        \"items\": [\n            {\n                \"id\": 2,\n                \"item_id\": 101,\n                \"purchase_order_id\": 2,\n                \"LookupCode\": \"ITEM002\",\n                \"Description\": \"Product B\",\n                \"price\": 15.0,\n                \"quantity_on_hand\": 30,\n                \"quantity_ordered\": 50,\n                \"quantity_received\": 50,\n                \"quantity_received_to_date \": 50,\n                \"infos\": []\n            }\n        ],\n        \"condition\": {\n            \"vehicle_type\": null,\n            \"purchase_order_id\": 2,\n            \"vehicle_tempOut\": null,\n            \"vehicle_tempIN\": 8,\n            \"delivery_permit_number\": null,\n            \"status\": null,\n            \"notes\": null,\n            \"seal_number\": null,\n            \"driver_name\": null,\n            \"vehicle_number\": null,\n            \"goods_type\": null,\n            \"receiver_name\": \"Jane Smith\",\n            \"created_at\": \"2024-01-15\"\n        }\n    }\n}"
+				},
+				{
+					"name": "Validation Error - Missing Vehicle Temp",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"transactionType\": \"TransferIN\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/purchase-order/{{purchase_order_id}}/commit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"purchase-order",
+								"{{purchase_order_id}}",
+								"commit"
+							]
+						}
+					},
+					"status": "Unprocessable Entity",
+					"code": 422,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"body": "{\n    \"status\": 422,\n    \"message\": \"Vehicle temperature (IN) is required for TransferIN transactions.\",\n    \"data\": null\n}"
+				}
+			]
+		}
+	]
+}

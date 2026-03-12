@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAdd goods_type field, update email recipients logic, and update Postman collection\n\n- Add goods_type as required field for TransferOut \\(POType 3\\)\n- Add goods_type and receiver_name to PurchaseOrderConditionResource\n- Fix email recipients to include both StoreID and OtherStoreID for transfers\n- Update Postman collection with correct response structure\nEOF\n\\)\")",
+      "Bash(git push)"
+    ]
+  }
+}

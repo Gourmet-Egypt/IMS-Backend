@@ -29,16 +29,18 @@ class BuildOrderDataStep
 
         $orderSpecific = match ($payload->purchaseOrder->POType) {
             '3' => [
-                "VehicleType" => (string) $payload->request->input('VehicleTypeID', ''),
+                "VehicleType" => (string) $payload->request->input('VehicleType', ''),
                 "Vehicle_tempOut" => $payload->request->input('Vehicle_tempOut', 0),
                 "DeliveryPermitNumber" => $payload->request->input('DeliveryPermitNumber', ''),
                 "Notes" => $payload->request->input('Notes', ''),
                 "seal_number" => $payload->request->input('seal_number', ''),
-                "driver_name" => $payload->request->input('driver_name', ''),
+                "Goods_type" => (int) $payload->request->input('goods_type', 0),
+                "Driver_name" => $payload->request->input('driver_name', ''),
+                "Vehicle_number" => $payload->request->input('vehicle_number', ''),
             ],
             '2' => [
                 "Vehicle_tempIN" => $payload->request->input('Vehicle_tempIN', 0),
-                "receiver_name" => $payload->request->input('receiver_name', ''),
+                "receiver_name" => $payload->cashier->Name ?? '',
             ],
             default => [],
         };

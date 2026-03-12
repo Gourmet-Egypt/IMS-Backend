@@ -22,18 +22,19 @@ class CommitOrderRequest extends FormRequest
 
         // POType 3 = TransferOut validation
         if ($poType === 3) {
-            $rules['VehicleTypeID'] = ['required', 'string'];
+            $rules['VehicleType'] = ['required', 'string'];
             $rules['Vehicle_tempOut'] = ['required', 'numeric', 'min:-50', 'max:50'];
             $rules['DeliveryPermitNumber'] = ['required', 'string', 'max:255'];
             $rules['Notes'] = ['nullable', 'string', 'max:1000'];
             $rules['seal_number'] = ['required', 'string', 'max:1000'];
+            $rules['goods_type'] = ['required', 'integer'];
             $rules['driver_name'] = ['nullable', 'string', 'max:255'];
+            $rules['vehicle_number'] = ['nullable', 'string', 'max:50'];
         }
 
         // POType 2 = TransferIN validation
         if ($poType === 2) {
             $rules['Vehicle_tempIN'] = ['required', 'numeric', 'min:-50', 'max:50'];
-            $rules['receiver_name'] = ['nullable', 'string', 'max:255'];
         }
 
         return $rules;
@@ -46,11 +47,12 @@ class CommitOrderRequest extends FormRequest
             'transactionType.in' => 'Transaction type must be either TransferOut or TransferIN.',
 
             // TransferOut messages
-            'VehicleTypeID.required' => 'Vehicle type is required for TransferOut transactions.',
+            'VehicleType.required' => 'Vehicle type is required for TransferOut transactions.',
             'seal_number.required' => 'seal_number is required for TransferOut transactions.',
-            'VehicleTypeID.in' => 'Invalid vehicle type selected.',
+            'VehicleType.in' => 'Invalid vehicle type selected.',
             'Vehicle_tempOut.required' => 'Vehicle temperature (Out) is required for TransferOut transactions.',
             'DeliveryPermitNumber.required' => 'Delivery permit number is required for TransferOut transactions.',
+            'goods_type.required' => 'Goods type is required for TransferOut transactions.',
 //            'driver_name.required' => 'Driver name is required for TransferOut transactions.',
 
             // TransferIN messages
@@ -65,7 +67,7 @@ class CommitOrderRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'Order.VehicleTypeID' => 'vehicle type',
+            'Order.VehicleType' => 'vehicle type',
             'Order.Vehicle_tempOut' => 'vehicle temperature (out)',
             'Order.Vehicle_tempIN' => 'vehicle temperature (in)',
             'Order.DeliveryPermitNumber' => 'delivery permit number',

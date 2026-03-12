@@ -63,6 +63,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | PDF Paper Size
+    |--------------------------------------------------------------------------
+    |
+    | This value determines the paper size used for generating PDF documents.
+    | Supported values are 'A4' (default) and 'A5'. This affects both printed
+    | PDFs and email attachments.
+    |
+    */
+
+    'pdf_paper_size' => env('PDF_PAPER_SIZE', 'A4'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |
