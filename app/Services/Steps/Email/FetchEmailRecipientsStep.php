@@ -3,30 +3,24 @@
 namespace App\Services\Steps\Email;
 
 use App\Models\PurchaseOrderEmail;
-use Illuminate\Support\Facades\DB;
 
 class FetchEmailRecipientsStep
 {
     public function handle($payload, \Closure $next)
     {
-        $configuration = DB::table('Configuration')->first();
-
-        if (!$configuration) {
-            $payload->emailRecipients = collect();
-            return $next($payload);
-        }
-
         $purchaseOrder = $payload->purchaseOrder;
-        $configStoreId = $configuration->StoreID;
 
-        $storeIds = match ((int)$purchaseOrder->POType) {
-            2, 3 => [$purchaseOrder->StoreID, $purchaseOrder->OtherStoreID],
-            default => [$configStoreId],
-        };
+        // Main recipients: users where store_id matches purchase order StoreID
+        $payload->emailRecipients = PurchaseOrderEmail::where('is_active', 1)
+            ->where('store_id', $purchaseOrder->StoreID)
+            ->pluck('email')
+            ->toArray();
 
-        $emails = PurchaseOrderEmail::forStores($storeIds)->get();
-
-        $payload->emailRecipients = $emails->groupBy('store_id');
+        // CC recipients: users with receive_all = 1
+        $payload->ccRecipients = PurchaseOrderEmail::where('is_active', 1)
+            ->where('receive_all', 1)
+            ->pluck('email')
+            ->toArray();
 
         return $next($payload);
     }

@@ -3,7 +3,13 @@
 
 <head>
     <meta charset="UTF-8"/>
-    <title>@if(isset($perspective) && $perspective === 'from_store')Transfer OUT @elseif(isset($perspective) && $perspective === 'to_store')Transfer IN @else Transfer @endif</title>
+    <title>@if(isset($perspective) && $perspective === 'from_store')
+            Transfer OUT
+        @elseif(isset($perspective) && $perspective === 'to_store')
+            Transfer IN
+        @else
+            Transfer
+        @endif</title>
     <style>
         @page {
             margin: 0.5in;
@@ -382,8 +388,8 @@
                 @if(isset($perspective) && $perspective === 'from_store')
                     {{-- Transfer OUT: Show Ordered, Issued, Diff (Ordered - Issued) --}}
                     <td>{{ number_format($item->quantity_requested, 1) }}</td>
-                    <td>{{ $item->quantity_issued ?? '0.0' }}</td>
-                    <td>{{ number_format($item->quantity_requested - ($item->quantity_issued ?? 0), 1) }}</td>
+                    <td>{{ $item->quantity_issued }}</td>
+                    <td>{{ number_format($item->quantity_requested - ($item->quantity_issued ), 1) }}</td>
                 @else
                     {{-- Transfer IN: Show Ordered, Received, Diff (Received - Ordered) --}}
                     <td>{{ number_format($item->quantity_requested, 1) }}</td>

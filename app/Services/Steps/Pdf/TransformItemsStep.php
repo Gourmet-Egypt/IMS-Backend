@@ -10,7 +10,7 @@ class TransformItemsStep
 
         // Load transfer request with items (eager load the pivot data)
         $payload->purchaseOrder->load([
-            'entries.transferRequest' => function($query) {
+            'entries.transferRequest' => function ($query) {
                 $query->with('items');
             },
             'entries.item',
@@ -27,7 +27,7 @@ class TransformItemsStep
                 // - PurchaseOrderEntry.ItemID -> Item.ID
                 // Both refer to the same item but use different keys
 
-                $matchingItem = $entry->transferRequest->items->first(function($item) use ($entry) {
+                $matchingItem = $entry->transferRequest->items->first(function ($item) use ($entry) {
                     // item.ID (from transfer request via HQID) should equal entry.ItemID (Item.ID)
                     return $item->ID === $entry->ItemID;
                 });
@@ -39,6 +39,7 @@ class TransformItemsStep
 
             // Sum quantity_issued for all infos of the same item
             $totalQuantityIssued = $entry->infos->sum('quantity_issued');
+//            $totalQuantityIssued = $entry->infos->sum('quantity_issued');
             $totalQuantityReceived = $entry->QuantityReceived;
 
             // For the stored PDF (default perspective), show actual values

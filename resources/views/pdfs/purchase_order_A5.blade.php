@@ -366,10 +366,15 @@
                 <tr>
                     <th>ITEM</th>
                     <th>DESCRIPTION</th>
-                    <th>Qty Received</th>
-                    <th>Qty Ordered</th>
-                    <th>Diff</th>
-                    <th>Qty Issued</th>
+                    @if(isset($perspective) && $perspective === 'from_store')
+                        <th>Qty Ordered</th>
+                        <th>Qty Issued</th>
+                        <th>Diff</th>
+                    @else
+                        <th>Qty Ordered</th>
+                        <th>Qty Received</th>
+                        <th>Diff</th>
+                    @endif
                     <th>Prod. Date</th>
                     <th>Exp. Date</th>
                 </tr>
@@ -379,10 +384,17 @@
                 <tr>
                     <td>{{ $item->lookupcode }}</td>
                     <td>{{ $item->description }}</td>
-                    <td>{{ number_format($item->quantity_received, 1) }}</td>
-                    <td>{{ number_format($item->quantity_requested, 1) }}</td>
-                    <td>{{ $item->quantity_received - $item->quantity_requested }}</td>
-                    <td>{{ $item->quantity_issued ?? '0.00' }}</td>
+                    @if(isset($perspective) && $perspective === 'from_store')
+                        {{-- Transfer OUT: Show Ordered, Issued, Diff (Ordered - Issued) --}}
+                        <td>{{ number_format($item->quantity_requested, 1) }}</td>
+                        <td>{{ $item->quantity_issued ?? '0.0' }}</td>
+                        <td>{{ number_format($item->quantity_requested - ($item->quantity_issued ?? 0), 1) }}</td>
+                    @else
+                        {{-- Transfer IN: Show Ordered, Received, Diff (Received - Ordered) --}}
+                        <td>{{ number_format($item->quantity_requested, 1) }}</td>
+                        <td>{{ number_format($item->quantity_received, 1) }}</td>
+                        <td>{{ number_format($item->quantity_received - $item->quantity_requested, 1) }}</td>
+                    @endif
                     <td>
                         {{ $item->production_date ?
                     \Carbon\Carbon::parse($item->production_date)->format('d/m/Y') :
