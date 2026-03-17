@@ -24,6 +24,8 @@ class PurchaseOrderEmail extends Model
      */
     public function scopeForStores($query, array $storeIds)
     {
-        return $query->where('is_active', '1');
+        return $query->where('is_active', '1')
+            ->whereIn('store_id', $storeIds)
+            ->where('receive_all', '0');
     }
 }
