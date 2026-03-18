@@ -3,7 +3,13 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Purchase Order #{{ $purchaseOrder->PONumber }}</title>
+    <title>@if(isset($perspective) && $perspective === 'from_store')
+            Transfer OUT
+        @elseif(isset($perspective) && $perspective === 'to_store')
+            Transfer IN
+        @else
+            Transfer
+        @endif</title>
 
     <style>
         @page {
@@ -194,7 +200,15 @@
                     GOURMETEGYPT.COM | 19339<br>
                     Landline: +202 27370617 / 19 / 21 | Ext
                 </td>
-                <td class="header-title">Goods Transfer Receiving Note</td>
+                <td class="header-title">
+                @if(isset($perspective) && $perspective === 'from_store')
+                    Transfer OUT
+                @elseif(isset($perspective) && $perspective === 'to_store')
+                    Transfer IN
+                @else
+                    Transfer
+                @endif
+            </td>
                 <td class="header-right">
                     DATE
                     <span class="box">
@@ -346,20 +360,6 @@
                 </td>
             </tr>
         </table>
-        <div class="footer">
-            <table class="footer-table">
-                <tr class="footer-tr">
-                    <td>
-                        Receiver/WMS Operator Signature
-                        <div class="signature-line"></div>
-                    </td>
-                    <td>
-                        Store/WMS Manager Signature
-                        <div class="signature-line"></div>
-                    </td>
-                </tr>
-            </table>
-        </div>
         <!-- ITEMS -->
         <table class="items">
             <thead>
@@ -387,8 +387,8 @@
                     @if(isset($perspective) && $perspective === 'from_store')
                         {{-- Transfer OUT: Show Ordered, Issued, Diff (Ordered - Issued) --}}
                         <td>{{ number_format($item->quantity_requested, 1) }}</td>
-                        <td>{{ $item->quantity_issued ?? '0.0' }}</td>
-                        <td>{{ number_format($item->quantity_requested - ($item->quantity_issued ?? 0), 1) }}</td>
+                        <td>{{ $item->quantity_issued }}</td>
+                        <td>{{ number_format($item->quantity_requested - ($item->quantity_issued ), 1) }}</td>
                     @else
                         {{-- Transfer IN: Show Ordered, Received, Diff (Received - Ordered) --}}
                         <td>{{ number_format($item->quantity_requested, 1) }}</td>
