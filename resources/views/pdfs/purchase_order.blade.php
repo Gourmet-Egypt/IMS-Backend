@@ -321,6 +321,8 @@
                 {{ $condition->Vehicle_number ?? '' }}
             </td>
             <td>
+                <span class="bold1">GE Receiver name: </span>
+                {{ $condition->receiver_name ?? '' }}
             </td>
         </tr>
         <tr>
@@ -329,8 +331,8 @@
                 {{ $condition->item_temp ?? '' }}
             </td>
             <td>
-                <span class="bold1">GE Receiver name: </span>
-                {{ $condition->receiver_name ?? '' }}
+                <span class="bold1">Car Temperature (In): </span>
+                {{ $condition->vehicle_tempIN ?? 'N/A' }}
             </td>
         </tr>
         <tr>
@@ -339,8 +341,8 @@
                 {{ $condition->vehicle_tempOut ?? 'N/A' }}
             </td>
             <td>
-                <span class="bold1">Car Temperature (In): </span>
-                {{ $condition->vehicle_tempIN ?? 'N/A' }}
+                <span class="bold1">Seal # : </span>
+                {{ $condition->seal_number ?? '' }}
             </td>
         </tr>
         <tr>
@@ -348,13 +350,6 @@
                 <span class="bold1">Delivery Permit Number: </span>
                 {{ $condition->delivery_permit_number ?? '' }}
             </td>
-            <td>
-                <span class="bold1">Seal # : </span>
-                {{ $condition->seal_number ?? '' }}
-            </td>
-        </tr>
-        <tr>
-
             <td>
                 <span class="bold1">TRF Division: </span>
                 {{ $condition->trf_division ?? '' }}
