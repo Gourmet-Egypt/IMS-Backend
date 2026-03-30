@@ -19,7 +19,6 @@ return new class extends Migration {
             $table->string('password');
             $table->unsignedBigInteger('store_id');
             $table->string('user_number');
-            $table->foreign('user_number')->references('Number')->on('Cashier')->onDelete('cascade');
             $table->string('role');
             $table->integer('security_level')->default(4);
             $table->rememberToken();
