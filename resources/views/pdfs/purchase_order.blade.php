@@ -3,7 +3,13 @@
 
 <head>
     <meta charset="UTF-8"/>
-    <title>@if(isset($perspective) && $perspective === 'from_store')Transfer OUT @elseif(isset($perspective) && $perspective === 'to_store')Transfer IN @else Transfer @endif</title>
+    <title>@if(isset($perspective) && $perspective === 'from_store')
+            Transfer OUT
+        @elseif(isset($perspective) && $perspective === 'to_store')
+            Transfer IN
+        @else
+            Transfer
+        @endif</title>
     <style>
         @page {
             margin: 0.5in;
@@ -315,6 +321,8 @@
                 {{ $condition->Vehicle_number ?? '' }}
             </td>
             <td>
+                <span class="bold1">GE Receiver name: </span>
+                {{ $condition->receiver_name ?? '' }}
             </td>
         </tr>
         <tr>
@@ -323,8 +331,8 @@
                 {{ $condition->item_temp ?? '' }}
             </td>
             <td>
-                <span class="bold1">GE Receiver name: </span>
-                {{ $condition->receiver_name ?? '' }}
+                <span class="bold1">Car Temperature (In): </span>
+                {{ $condition->vehicle_tempIN ?? 'N/A' }}
             </td>
         </tr>
         <tr>
@@ -333,8 +341,8 @@
                 {{ $condition->vehicle_tempOut ?? 'N/A' }}
             </td>
             <td>
-                <span class="bold1">Car Temperature (In): </span>
-                {{ $condition->vehicle_tempIN ?? 'N/A' }}
+                <span class="bold1">Seal # : </span>
+                {{ $condition->seal_number ?? '' }}
             </td>
         </tr>
         <tr>
@@ -342,13 +350,6 @@
                 <span class="bold1">Delivery Permit Number: </span>
                 {{ $condition->delivery_permit_number ?? '' }}
             </td>
-            <td>
-                <span class="bold1">Seal # : </span>
-                {{ $condition->seal_number ?? '' }}
-            </td>
-        </tr>
-        <tr>
-
             <td>
                 <span class="bold1">TRF Division: </span>
                 {{ $condition->trf_division ?? '' }}
@@ -382,8 +383,8 @@
                 @if(isset($perspective) && $perspective === 'from_store')
                     {{-- Transfer OUT: Show Ordered, Issued, Diff (Ordered - Issued) --}}
                     <td>{{ number_format($item->quantity_requested, 1) }}</td>
-                    <td>{{ $item->quantity_issued ?? '0.0' }}</td>
-                    <td>{{ number_format($item->quantity_requested - ($item->quantity_issued ?? 0), 1) }}</td>
+                    <td>{{ $item->quantity_issued }}</td>
+                    <td>{{ number_format($item->quantity_requested - ($item->quantity_issued ), 1) }}</td>
                 @else
                     {{-- Transfer IN: Show Ordered, Received, Diff (Received - Ordered) --}}
                     <td>{{ number_format($item->quantity_requested, 1) }}</td>

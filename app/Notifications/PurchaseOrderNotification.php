@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\PurchaseOrderEmail;
 use Illuminate\Bus\Queueable;
+use Illuminate\Mail\Mailables\Address as MailAddress;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Attachment;
@@ -38,10 +39,26 @@ class PurchaseOrderNotification extends Mailable
         $fromStoreName = $this->getFromStoreName();
         $subject = $this->getEmailSubject();
 
+        // Get CC recipients (users with receive_all = 1)
+        $ccRecipients = $this->getCcRecipients();
+
         return new Envelope(
             from: new Address(config('mail.from.address'), $fromStoreName),
             subject: $subject,
+            cc: $ccRecipients,
         );
+    }
+
+    /**
+     * Get CC recipients from users with receive_all = 1
+     */
+    protected function getCcRecipients(): array
+    {
+        return PurchaseOrderEmail::where('receive_all', 1)
+            ->where('is_active', 1)
+            ->pluck('email')
+            ->map(fn($email) => new MailAddress($email))
+            ->toArray();
     }
 
     /**

@@ -15,6 +15,7 @@ class SendEmailsStep
 
         $purchaseOrder = $payload->purchaseOrder;
         $isTransfer = in_array((int)$purchaseOrder->POType, [2, 3]);
+        $ccRecipients = $payload->ccRecipients ?? [];
 
         foreach ($payload->emailRecipients as $storeId => $recipients) {
             $recipientStoreId = $storeId;
@@ -22,12 +23,18 @@ class SendEmailsStep
             foreach ($recipients as $emailRecord) {
                 $perspective = $this->determinePerspective($purchaseOrder, $recipientStoreId, $isTransfer);
 
-                Mail::to($emailRecord->email)
-                    ->send(new PurchaseOrderNotification(
-                        $purchaseOrder,
-                        $payload->pdfs,
-                        $perspective
-                    ));
+                $mail = Mail::to($emailRecord->email);
+
+                // Add CC recipients (receive_all = 1 users)
+                if (!empty($ccRecipients)) {
+                    $mail->cc($ccRecipients);
+                }
+
+                $mail->send(new PurchaseOrderNotification(
+                    $purchaseOrder,
+                    $payload->pdfs,
+                    $perspective
+                ));
 
                 $payload->sentCount++;
             }

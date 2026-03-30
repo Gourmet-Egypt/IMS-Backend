@@ -3,7 +3,13 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Purchase Order #{{ $purchaseOrder->PONumber }}</title>
+    <title>@if(isset($perspective) && $perspective === 'from_store')
+            Transfer OUT
+        @elseif(isset($perspective) && $perspective === 'to_store')
+            Transfer IN
+        @else
+            Transfer
+        @endif</title>
 
     <style>
         @page {
@@ -194,7 +200,15 @@
                     GOURMETEGYPT.COM | 19339<br>
                     Landline: +202 27370617 / 19 / 21 | Ext
                 </td>
-                <td class="header-title">Goods Transfer Receiving Note</td>
+                <td class="header-title">
+                @if(isset($perspective) && $perspective === 'from_store')
+                    Transfer OUT
+                @elseif(isset($perspective) && $perspective === 'to_store')
+                    Transfer IN
+                @else
+                    Transfer
+                @endif
+            </td>
                 <td class="header-right">
                     DATE
                     <span class="box">
@@ -306,6 +320,8 @@
                     {{ $condition->Vehicle_number ?? '' }}
                 </td>
                 <td>
+                    <span class="bold1">GE Receiver name: </span>
+                    {{ $condition->receiver_name ?? '' }}
                 </td>
             </tr>
             <tr>
@@ -314,8 +330,8 @@
                     {{ $condition->item_temp ?? '' }}
                 </td>
                 <td>
-                    <span class="bold1">GE Receiver name: </span>
-                    {{ $condition->receiver_name ?? '' }}
+                    <span class="bold1">Car Temperature (In): </span>
+                    {{ $condition->vehicle_tempIN ?? 'N/A' }}
                 </td>
             </tr>
             <tr>
@@ -324,8 +340,8 @@
                     {{ $condition->vehicle_tempOut ?? 'N/A' }}
                 </td>
                 <td>
-                    <span class="bold1">Car Temperature (In): </span>
-                    {{ $condition->vehicle_tempIN ?? 'N/A' }}
+                    <span class="bold1">Seal # : </span>
+                    {{ $condition->seal_number ?? '' }}
                 </td>
             </tr>
             <tr>
@@ -334,42 +350,26 @@
                     {{ $condition->delivery_permit_number ?? '' }}
                 </td>
                 <td>
-                    <span class="bold1">Seal # : </span>
-                    {{ $condition->seal_number ?? '' }}
-                </td>
-            </tr>
-            <tr>
-
-                <td>
                     <span class="bold1">TRF Division: </span>
                     {{ $condition->trf_division ?? '' }}
                 </td>
             </tr>
         </table>
-        <div class="footer">
-            <table class="footer-table">
-                <tr class="footer-tr">
-                    <td>
-                        Receiver/WMS Operator Signature
-                        <div class="signature-line"></div>
-                    </td>
-                    <td>
-                        Store/WMS Manager Signature
-                        <div class="signature-line"></div>
-                    </td>
-                </tr>
-            </table>
-        </div>
         <!-- ITEMS -->
         <table class="items">
             <thead>
                 <tr>
                     <th>ITEM</th>
                     <th>DESCRIPTION</th>
-                    <th>Qty Received</th>
-                    <th>Qty Ordered</th>
-                    <th>Diff</th>
-                    <th>Qty Issued</th>
+                    @if(isset($perspective) && $perspective === 'from_store')
+                        <th>Qty Ordered</th>
+                        <th>Qty Issued</th>
+                        <th>Diff</th>
+                    @else
+                        <th>Qty Ordered</th>
+                        <th>Qty Received</th>
+                        <th>Diff</th>
+                    @endif
                     <th>Prod. Date</th>
                     <th>Exp. Date</th>
                 </tr>
@@ -379,10 +379,17 @@
                 <tr>
                     <td>{{ $item->lookupcode }}</td>
                     <td>{{ $item->description }}</td>
-                    <td>{{ number_format($item->quantity_received, 1) }}</td>
-                    <td>{{ number_format($item->quantity_requested, 1) }}</td>
-                    <td>{{ $item->quantity_received - $item->quantity_requested }}</td>
-                    <td>{{ $item->quantity_issued ?? '0.00' }}</td>
+                    @if(isset($perspective) && $perspective === 'from_store')
+                        {{-- Transfer OUT: Show Ordered, Issued, Diff (Ordered - Issued) --}}
+                        <td>{{ number_format($item->quantity_requested, 1) }}</td>
+                        <td>{{ $item->quantity_issued }}</td>
+                        <td>{{ number_format($item->quantity_requested - ($item->quantity_issued ), 1) }}</td>
+                    @else
+                        {{-- Transfer IN: Show Ordered, Received, Diff (Received - Ordered) --}}
+                        <td>{{ number_format($item->quantity_requested, 1) }}</td>
+                        <td>{{ number_format($item->quantity_received, 1) }}</td>
+                        <td>{{ number_format($item->quantity_received - $item->quantity_requested, 1) }}</td>
+                    @endif
                     <td>
                         {{ $item->production_date ?
                     \Carbon\Carbon::parse($item->production_date)->format('d/m/Y') :
