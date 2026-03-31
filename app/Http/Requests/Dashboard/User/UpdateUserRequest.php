@@ -29,6 +29,7 @@ class UpdateUserRequest extends FormRequest
             'store_id' => 'nullable|integer|exists:Store,ID',
             'user_number' => 'nullable|string|max:255',
             'role' => ['nullable', 'string', 'max:191', Rule::enum(UserRolesEnum::class)],
+            'security_level' => ['nullable', 'integer', Rule::in([2, 4])],
         ];
     }
 
@@ -52,6 +53,9 @@ class UpdateUserRequest extends FormRequest
             'role.string' => 'Role must be a valid string.',
             'role.max' => 'Role cannot exceed 191 characters.',
             'role.in' => 'Invalid role selected.',
+
+            'security_level.integer' => 'The security level must be a valid integer.',
+            'security_level.in' => 'The security level must be either 2 or 4.',
         ];
     }
 }

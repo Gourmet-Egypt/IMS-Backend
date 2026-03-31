@@ -28,10 +28,8 @@ class UserController extends Controller
 
     public function store(StoreUserRequest $request)
     {
-        $data = $request->only(['name', 'email', 'store_id', 'user_number', 'role']);
-
+        $data = $request->validated();
         $data['password'] = Hash::make('password');
-        $data['security_level'] = $data['security_level'] ?? 4;
 
         $user = User::on('sqlsrv_rms')->create($data);
 
@@ -77,9 +75,7 @@ class UserController extends Controller
             );
         }
 
-        $updateData = $request->only(['name', 'email', 'store_id', 'user_number', 'role']);
-
-        $updateData = array_filter($updateData, fn($value) => !is_null($value));
+        $updateData = array_filter($request->validated(), fn($value) => !is_null($value));
 
         $updateData['password'] = Hash::make('password');
 

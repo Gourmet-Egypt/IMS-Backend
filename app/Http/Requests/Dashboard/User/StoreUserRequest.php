@@ -29,7 +29,7 @@ class StoreUserRequest extends FormRequest
             'role' => ['required', 'string',
                 Rule::in(array_column(UserRolesEnum::cases(), 'value')),
             ],
-
+            'security_level' => ['required', 'integer', Rule::in([2, 4])],
         ];
     }
 
@@ -57,6 +57,10 @@ class StoreUserRequest extends FormRequest
             'role.required' => 'The role field is required.',
             'role.string' => 'The role must be a valid string.',
             'role.exists' => 'The selected role is invalid.',
+
+            'security_level.required' => 'The security level field is required.',
+            'security_level.integer' => 'The security level must be a valid integer.',
+            'security_level.in' => 'The security level must be either 2 or 4.',
         ];
     }
 
