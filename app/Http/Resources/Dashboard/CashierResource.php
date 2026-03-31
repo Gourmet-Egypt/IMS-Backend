@@ -16,9 +16,10 @@ class CashierResource extends JsonResource
     {
         return [
             'id' => $this->ID,
-            'name' => $this->Name ,
-            'user_name' => $this->Number ,
-            'store_id' => $this->StoreID
+            'name' => $this->Name,
+            'user_name' => $this->Number,
+            'store_id' => $this->StoreID,
+            'security_level' => $this->SecurityLevel,
         ];
     }
 }
