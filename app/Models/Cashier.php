@@ -12,14 +12,11 @@ class Cashier extends Model
 
     protected $table = 'Cashier';
     protected $guarded = [];
-    
+
 
     public function scopeSearch(Builder $query, $store_id)
     {
-        return $query->where([
-            'StoreID' => $store_id,
-            'SecurityLevel' => 4
-        ]);
-
+        return $query->where('StoreID', $store_id)
+            ->whereIn('SecurityLevel', [2, 4]);
     }
 }
