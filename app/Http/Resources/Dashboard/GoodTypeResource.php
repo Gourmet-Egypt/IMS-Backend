@@ -19,8 +19,6 @@ class GoodTypeResource extends JsonResource
             'name' => $this->name,
             'min_temp' => $this->min_temp,
             'max_temp' => $this->max_temp,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at
         ];
     }
 }

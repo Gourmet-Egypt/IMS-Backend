@@ -68,7 +68,6 @@ class GoodTypeController extends Controller
             'name' => $request->post('name'),
             'min_temp' => $request->post('min_temp'),
             'max_temp' => $request->post('max_temp'),
-            'updated_at' => now()
         ]);
 
         return $this->success(
