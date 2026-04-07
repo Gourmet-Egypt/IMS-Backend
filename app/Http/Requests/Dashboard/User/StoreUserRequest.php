@@ -24,7 +24,7 @@ class StoreUserRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255'],
+            'email' => ['nullable', 'string', 'email', 'max:255'],
             'user_number' => ['required', 'unique:'.User::class],
             'store_id' => ['required', 'exists:App\Models\Store,ID'],
             'role' => [
@@ -45,7 +45,6 @@ class StoreUserRequest extends FormRequest
             'name.string' => 'The name must be a valid string.',
             'name.max' => 'The name must not exceed 255 characters.',
 
-            'email.required' => 'The email field is required.',
             'email.email' => 'Please provide a valid email address.',
             'email.max' => 'The email must not exceed 255 characters.',
 
