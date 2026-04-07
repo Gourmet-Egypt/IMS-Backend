@@ -14,7 +14,8 @@ use Illuminate\Validation\Rule;
 class StoreUserRequest extends FormRequest
 {
 
-    use Responses ;
+    use Responses;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -23,10 +24,11 @@ class StoreUserRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:' . User::class],
-            'user_number' => ['required', 'unique:' . User::class],
+            'email' => ['required', 'string', 'email', 'max:255'],
+            'user_number' => ['required', 'unique:'.User::class],
             'store_id' => ['required', 'exists:App\Models\Store,ID'],
-            'role' => ['required', 'string',
+            'role' => [
+                'required', 'string',
                 Rule::in(array_column(UserRolesEnum::cases(), 'value')),
             ],
             'security_level' => ['required', 'integer', Rule::in([2, 4])],
@@ -45,7 +47,6 @@ class StoreUserRequest extends FormRequest
 
             'email.required' => 'The email field is required.',
             'email.email' => 'Please provide a valid email address.',
-            'email.unique' => 'This email is already registered.',
             'email.max' => 'The email must not exceed 255 characters.',
 
             'user_number.required' => 'The user_number field is required.',
@@ -79,7 +80,7 @@ class StoreUserRequest extends FormRequest
 
         throw new HttpResponseException(
             $this->error(
-                status: 401 ,
+                status: 401,
                 message: $firstError,
             )
         );
