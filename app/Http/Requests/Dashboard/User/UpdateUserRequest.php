@@ -24,7 +24,7 @@ class UpdateUserRequest extends FormRequest
                 'nullable',
                 'email',
                 'max:191',
-                Rule::unique('users', 'email')->ignore($this->user->id)
+                Rule::unique('users', 'email')->ignore($this->user)
             ],
             'store_id' => 'nullable|integer|exists:Store,ID',
             'user_number' => 'nullable|string|max:255',
