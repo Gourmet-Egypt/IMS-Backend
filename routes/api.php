@@ -139,7 +139,9 @@ Route::get('/stores', [StoreController::class, 'index'])
 
 Route::middleware('auth.multi')->group(function () {
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
-        ->middleware('auth')->name('logout');;
+        ->middleware('auth')->name('logout');
+    Route::post('/change-password', [AuthenticatedSessionController::class, 'changePassword'])
+        ->name('password.change');
 });
 
 

@@ -13,14 +13,12 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $table = 'IMS_Users';
-
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
     protected $guarded = [];
-
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -30,7 +28,6 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
-
     /**
      * The attributes that should be cast.
      *
@@ -41,6 +38,10 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    public static function onSecondary()
+    {
+        return static::on('sqlsrv_rms');
+    }
 
     public function cashier()
     {
