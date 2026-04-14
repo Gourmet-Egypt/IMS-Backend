@@ -33,6 +33,8 @@ class ChangePasswordRequest extends FormRequest
             if (!$validator->errors()->has('old_password')) {
                 if (!Hash::check($this->old_password, $this->user()->password)) {
                     $validator->errors()->add('old_password', $this->messages()['old_password.current_password']);
+                } elseif ($this->old_password === $this->password) {
+                    $validator->errors()->add('password', $this->messages()['password.different']);
                 }
             }
         });
@@ -41,9 +43,12 @@ class ChangePasswordRequest extends FormRequest
     protected function failedValidation(Validator $validator)
     {
         $firstError = $validator->errors()->first();
+        $firstKey = $validator->errors()->keys()[0] ?? null;
+
+        $status = ($firstKey === 'old_password') ? 400 : 422;
 
         throw new HttpResponseException(
-            $this->error(422, $firstError, null)
+            $this->error($status, $firstError, null)
         );
     }
 
@@ -58,6 +63,7 @@ class ChangePasswordRequest extends FormRequest
             'password.string' => 'New password must be a valid string.',
             'password.min' => 'New password must be at least 6 characters.',
             'password.confirmed' => 'Password confirmation does not match.',
+            'password.different' => 'New password must be different from old password.',
         ];
     }
 }
