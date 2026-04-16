@@ -12,7 +12,7 @@ class LoadPurchaseOrderStep
             $payload->purchaseOrder->StoreID = $configStoreId;
         }
 
-        $payload->purchaseOrder->load(['condition', 'entries.infos', 'entries.item', 'currentStore', 'otherStore']);
+        $payload->purchaseOrder->load(['condition', 'entries.infos', 'entries.itemById', 'currentStore', 'otherStore']);
 
         return $next($payload);
     }

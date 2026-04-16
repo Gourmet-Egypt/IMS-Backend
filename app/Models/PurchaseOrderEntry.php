@@ -26,12 +26,20 @@ class PurchaseOrderEntry extends Model
         return $this->belongsTo(TransferRequest::class, 'PurchaseOrderID', 'purchase_order_id');
     }
 
-    public function item()
+    /**
+     * Get item by HQID (ItemID matches Item.HQID)
+     * Note: PurchaseOrderEntry.ItemID stores Item.ID, so use itemById() instead
+     */
+    public function itemByHqid()
     {
         return $this->belongsTo(Item::class, 'ItemID', 'HQID');
     }
 
-    public function HQ_item()
+    /**
+     * Get item by ID (ItemID matches Item.ID)
+     * This is the correct relation for PurchaseOrderEntry
+     */
+    public function itemById()
     {
         return $this->belongsTo(Item::class, 'ItemID', 'ID');
     }
@@ -44,7 +52,7 @@ class PurchaseOrderEntry extends Model
     public function getTotalCostAttribute()
     {
         return $this->entries->sum(function ($entry) {
-            return $entry->HQItem->Cost * $entry->QuantityOrdered;
+            return $entry->itemById->Cost * $entry->QuantityOrdered;
         });
     }
 
@@ -52,8 +60,8 @@ class PurchaseOrderEntry extends Model
     {
         return $query->with([
             'infos',
-            'HQ_item.category',
-            'HQ_item.department'
+            'itemById.category',
+            'itemById.department'
         ])->where([
             ['ID', $id],
             ['StoreID', request()->input('store_id')]

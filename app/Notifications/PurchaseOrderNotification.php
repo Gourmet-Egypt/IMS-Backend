@@ -171,7 +171,7 @@ class PurchaseOrderNotification extends Mailable
         $this->purchaseOrder->load([
             'condition',
             'entries.infos',
-            'entries.item',
+            'entries.itemById',
             'entries.transferRequest' => function($query) {
                 $query->with('items');
             },

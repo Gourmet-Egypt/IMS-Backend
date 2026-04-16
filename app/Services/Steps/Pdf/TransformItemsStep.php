@@ -13,7 +13,7 @@ class TransformItemsStep
             'entries.transferRequest' => function ($query) {
                 $query->with('items');
             },
-            'entries.item',
+            'entries.itemById',
             'entries.infos'
         ]);
 
@@ -49,7 +49,7 @@ class TransformItemsStep
             $firstInfo = $entry->infos->first();
 
             $items[] = [
-                'lookupcode' => $entry->item->ItemLookupCode ?? '',
+                'lookupcode' => $entry->itemById->ItemLookupCode ?? '',
                 'description' => $entry->ItemDescription,
                 'quantity_requested' => $quantityRequested,
                 'quantity_received' => $totalQuantityReceived,
