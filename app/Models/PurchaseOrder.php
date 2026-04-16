@@ -168,7 +168,7 @@ class PurchaseOrder extends Model
                 $query->where('StoreID', $store_id);
             },
             'entries.infos',
-            'entries.item:Cost,ItemLookupCode',
+            'entries.itemById:Cost,ItemLookupCode',
             'condition'
         ])
             ->where([

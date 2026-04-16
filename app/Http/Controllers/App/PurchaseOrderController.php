@@ -35,7 +35,7 @@ class PurchaseOrderController extends Controller
 
     public function show(PurchaseOrder $purchaseOrder): \Illuminate\Http\JsonResponse
     {
-        $purchaseOrder = $purchaseOrder->load(['condition', 'entries', 'entries.infos']);
+        $purchaseOrder = $purchaseOrder->load(['condition', 'entries', 'entries.infos', 'entries.itemById']);
 
         return $this->success(
             status: Response::HTTP_OK,
@@ -47,7 +47,7 @@ class PurchaseOrderController extends Controller
 
     public function offline(): \Illuminate\Http\JsonResponse
     {
-        $purchaseOrders = PurchaseOrder::Type()->with(['condition', 'entries', 'entries.infos'])->where('status',
+        $purchaseOrders = PurchaseOrder::Type()->with(['condition', 'entries', 'entries.infos', 'entries.itemById'])->where('status',
             0)->paginate(15);
 
         return $this->AppSuccessPaginated(
@@ -96,7 +96,7 @@ class PurchaseOrderController extends Controller
 
     public function allInfos(PurchaseOrderEntry $purchaseOrderEntry): \Illuminate\Http\JsonResponse
     {
-        $purchaseOrderEntry = $purchaseOrderEntry->load(['infos']);
+        $purchaseOrderEntry = $purchaseOrderEntry->load(['infos', 'itemById']);
 
         return $this->success(
             status: Response::HTTP_OK,
@@ -132,7 +132,7 @@ class PurchaseOrderController extends Controller
             return $this->success(
                 status: Response::HTTP_OK,
                 message: 'Purchase order entry updated successfully',
-                data: new PurchaseOrderEntryResource($purchaseOrderEntry->load(['infos'])),
+                data: new PurchaseOrderEntryResource($purchaseOrderEntry->load(['infos', 'itemById'])),
             );
         } else {
             return $this->error(
@@ -146,7 +146,7 @@ class PurchaseOrderController extends Controller
     public function test(PurchaseOrder $purchaseOrder)
     {
 
-        $purchaseOrder = $purchaseOrder->load(['condition', 'entries', 'entries.infos']);
+        $purchaseOrder = $purchaseOrder->load(['condition', 'entries', 'entries.infos', 'entries.itemById']);
 
         PurchaseOrderCommitted::dispatch($purchaseOrder);
     }
