@@ -21,7 +21,7 @@ class PurchaseOrderEntryResource extends JsonResource
             'LookupCode' => $this->itemById?->ItemLookupCode,
             'Description' => $this->ItemDescription,
             'price' => $this->Price,
-            'quantity_on_hand' => $this->itemById?->Quantity,
+            'quantity_on_hand' => round($this->itemById?->Quantity ?? 0, 3),
             'quantity_ordered' => $this->QuantityOrdered,
             'quantity_received' => $this->QuantityReceived,
             'quantity_received_to_date ' => $this->QuantityReceivedToDate,
