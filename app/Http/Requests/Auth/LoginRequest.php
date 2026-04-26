@@ -5,6 +5,7 @@ namespace App\Http\Requests\Auth;
 use App\Http\Resources\Dashboard\AdminResource;
 use App\Http\Resources\Dashboard\UserResource;
 use App\Models\Admin;
+use App\Models\Configuration;
 use App\Models\User;
 use App\Traits\Responses;
 use Illuminate\Auth\Events\Lockout;
@@ -60,7 +61,15 @@ class LoginRequest extends FormRequest
             : 'user_number';
 
         $modelClass = $this->guardConfig[$guard]['model'];
-        $user = $modelClass::where($loginField, $credentials['email'])->first();
+
+        $query = $modelClass::where($loginField, $credentials['email']);
+
+        if ($guard === 'web') {
+            $storeId = Configuration::value('StoreID');
+            $query->where('store_id', $storeId);
+        }
+
+        $user = $query->first();
 
         if (!$user) {
             RateLimiter::hit($this->throttleKey());
