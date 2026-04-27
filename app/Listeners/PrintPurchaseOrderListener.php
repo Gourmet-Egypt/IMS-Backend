@@ -21,10 +21,6 @@ class PrintPurchaseOrderListener
     {
         $purchaseOrder = $event->purchaseOrder;
 
-        try {
-            $this->printerService->printPdf($purchaseOrder, 1);
-        } catch (\Exception $e) {
-            // Silently fail or handle error as needed
-        }
+        $this->printerService->printPdf($purchaseOrder, 1);
     }
 }

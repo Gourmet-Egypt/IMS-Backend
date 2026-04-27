@@ -7,7 +7,6 @@ use App\Support\Pipeline;
 use App\Services\Steps\Print\FetchPdfPathStep;
 use App\Services\Steps\Print\PrintToNetworkStep;
 use App\Services\Steps\Print\ValidatePrinterConfigStep;
-use Illuminate\Support\Facades\Log;
 
 class PurchaseOrderPrintService
 {

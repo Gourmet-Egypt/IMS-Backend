@@ -19,14 +19,9 @@ class SendTransferEmailsListener
 
     public function handle(PurchaseOrderCommitted $event)
     {
-        try {
-            $purchaseOrder = $event->purchaseOrder;
+        $purchaseOrder = $event->purchaseOrder;
 
-            $this->emailService->sendNotifications($purchaseOrder);
-
-        } catch (\Exception $e) {
-            // Silently fail or handle error as needed
-        }
+        $this->emailService->sendNotifications($purchaseOrder);
     }
 
 
