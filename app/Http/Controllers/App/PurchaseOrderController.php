@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\App;
 
 use App\Enums\PurchaseOrderTypeEnum;
-use App\Events\PurchaseOrderCommitted;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\App\PurchaseOrder\CommitOrderRequest;
 use App\Http\Requests\App\PurchaseOrderEntry\UpdatePurchaseOrderEntryInfosRequest;
@@ -47,7 +46,9 @@ class PurchaseOrderController extends Controller
 
     public function offline(): \Illuminate\Http\JsonResponse
     {
-        $purchaseOrders = PurchaseOrder::Type()->with(['condition', 'entries', 'entries.infos', 'entries.itemById'])->where('status',
+        $purchaseOrders = PurchaseOrder::Type()->with([
+            'condition', 'entries', 'entries.infos', 'entries.itemById'
+        ])->where('status',
             0)->paginate(15);
 
         return $this->AppSuccessPaginated(
@@ -142,12 +143,4 @@ class PurchaseOrderController extends Controller
         }
     }
 
-
-    public function test(PurchaseOrder $purchaseOrder)
-    {
-
-        $purchaseOrder = $purchaseOrder->load(['condition', 'entries', 'entries.infos', 'entries.itemById']);
-
-        PurchaseOrderCommitted::dispatch($purchaseOrder);
-    }
 }

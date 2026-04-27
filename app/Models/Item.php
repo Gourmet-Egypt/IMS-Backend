@@ -46,8 +46,7 @@ class Item extends Model
 
         $query
             ->where([
-                ['DoNotOrder', 0]
-                , ['Inactive', 0],
+                ['Inactive', 0],
                 ['HQID', '<>', 0]
 
             ])

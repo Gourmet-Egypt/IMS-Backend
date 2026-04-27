@@ -5,7 +5,6 @@ namespace App\Services\Steps\CommitOrder;
 use App\Traits\Responses;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 class CommitToApiStep
 {
@@ -15,23 +14,10 @@ class CommitToApiStep
     {
         $server = config('database.connections.sqlsrv.host');
 
-        // Log the data being sent to API
-        Log::info('CommitOrder API Request', [
-            'url' => "http://".$server."/api/commit-order",
-            'data' => $payload->orderData
-        ]);
-
         $response = Http::withoutVerifying()
             ->timeout(30)
             ->asJson()
             ->post("http://".$server."/api/commit-order", $payload->orderData);
-
-        // Log the API response
-        Log::info('CommitOrder API Response', [
-            'status' => $response->status(),
-            'successful' => $response->successful(),
-            'body' => $response->json()
-        ]);
 
         if (!$response->successful()) {
             $responseData = $response->json();

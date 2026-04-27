@@ -12,8 +12,8 @@
         @endif</title>
     <style>
         @page {
-            margin: 0.5in;
-            size: A4 portrait;
+            size: 210mm 297mm; /* A4 portrait: 210mm x 297mm */
+            margin: 12mm; /* Standard margin for A4 */
         }
 
         * {
@@ -28,7 +28,6 @@
             color: #000;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
-            /* Removed display: flex; justify-content: center; align-items: center; */
         }
 
         .page {

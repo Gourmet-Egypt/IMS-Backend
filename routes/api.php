@@ -8,6 +8,7 @@ use App\Http\Controllers\App\TransferRequestItemController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Dashboard\CashierController;
 use App\Http\Controllers\Dashboard\GoodTypeController;
+use App\Http\Controllers\Dashboard\PurchaseOrderEmailController;
 use App\Http\Controllers\Dashboard\ReasonController;
 use App\Http\Controllers\Dashboard\ReportController;
 use App\Http\Controllers\Dashboard\StoreController;
@@ -109,6 +110,7 @@ Route::middleware(['auth.multi'])->group(function () {
     Route::apiResource('user', UserController::class);
     Route::apiResource('reason', ReasonController::class)->except('index')->except('index');
     Route::apiResource('temperature-range', TemperatureRangeController::class)->except('index');
+    Route::apiResource('purchase-order-emails', PurchaseOrderEmailController::class);
 
     Route::prefix('reports')->group(function () {
         Route::get('/transfer_list/entry_details/{id}', [ReportController::class, 'entryDetails']);

@@ -3,7 +3,6 @@
 namespace App\Services\Steps\Print;
 
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Log;
 
 class PrintToNetworkStep
 {
@@ -16,12 +15,6 @@ class PrintToNetworkStep
         $ip = $payload->printerConfig['ip'];
         $port = $payload->printerConfig['port'] ?? 9100;
         $copies = $payload->copies;
-
-        Log::info("Printing to network printer", [
-            'ip' => $ip,
-            'port' => $port,
-            'file' => $payload->pdfPath,
-        ]);
 
         try {
             $pdfContent = File::get($payload->pdfPath);
@@ -47,15 +40,7 @@ class PrintToNetworkStep
 
             fclose($socket);
 
-            Log::info("Successfully printed {$copies} copies to network printer {$ip}:{$port} for PO #{$payload->purchaseOrder->PONumber}");
-
         } catch (\Exception $e) {
-            Log::error("Network print failed: ".$e->getMessage(), [
-                'ip' => $ip,
-                'port' => $port,
-                'pdf' => $payload->pdfPath,
-                'po_number' => $payload->purchaseOrder->PONumber,
-            ]);
             throw $e;
         }
 
