@@ -8,7 +8,9 @@ use App\Http\Requests\App\PurchaseOrder\CommitOrderRequest;
 use App\Http\Requests\App\PurchaseOrderEntry\UpdatePurchaseOrderEntryInfosRequest;
 use App\Http\Resources\App\Offline\PurchaseOrderEntryResource;
 use App\Http\Resources\App\Offline\PurchaseOrderResource;
+use App\Mail\PurchaseOrderTestMail;
 use App\Models\PurchaseOrder;
+use App\Models\PurchaseOrderEmail;
 use App\Models\PurchaseOrderEntry;
 use App\Models\PurchaseOrderProcessStart;
 use App\Services\CommitOrderService;
@@ -16,6 +18,7 @@ use App\Traits\Responses;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 
 class PurchaseOrderController extends Controller
 {
@@ -39,17 +42,16 @@ class PurchaseOrderController extends Controller
         return $this->success(
             status: Response::HTTP_OK,
             message: 'PurchaseOrder retrieved successfully',
-            data: new  \App\Http\Resources\App\Offline\PurchaseOrderResource($purchaseOrder),
+            data: new PurchaseOrderResource($purchaseOrder),
         );
     }
 
-
     public function offline(): \Illuminate\Http\JsonResponse
     {
-        $purchaseOrders = PurchaseOrder::Type()->with([
-            'condition', 'entries', 'entries.infos', 'entries.itemById'
-        ])->where('status',
-            0)->paginate(15);
+        $purchaseOrders = PurchaseOrder::Type()
+            ->with(['condition', 'entries', 'entries.infos', 'entries.itemById'])
+            ->where('status', 0)
+            ->paginate(15);
 
         return $this->AppSuccessPaginated(
             status: Response::HTTP_OK,
@@ -57,7 +59,6 @@ class PurchaseOrderController extends Controller
             data: PurchaseOrderResource::collection($purchaseOrders),
         );
     }
-
 
     public function startProcess(PurchaseOrder $purchaseOrder): \Illuminate\Http\JsonResponse
     {
@@ -90,10 +91,8 @@ class PurchaseOrderController extends Controller
         CommitOrderRequest $request,
         CommitOrderService $service
     ): \Illuminate\Http\JsonResponse {
-
         return $service->commit($purchaseOrder, $request);
     }
-
 
     public function allInfos(PurchaseOrderEntry $purchaseOrderEntry): \Illuminate\Http\JsonResponse
     {
@@ -106,11 +105,11 @@ class PurchaseOrderController extends Controller
         );
     }
 
-
     public function updateInfos(
         UpdatePurchaseOrderEntryInfosRequest $request,
         PurchaseOrderEntry $purchaseOrderEntry
     ): \Illuminate\Http\JsonResponse {
+
         $validated = $request->validated();
 
         $server = config('database.connections.sqlsrv.host');
@@ -133,14 +132,32 @@ class PurchaseOrderController extends Controller
             return $this->success(
                 status: Response::HTTP_OK,
                 message: 'Purchase order entry updated successfully',
-                data: new PurchaseOrderEntryResource($purchaseOrderEntry->load(['infos', 'itemById'])),
-            );
-        } else {
-            return $this->error(
-                status: Response::HTTP_INTERNAL_SERVER_ERROR,
-                message: $response
+                data: new PurchaseOrderEntryResource(
+                    $purchaseOrderEntry->load(['infos', 'itemById'])
+                ),
             );
         }
+
+        return $this->error(
+            status: Response::HTTP_INTERNAL_SERVER_ERROR,
+            message: $response->body()
+        );
     }
 
+    public function testMail(PurchaseOrder $purchaseOrder): \Illuminate\Http\JsonResponse
+    {
+        $users = PurchaseOrderEmail::whereIn('id', [1, 6, 8])
+            ->where('is_active', 1)
+            ->pluck('email')
+            ->toArray();
+
+        Mail::to($users)->send(
+            new PurchaseOrderTestMail($purchaseOrder)
+        );
+
+        return response()->json([
+            'message' => 'Test email sent successfully',
+            'recipients' => $users
+        ]);
+    }
 }
