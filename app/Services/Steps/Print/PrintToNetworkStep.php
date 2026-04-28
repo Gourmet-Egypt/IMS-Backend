@@ -22,7 +22,7 @@ class PrintToNetworkStep
             $socket = @fsockopen($ip, $port, $errno, $errstr, 10);
 
             if (!$socket) {
-                throw new \Exception("Failed to connect to printer at {$ip}:{$port} - {$errstr} ({$errno})");
+                return $next($payload);
             }
 
             for ($i = 0; $i < $copies; $i++) {
@@ -30,7 +30,7 @@ class PrintToNetworkStep
 
                 if ($written === false) {
                     fclose($socket);
-                    throw new \Exception("Failed to write to printer socket");
+                    return $next($payload);
                 }
 
                 if ($i < $copies - 1) {
@@ -41,7 +41,8 @@ class PrintToNetworkStep
             fclose($socket);
 
         } catch (\Exception $e) {
-            throw $e;
+            // Silently skip printing if an error occurs
+            return $next($payload);
         }
 
         return $next($payload);
