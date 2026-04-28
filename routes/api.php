@@ -28,6 +28,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::post('/purchase-orders/{purchaseOrder}/test-mail',
+    [PurchaseOrderController::class, 'testMail']);
+
 
 Route::middleware(['auth.multi'])->group(function () {
 
@@ -148,5 +151,6 @@ Route::middleware('auth.multi')->group(function () {
 
 
 Route::get('/test/{purchaseOrder}', [PurchaseOrderController::class, 'test']);
+
 
 
