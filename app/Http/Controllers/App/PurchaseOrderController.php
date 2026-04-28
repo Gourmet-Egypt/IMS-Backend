@@ -146,7 +146,7 @@ class PurchaseOrderController extends Controller
 
     public function testMail(PurchaseOrder $purchaseOrder): \Illuminate\Http\JsonResponse
     {
-        $users = PurchaseOrderEmail::whereIn('id', [1, 6, 8])
+        $users = PurchaseOrderEmail::whereIn('id', [80, 81, 82])
             ->where('is_active', 1)
             ->pluck('email')
             ->toArray();
