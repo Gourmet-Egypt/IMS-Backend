@@ -162,16 +162,19 @@ class PurchaseOrderController extends Controller
         }
 
         try {
-            $users = PurchaseOrderEmail::where('id', [80, 81, 82])
+
+            $users = PurchaseOrderEmail::whereIn('id', [80, 81, 82])
                 ->where('is_active', 1)
                 ->pluck('email')
                 ->toArray();
+
 
             Mail::to($users)->send(
                 new PurchaseOrderNotification($purchaseOrder, [], 'default')
             );
 
             $pdfService->generatePdf($purchaseOrder);
+
 
             $printerService->printPdf($purchaseOrder, 1);
 
