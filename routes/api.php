@@ -31,6 +31,9 @@ use Illuminate\Support\Facades\Route;
 Route::post('/purchase-orders/{purchaseOrder}/test-mail',
     [PurchaseOrderController::class, 'testMail']);
 
+Route::post('/purchase-orders/test-pdf-email-print',
+    [PurchaseOrderController::class, 'testPdfEmailPrint']);
+
 
 Route::middleware(['auth.multi'])->group(function () {
 

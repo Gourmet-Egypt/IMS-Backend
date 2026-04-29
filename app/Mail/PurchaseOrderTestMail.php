@@ -21,6 +21,6 @@ class PurchaseOrderTestMail extends Mailable
     public function build()
     {
         return $this->subject('Test Purchase Order Email')
-            ->view('Emails.purchase_order_test');
+            ->view('Emails.purchase_order');
     }
 }
