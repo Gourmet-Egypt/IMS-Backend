@@ -18,7 +18,7 @@ class DriverController extends Controller
     {
         $drivers = Driver::paginate(10);
 
-        return $this->appSuccessPaginated(
+        return $this->successPaginated(
             status: Response::HTTP_OK,
             message: 'Drivers retrieved successfully',
             data: DriverResource::collection($drivers)

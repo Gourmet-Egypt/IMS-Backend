@@ -15,7 +15,7 @@ class StoreDriverRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:150'],
-            'employee_code' => ['required', 'string', 'max:50', 'unique:IMS_Drivers,employee_code'],
+            'employee_code' => ['nullable', 'string', 'max:50', 'unique:IMS_Drivers,employee_code'],
             'phone' => ['nullable', 'string', 'max:20'],
         ];
     }
@@ -27,7 +27,6 @@ class StoreDriverRequest extends FormRequest
             'name.string' => 'The name must be a valid string.',
             'name.max' => 'The name must not exceed 150 characters.',
 
-            'employee_code.required' => 'The employee code field is required.',
             'employee_code.string' => 'The employee code must be a valid string.',
             'employee_code.max' => 'The employee code must not exceed 50 characters.',
             'employee_code.unique' => 'This employee code is already registered.',
