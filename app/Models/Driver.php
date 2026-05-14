@@ -11,4 +11,9 @@ class Driver extends Model
 
     protected $connection = 'sqlsrv_rms';
     protected $table = 'IMS_Drivers';
+
+    protected $casts =
+        [
+            'is_active' => 'boolean',
+        ];
 }
