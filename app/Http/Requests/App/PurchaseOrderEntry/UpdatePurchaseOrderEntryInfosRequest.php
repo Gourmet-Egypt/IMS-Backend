@@ -29,7 +29,7 @@ class UpdatePurchaseOrderEntryInfosRequest extends FormRequest
             'Batches.*.quantity_issued' => 'required|numeric|min:0',
             'Batches.*.production_date' => 'nullable|string',
             'Batches.*.expire_date' => 'nullable|string',
-            'Batches.*.quantity_IN' => $poType == 2 ? 'required|numeric|gt:0' : 'nullable',
+            'Batches.*.quantity_IN' => $poType == 2 ? 'required|numeric' : 'nullable',
         ];
     }
 
@@ -37,7 +37,6 @@ class UpdatePurchaseOrderEntryInfosRequest extends FormRequest
     {
         return [
             'Batches.*.quantity_IN.required' => 'The quantity_IN field is required.',
-            'Batches.*.quantity_IN.gt' => 'The quantity_IN must be greater than 0.',
         ];
     }
 
