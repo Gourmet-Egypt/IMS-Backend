@@ -114,6 +114,7 @@ class PurchaseOrderController extends Controller
 
         $validated = $request->validated();
 
+
         $server = config('database.connections.sqlsrv.host');
         $storeId = DB::table('Configuration')->select('StoreID')->value('StoreID');
 

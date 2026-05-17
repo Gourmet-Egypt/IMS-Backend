@@ -20,7 +20,7 @@ class PurchaseOrderEntryInfosResource extends JsonResource
             'quantity_issued' => $this->quantity_issued,
             'production_date' => $this->production_date?->format('Y-m-d'),
             'expire_date' => $this->expire_date?->format('Y-m-d'),
-            'quantity_in' => (float) $this->quantity_IN == 0 ? null : $this->quantity_IN,
+            'quantity_in' => (float) $this->quantity_IN,
         ];
 
     }
