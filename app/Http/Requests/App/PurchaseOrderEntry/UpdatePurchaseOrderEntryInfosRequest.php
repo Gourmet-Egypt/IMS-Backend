@@ -51,6 +51,10 @@ class UpdatePurchaseOrderEntryInfosRequest extends FormRequest
                 }
             }
 
+            if (is_null($batch['quantity_IN'] ?? null)) {
+                unset($batch['quantity_IN']);
+            }
+
             return $batch;
         })->all();
 
