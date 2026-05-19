@@ -21,22 +21,11 @@ class UpdatePurchaseOrderEntryInfosRequest extends FormRequest
      */
     public function rules(): array
     {
-        $purchaseOrderEntry = $this->route('purchaseOrderEntry');
-        $poType = $purchaseOrderEntry?->purchaseOrder?->POType;
-
         return [
             'Batches' => 'present|array',
             'Batches.*.quantity_issued' => 'required|numeric|min:0',
             'Batches.*.production_date' => 'nullable|string',
             'Batches.*.expire_date' => 'nullable|string',
-            'Batches.*.quantity_IN' => $poType == 2 ? 'required|numeric' : 'nullable',
-        ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'Batches.*.quantity_IN.required' => 'The quantity_IN field is required.',
         ];
     }
 
