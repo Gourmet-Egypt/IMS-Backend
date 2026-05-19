@@ -51,8 +51,8 @@ class UpdatePurchaseOrderEntryInfosRequest extends FormRequest
                 }
             }
 
-            if (is_null($batch['quantity_IN'] ?? null)) {
-                unset($batch['quantity_IN']);
+            if (!array_key_exists('quantity_IN', $batch)) {
+                $batch['quantity_IN'] = null;
             }
 
             return $batch;
