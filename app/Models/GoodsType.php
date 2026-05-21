@@ -9,11 +9,13 @@ class GoodsType extends Model
 {
     use HasFactory;
 
-    protected $connection = 'sqlsrv_rms';
-
-    protected $table = 'goods_types';
-
     public $timestamps = false;
-
+    protected $fillable = [
+        'max_temp',
+        'min_temp',
+        'name',
+    ];
+    protected $connection = 'sqlsrv_rms';
+    protected $table = 'goods_types';
     protected $guarded = [];
 }

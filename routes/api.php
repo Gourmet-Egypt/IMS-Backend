@@ -7,6 +7,7 @@ use App\Http\Controllers\App\TransferRequestController;
 use App\Http\Controllers\App\TransferRequestItemController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Dashboard\CashierController;
+use App\Http\Controllers\Dashboard\DriverController;
 use App\Http\Controllers\Dashboard\GoodTypeController;
 use App\Http\Controllers\Dashboard\PurchaseOrderEmailController;
 use App\Http\Controllers\Dashboard\ReasonController;
@@ -109,11 +110,13 @@ Route::get('vehicle-types', [VehicleController::class, 'index']);
 Route::get('good-types', [GoodTypeController::class, 'index']);
 Route::get('reason', [ReasonController::class, 'index']);
 Route::get('temperature-range', [TemperatureRangeController::class, 'index']);
+Route::get('drivers', [DriverController::class, 'index']);
 
 Route::middleware(['auth.multi'])->group(function () {
     Route::apiResource('vehicle-types', VehicleController::class)->except('index');
     Route::apiResource('good-types', GoodTypeController::class)->except('index');
     Route::apiResource('user', UserController::class);
+    Route::apiResource('drivers', DriverController::class)->except('index');
     Route::apiResource('reason', ReasonController::class)->except('index')->except('index');
     Route::apiResource('temperature-range', TemperatureRangeController::class)->except('index');
     Route::apiResource('purchase-order-emails', PurchaseOrderEmailController::class);
