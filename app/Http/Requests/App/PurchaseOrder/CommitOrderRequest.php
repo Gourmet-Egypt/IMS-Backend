@@ -35,6 +35,11 @@ class CommitOrderRequest extends FormRequest
         // POType 2 = TransferIN validation
         if ($poType === 2) {
             $rules['Vehicle_tempIN'] = ['required', 'numeric', 'min:-50', 'max:50'];
+
+            // Partial commit requires isClosed
+            if ($this->route()->getActionMethod() === 'partialCommitOrder') {
+                $rules['isClosed'] = ['required', 'integer', 'in:0,1'];
+            }
         }
 
         return $rules;
@@ -57,7 +62,8 @@ class CommitOrderRequest extends FormRequest
 
             // TransferIN messages
             'Vehicle_tempIN.required' => 'Vehicle temperature (IN) is required for TransferIN transactions.',
-//            'receiver_name.required' => 'Receiver name is required for TransferIN transactions.',
+            'isClosed.required' => 'isClosed is required for partial commit.',
+            'isClosed.in' => 'isClosed must be 0 or 1.',
         ];
     }
 

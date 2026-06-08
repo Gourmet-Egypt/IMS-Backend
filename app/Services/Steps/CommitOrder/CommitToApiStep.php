@@ -13,14 +13,15 @@ class CommitToApiStep
     public function handle($payload, \Closure $next)
     {
         $server = config('database.connections.sqlsrv.host');
+        $endpoint = $payload->isPartial ? '/api/partial-transfer-in' : '/api/commit-order';
 
         $response = Http::withoutVerifying()
             ->timeout(30)
             ->asJson()
-            ->post("http://".$server."/api/commit-order", $payload->orderData);
+            ->post("http://".$server.$endpoint, $payload->orderData);
 
         if (!$response->successful()) {
-            $responseData = $response->json();
+            $responseData = $response->json() ?? [];
             $errorMessage = $this->parseErrorMessage($responseData);
 
             return $this->error(
@@ -34,11 +35,11 @@ class CommitToApiStep
         return $next($payload);
     }
 
-    protected function parseErrorMessage(array $responseData): string
+    protected function parseErrorMessage(?array $responseData): string
     {
         $errorMessage = 'Failed to commit order';
 
-        if (!isset($responseData['message'])) {
+        if (!$responseData || !isset($responseData['message'])) {
             return $errorMessage;
         }
 
@@ -46,14 +47,17 @@ class CommitToApiStep
             preg_match('/"message":\s*"([^"]+)"/', $responseData['message'], $matches);
             $errorMessage = !empty($matches[1]) ? $matches[1] : $responseData['message'];
         } elseif (is_array($responseData['message'])) {
-            $errorMessage = json_encode($responseData['message']);
+            $errorMessage = json_encode($responseData['message'], JSON_INVALID_UTF8_SUBSTITUTE);
         } else {
-            $errorMessage = $responseData['message'];
+            $errorMessage = (string) $responseData['message'];
         }
 
         if (strpos($errorMessage, ':') !== false) {
             $errorMessage = trim(substr($errorMessage, strpos($errorMessage, ':') + 1));
         }
+
+        // Ensure valid UTF-8
+        $errorMessage = mb_convert_encoding($errorMessage, 'UTF-8', 'UTF-8');
 
         return $errorMessage;
     }
