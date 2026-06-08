@@ -14,6 +14,7 @@ class PurchaseOrder extends Model
     use HasFactory, Responses;
 
     protected $table = 'PurchaseOrder';
+    protected $primaryKey = 'ID';
 
     protected $hidden = ['DBTimeStamp'];
 

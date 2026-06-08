@@ -380,15 +380,15 @@
                 <td>{{ $item->lookupcode }}</td>
                 <td>{{ $item->description }}</td>
                 @if(isset($perspective) && $perspective === 'from_store')
-                    {{-- Transfer OUT: Show Ordered, Issued, Diff (Ordered - Issued) --}}
-                    <td>{{ number_format($item->quantity_requested, 1) }}</td>
-                    <td>{{ $item->quantity_issued }}</td>
-                    <td>{{ number_format($item->quantity_requested - ($item->quantity_issued ), 1) }}</td>
+                    {{-- Transfer OUT: Show Ordered, Issued, Diff --}}
+                    <td>{{ $item->quantity_requested !== null ? number_format($item->quantity_requested, 1) : '' }}</td>
+                    <td>{{ number_format($item->quantity_issued, 1) }}</td>
+                    <td>{{ number_format($item->diff, 1) }}</td>
                 @else
-                    {{-- Transfer IN: Show Ordered, Received, Diff (Received - Ordered) --}}
-                    <td>{{ number_format($item->quantity_requested, 1) }}</td>
-                    <td>{{ number_format($item->quantity_received, 1) }}</td>
-                    <td>{{ number_format($item->quantity_received - $item->quantity_requested, 1) }}</td>
+                    {{-- Transfer IN: Show Ordered, Received, Diff --}}
+                    <td>{{ $item->quantity_requested !== null ? number_format($item->quantity_requested, 1) : '' }}</td>
+                    <td>{{ number_format($item->quantity_IN, 1) }}</td>
+                    <td>{{ number_format($item->diff, 1) }}</td>
                 @endif
                 <td>
                     {{ $item->production_date ?

@@ -260,11 +260,21 @@
     <!-- VEHICLE -->
     <div class="section-title">Vehicle Info</div>
     <table class="info-table">
-        <tr><td><span class="bold1">Driver: </span>{{ $condition->Driver_name ?? '' }}</td></tr>
-        <tr><td><span class="bold1">Vehicle #: </span>{{ $condition->Vehicle_number ?? '' }}</td></tr>
-        <tr><td><span class="bold1">Seal #: </span>{{ $condition->seal_number ?? '' }}</td></tr>
-        <tr><td><span class="bold1">Temp In: </span>{{ $condition->vehicle_tempIN ?? 'N/A' }}</td></tr>
-        <tr><td><span class="bold1">Temp Out: </span>{{ $condition->vehicle_tempOut ?? 'N/A' }}</td></tr>
+        <tr>
+            <td><span class="bold1">Driver: </span>{{ $condition->Driver_name ?? '' }}</td>
+        </tr>
+        <tr>
+            <td><span class="bold1">Vehicle #: </span>{{ $condition->Vehicle_number ?? '' }}</td>
+        </tr>
+        <tr>
+            <td><span class="bold1">Seal #: </span>{{ $condition->seal_number ?? '' }}</td>
+        </tr>
+        <tr>
+            <td><span class="bold1">Temp In: </span>{{ $condition->vehicle_tempIN ?? 'N/A' }}</td>
+        </tr>
+        <tr>
+            <td><span class="bold1">Temp Out: </span>{{ $condition->vehicle_tempOut ?? 'N/A' }}</td>
+        </tr>
     </table>
 
     <!-- ITEMS -->
@@ -287,16 +297,27 @@
         @foreach($items as $item)
             <tr>
                 <td>{{ $item->lookupcode }}</td>
-                <td>{{ Str::limit($item->description, 15) }}</td>
+                <td>{{ $item->description }}</td>
                 @if(isset($perspective) && $perspective === 'from_store')
-                    <td>{{ number_format($item->quantity_requested, 1) }}</td>
-                    <td>{{ $item->quantity_issued }}</td>
-                    <td>{{ number_format($item->quantity_requested - $item->quantity_issued, 1) }}</td>
+                    {{-- Transfer OUT: Show Ordered, Issued, Diff --}}
+                    <td>{{ $item->quantity_requested !== null ? number_format($item->quantity_requested, 1) : '' }}</td>
+                    <td>{{ number_format($item->quantity_issued, 1) }}</td>
+                    <td>{{ number_format($item->diff, 1) }}</td>
                 @else
-                    <td>{{ number_format($item->quantity_requested, 1) }}</td>
-                    <td>{{ number_format($item->quantity_received, 1) }}</td>
-                    <td>{{ number_format($item->quantity_received - $item->quantity_requested, 1) }}</td>
+                    {{-- Transfer IN: Show Ordered, Received, Diff --}}
+                    <td>{{ $item->quantity_requested !== null ? number_format($item->quantity_requested, 1) : '' }}</td>
+                    <td>{{ number_format($item->quantity_IN, 1) }}</td>
+                    <td>{{ number_format($item->diff, 1) }}</td>
                 @endif
+                <td>
+                    {{ $item->production_date ?
+                \Carbon\Carbon::parse($item->production_date)->format('d/m/Y') :
+                '' }}
+                </td>
+                <td>
+                    {{ $item->expire_date ?
+                \Carbon\Carbon::parse($item->expire_date)->format('d/m/Y') : '' }}
+                </td>
             </tr>
         @endforeach
         </tbody>

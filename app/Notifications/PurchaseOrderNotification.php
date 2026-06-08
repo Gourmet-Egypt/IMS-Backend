@@ -179,8 +179,8 @@ class PurchaseOrderNotification extends Mailable
             'otherStore'
         ]);
 
-        // Transform items data - one row per item with summed quantities
-        $items = $this->purchaseOrder->entries->map(function ($entry) {
+        // Transform items data - one row per info (batch)
+        $items = $this->purchaseOrder->entries->flatMap(function ($entry) {
             $infos = $entry->infos;
 
             // Get quantity from transfer request item
@@ -202,52 +202,78 @@ class PurchaseOrderNotification extends Mailable
                 }
             }
 
-            // Sum quantity_issued for all infos of the same item
-            $totalQuantityIssued = $infos->sum('quantity_issued');
-            $totalQuantityReceived = $infos->sum('quantity_issued');
-
-            // Set values based on perspective AND POType
+            $lookupCode = \App\Models\Item::where('ID', $entry->ItemID)->value('ItemLookupCode') ?? 'N/A';
             $poType = (int)$this->purchaseOrder->POType;
 
-            if ($poType == 3) {
-                // TransferOUT: Goods are being sent out
-                if ($this->perspective === 'from_store') {
-                    // FROM store (sending): show what was issued
-                    $displayQuantityIssued = $totalQuantityIssued;
-                    $displayQuantityReceived = 0;
-                } else {
-                    // TO store (receiving): nothing received yet at commit time
-                    $displayQuantityIssued = 0;
-                    $displayQuantityReceived = 0;
-                }
-            } elseif ($poType == 2) {
-                // TransferIN: Goods are being received
-                if ($this->perspective === 'to_store') {
-                    // TO store (receiving): show what was received
-                    $displayQuantityIssued = 0;
-                    $displayQuantityReceived = $totalQuantityReceived;
-                } else {
-                    // FROM store (sending from other store): nothing from their perspective
-                    $displayQuantityIssued = 0;
-                    $displayQuantityReceived = 0;
-                }
-            } else {
-                // Default: show both actual values
-                $displayQuantityIssued = $totalQuantityIssued;
-                $displayQuantityReceived = $totalQuantityReceived;
+            // If no infos exist, return one row for the entry
+            if ($infos->isEmpty()) {
+                return [
+                    (object)[
+                        'lookupcode' => $lookupCode,
+                        'description' => $entry->ItemDescription ?? 'N/A',
+                        'quantity_requested' => $quantityRequested,
+                        'quantity_received' => 0,
+                        'quantity_IN' => 0,
+                        'quantity_issued' => 0,
+                        'diff' => -$quantityRequested,
+                        'production_date' => null,
+                        'expire_date' => null,
+                    ]
+                ];
             }
 
-            $itemData = (object)[
-                'lookupcode' => \App\Models\Item::where('ID', $entry->ItemID)->value('ItemLookupCode') ?? 'N/A',
-                'description' => $entry->ItemDescription ?? 'N/A',
-                'quantity_requested' => $quantityRequested,
-                'quantity_received' => $displayQuantityReceived,
-                'quantity_issued' => $displayQuantityIssued,
-                'production_date' => $infos->first()?->production_date ?? null,
-                'expire_date' => $infos->first()?->expire_date ?? null,
-            ];
+            // Create one row per info (batch)
+            // Track remaining quantity for diff calculation
+            $rows = [];
+            $remainingQuantity = $quantityRequested;
+            $isFirstRow = true;
 
-            return $itemData;
+            foreach ($infos as $info) {
+                // Set values based on perspective AND POType
+                if ($poType == 3) {
+                    // TransferOUT: Goods are being sent out
+                    if ($this->perspective === 'from_store') {
+                        $displayQuantityIssued = $info->quantity_issued ?? 0;
+                        $displayQuantityReceived = 0;
+                    } else {
+                        $displayQuantityIssued = 0;
+                        $displayQuantityReceived = 0;
+                    }
+                } elseif ($poType == 2) {
+                    // TransferIN: Goods are being received
+                    if ($this->perspective === 'to_store') {
+                        $displayQuantityIssued = 0;
+                        $displayQuantityReceived = $info->quantity_issued ?? 0;
+                    } else {
+                        $displayQuantityIssued = 0;
+                        $displayQuantityReceived = 0;
+                    }
+                } else {
+                    // Default: show both actual values
+                    $displayQuantityIssued = $info->quantity_issued ?? 0;
+                    $displayQuantityReceived = $info->quantity_issued ?? 0;
+                }
+
+                // Subtract current quantity from remaining to get diff
+                $currentQuantity = $info->quantity_issued ?? $info->quantity_IN ?? 0;
+                $remainingQuantity -= $currentQuantity;
+
+                $rows[] = (object)[
+                    'lookupcode' => $lookupCode,
+                    'description' => $entry->ItemDescription ?? 'N/A',
+                    'quantity_requested' => $isFirstRow ? $quantityRequested : null,
+                    'quantity_received' => $displayQuantityReceived,
+                    'quantity_IN' => $info->quantity_IN ?? 0,
+                    'quantity_issued' => $displayQuantityIssued,
+                    'diff' => $remainingQuantity,
+                    'production_date' => $info->production_date ?? null,
+                    'expire_date' => $info->expire_date ?? null,
+                ];
+
+                $isFirstRow = false;
+            }
+
+            return $rows;
         });
 
         $data = [

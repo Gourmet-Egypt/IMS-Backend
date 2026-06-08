@@ -37,27 +37,47 @@ class TransformItemsStep
                 }
             }
 
-            // Sum quantity_issued for all infos of the same item
-            $totalQuantityIssued = $entry->infos->sum('quantity_issued');
-//            $totalQuantityIssued = $entry->infos->sum('quantity_issued');
-            $totalQuantityReceived = $entry->QuantityReceived;
+            // Create one row per info (batch) for each entry
+            // Track remaining quantity for diff calculation
+            $remainingQuantity = $quantityRequested;
+            $isFirstRow = true;
 
-            // For the stored PDF (default perspective), show actual values
-            // The email PDFs will handle perspective-based values differently
+            foreach ($entry->infos as $info) {
+                // Subtract current quantity from remaining to get diff
+                $currentQuantity = $info->quantity_issued ?? $info->quantity_IN ?? 0;
+                $remainingQuantity -= $currentQuantity;
 
-            // Get the first info for production and expiration dates
-            $firstInfo = $entry->infos->first();
+                $items[] = [
+                    'lookupcode' => $entry->itemById->ItemLookupCode ?? '',
+                    'description' => $entry->ItemDescription,
+                    'quantity_requested' => $isFirstRow ? $quantityRequested : null,
+                    'quantity_received' => $entry->QuantityReceived,
+                    'quantity_IN' => $info->quantity_IN ?? 0,
+                    'production_date' => $info->production_date,
+                    'expire_date' => $info->expire_date,
+                    'quantity_issued' => $info->quantity_issued ?? 0,
+                    'diff' => $remainingQuantity,
+                    'sn' => $info->SN,
+                ];
 
-            $items[] = [
-                'lookupcode' => $entry->itemById->ItemLookupCode ?? '',
-                'description' => $entry->ItemDescription,
-                'quantity_requested' => $quantityRequested,
-                'quantity_received' => $totalQuantityReceived,
-                'production_date' => $firstInfo?->production_date,
-                'expire_date' => $firstInfo?->expire_date,
-                'quantity_issued' => $totalQuantityIssued,
-                'sn' => $firstInfo?->SN,
-            ];
+                $isFirstRow = false;
+            }
+
+            // If no infos exist, still add one row for the entry
+            if ($entry->infos->isEmpty()) {
+                $items[] = [
+                    'lookupcode' => $entry->itemById->ItemLookupCode ?? '',
+                    'description' => $entry->ItemDescription,
+                    'quantity_requested' => $quantityRequested,
+                    'quantity_received' => $entry->QuantityReceived,
+                    'quantity_IN' => 0,
+                    'production_date' => null,
+                    'expire_date' => null,
+                    'quantity_issued' => 0,
+                    'diff' => -$quantityRequested,
+                    'sn' => null,
+                ];
+            }
         }
 
         $payload->items = collect($items)->map(fn($item) => (object) $item);
