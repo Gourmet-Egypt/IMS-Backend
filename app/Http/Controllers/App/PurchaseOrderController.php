@@ -13,6 +13,7 @@ use App\Models\PurchaseOrderEntry;
 use App\Models\PurchaseOrderProcessStart;
 use App\Services\CommitOrderService;
 use App\Traits\Responses;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -43,12 +44,18 @@ class PurchaseOrderController extends Controller
         );
     }
 
-    public function offline(): \Illuminate\Http\JsonResponse
+    public function offline(Request $request): \Illuminate\Http\JsonResponse
     {
-        $purchaseOrders = PurchaseOrder::Type()
-            ->with(['condition', 'entries', 'entries.infos', 'entries.itemById'])
-            ->where('status', 0)
-            ->paginate(15);
+        $query = PurchaseOrder::Type()
+            ->with(['condition', 'entries', 'entries.infos', 'entries.itemById']);
+
+        if ($request->has('status')) {
+            $query->where('status', $request->input('status'));
+        } else {
+            $query->where('status', '!=', 2);
+        }
+
+        $purchaseOrders = $query->paginate(15);
 
         return $this->AppSuccessPaginated(
             status: Response::HTTP_OK,
