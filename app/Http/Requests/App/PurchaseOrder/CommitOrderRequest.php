@@ -32,12 +32,12 @@ class CommitOrderRequest extends FormRequest
             $rules['vehicle_number'] = ['nullable', 'string', 'max:50'];
         }
 
-        // POType 2 = TransferIN validation
         if ($poType === 2) {
             $rules['Vehicle_tempIN'] = ['required', 'numeric', 'min:-50', 'max:50'];
 
-            // Partial commit requires isClosed
+            // Partial commit
             if ($this->route()->getActionMethod() === 'partialCommitOrder') {
+                $rules['Vehicle_tempIN'] = ['nullable', 'numeric', 'min:-50', 'max:50'];
                 $rules['isClosed'] = ['required', 'integer', 'in:0,1'];
             }
         }
