@@ -16,9 +16,9 @@ class CommitToApiStep
         $endpoint = $payload->isPartial ? '/api/partial-transfer-in' : '/api/commit-order';
 
         $response = Http::withoutVerifying()
-            ->timeout(30)
             ->asJson()
-            ->post("http://".$server.$endpoint, $payload->orderData);
+            ->post("http://{$server}{$endpoint}", $payload->orderData);
+
 
         if (!$response->successful()) {
             $responseData = $response->json() ?? [];

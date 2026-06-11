@@ -3,17 +3,16 @@
 namespace App\Http\Controllers\App;
 
 use App\Enums\TransferRequestStatusEnum;
-use App\Enums\TransferRequestTypeEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\App\TransferRequest\StoreTransferRequest;
 use App\Http\Requests\App\TransferRequest\UpdateTransferRequest;
 use App\Http\Resources\App\TransferRequest\TransferRequestResource;
 use App\Models\Store;
 use App\Models\TransferRequest;
+use App\Services\CreateOrderService;
 use App\Traits\Responses;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Http;
 
 class TransferRequestController extends Controller
 {
@@ -104,79 +103,12 @@ class TransferRequestController extends Controller
         );
     }
 
-    public function createOrder(TransferRequest $transferRequest, Request $request)
-    {
-        if (!$transferRequest->items()->exists()) {
-            return $this->error(
-                status: Response::HTTP_NOT_ACCEPTABLE,
-                message: 'No items were found',
-                data: []
-            );
-        }
-
-        $cashier = $request->user()->cashier;
-        $server = config('database.connections.sqlsrv.host');
-
-        $data = [
-            "Order" => [
-                "POTitle" => $transferRequest->title,
-                "transactionType" => $transferRequest->type,
-                "StoreID" => (int) $transferRequest->store_id,
-                "OtherStoreID" => (int) $transferRequest->other_store_id,
-                "SupplierID" => 0,
-                "HH_ID" => (string) $transferRequest->id,
-                "CashierID" => $cashier->ID,
-            ],
-            "OrderItems" => $transferRequest->items->map(function ($item) {
-                return [
-                    "ItemLookupcode" => (string) $item->ItemLookupCode,
-                    "QTY" => (float) $item->pivot->quantity,
-                ];
-            })->values()->toArray(),
-        ];
-
-
-        $response = Http::withoutVerifying()
-            ->asJson()
-            ->post("http://".$server."/api/create-order", $data);
-
-
-        if ($response->failed()) {
-            return $this->error(
-                status: $response->status() ?? Response::HTTP_INTERNAL_SERVER_ERROR,
-                message: $response->json('message') ?? 'Failed to create order'
-            );
-        }
-
-        $body = $response->json();
-
-        if ($transferRequest->type === TransferRequestTypeEnum::TransferIN->value) {
-            $purchaseOrderNumber = sprintf(
-                '%05d_%05d_%s',
-                $transferRequest->other_store_id,
-                $transferRequest->store_id,
-                $body['poNumber']
-            );
-
-
-            \App\Jobs\SyncPurchaseOrderJob::dispatch($transferRequest->id, $purchaseOrderNumber)
-                ->delay(now()->addMinutes(3));
-
-            $purchaseOrderId = null;
-        } else {
-            $purchaseOrderId = $body['id'] ?? null;
-        }
-
-        $transferRequest->update([
-            'status' => TransferRequestStatusEnum::CLOSED,
-            'purchase_order_id' => $purchaseOrderId,
-        ]);
-
-        return $this->success(
-            status: Response::HTTP_OK,
-            message: 'Transfer request status updated successfully. PO sync job dispatched.',
-            data: new TransferRequestResource($transferRequest)
-        );
+    public function createOrder(
+        TransferRequest $transferRequest,
+        Request $request,
+        CreateOrderService $service
+    ) {
+        return $service->create($transferRequest, $request);
     }
 
     public function update(UpdateTransferRequest $request, TransferRequest $transferRequest)

@@ -11,16 +11,6 @@ class SendTransferEmailsListener implements ShouldQueue
 {
     use InteractsWithQueue;
 
-    /**
-     * Number of times the job may be attempted.
-     */
-    public $tries = 1;
-
-    /**
-     * The maximum number of unhandled exceptions to allow before failing.
-     */
-    public $maxExceptions = 1;
-
     protected $emailService;
 
     public function __construct(PurchaseOrderEmailService $emailService)
@@ -34,8 +24,6 @@ class SendTransferEmailsListener implements ShouldQueue
 
         $this->emailService->sendNotifications($purchaseOrder);
     }
-
-
 
 
 }

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Events\PurchaseOrderCommitted;
 use App\Models\PurchaseOrder;
+use App\Services\Steps\CommitOrder\AcquireLockStep;
 use App\Services\Steps\CommitOrder\BuildOrderDataStep;
 use App\Services\Steps\CommitOrder\CommitToApiStep;
 use App\Services\Steps\CommitOrder\ValidateStep;
@@ -30,7 +31,6 @@ class CommitOrderService
         $isPartial = $request->route()->getActionMethod() === 'partialCommitOrder';
 
         $result = DB::transaction(function () use ($purchaseOrder, $request, $isPartial) {
-            // Lock the purchase order row to prevent race conditions
             $lockedPurchaseOrder = PurchaseOrder::where('ID', $purchaseOrder->ID)
                 ->lockForUpdate()
                 ->first();
@@ -39,15 +39,6 @@ class CommitOrderService
                 return $this->error(
                     status: Response::HTTP_NOT_FOUND,
                     message: 'Purchase Order not found'
-                );
-            }
-
-            // Idempotency check: prevent double commit
-            // Status 2 = closed (fully committed)
-            if (!$isPartial && $lockedPurchaseOrder->Status == 2) {
-                return $this->error(
-                    status: Response::HTTP_CONFLICT,
-                    message: 'Purchase Order has already been committed'
                 );
             }
 
@@ -66,17 +57,26 @@ class CommitOrderService
                 ->through([
                     ValidateStep::class,
                     BuildOrderDataStep::class,
-                    CommitToApiStep::class,
                 ])
                 ->thenReturn();
         });
 
-        // A step failed and returned a response — stop here.
         if ($result instanceof JsonResponse) {
             return $result;
         }
 
-        // ---- Everything below runs ONLY after the transaction has committed ----
+        $apiResult = $this->pipeline
+            ->send($result)
+            ->through([
+                AcquireLockStep::class,
+                CommitToApiStep::class,
+            ])
+            ->thenReturn();
+
+        if ($apiResult instanceof JsonResponse) {
+            return $apiResult;
+        }
+
 
         PurchaseOrderCommitted::dispatch($purchaseOrder);
 

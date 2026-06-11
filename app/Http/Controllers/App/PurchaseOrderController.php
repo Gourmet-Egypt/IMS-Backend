@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\App;
 
-use App\Enums\PurchaseOrderTypeEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\App\PurchaseOrder\CommitOrderRequest;
 use App\Http\Requests\App\PurchaseOrderEntry\UpdatePurchaseOrderEntryInfosRequest;
@@ -12,11 +11,10 @@ use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderEntry;
 use App\Models\PurchaseOrderProcessStart;
 use App\Services\CommitOrderService;
+use App\Services\UpdateInfosService;
 use App\Traits\Responses;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 
 class PurchaseOrderController extends Controller
 {
@@ -119,42 +117,10 @@ class PurchaseOrderController extends Controller
 
     public function updateInfos(
         UpdatePurchaseOrderEntryInfosRequest $request,
-        PurchaseOrderEntry $purchaseOrderEntry
+        PurchaseOrderEntry $purchaseOrderEntry,
+        UpdateInfosService $service
     ): \Illuminate\Http\JsonResponse {
-
-        $validated = $request->validated();
-
-
-        $server = config('database.connections.sqlsrv.host');
-        $storeId = DB::table('Configuration')->select('StoreID')->value('StoreID');
-
-        $data = [
-            "StoreID" => $storeId,
-            "transactionType" => PurchaseOrderTypeEnum::tryFrom($purchaseOrderEntry->purchaseOrder->POType)?->name,
-            "purchase_order_id" => $purchaseOrderEntry->PurchaseOrderID,
-            "purchase_order_entry_id" => $purchaseOrderEntry->ID,
-            "Batches" => $validated['Batches'],
-        ];
-
-        $response = Http::withoutVerifying()
-            ->asJson()
-            ->post("http://$server/api/update-order-details", $data);
-
-        if ($response->status() === 200) {
-
-            return $this->success(
-                status: Response::HTTP_OK,
-                message: 'Purchase order entry updated successfully',
-                data: new PurchaseOrderEntryResource(
-                    $purchaseOrderEntry->load(['infos', 'itemById'])
-                ),
-            );
-        }
-
-        return $this->error(
-            status: Response::HTTP_INTERNAL_SERVER_ERROR,
-            message: $response->body()
-        );
+        return $service->update($purchaseOrderEntry, $request->validated());
     }
 
 }
