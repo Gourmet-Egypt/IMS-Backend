@@ -14,36 +14,48 @@ class CommitOrderRequest extends FormRequest
 
     public function rules(): array
     {
-        // Get PurchaseOrder from route parameter (matches {purchaseOrder} in route)
-        $purchaseOrder = $this->route('purchaseOrder');
-        $poType = $purchaseOrder ? (int) $purchaseOrder->POType : null;
+        $poType = $this->poType;
+        $isPartialCommit = $this->route()->getActionMethod() === 'partialCommitOrder';
 
-        $rules = [];
+        $rules = match ($poType) {
+            2 => [
+                'Vehicle_tempIN' => $isPartialCommit
+                    ? [
+                        'nullable',
+                        'required_if:isClosed,1',
+                        'numeric',
+                        'min:-50',
+                        'max:50',
+                    ]
+                    : [
+                        'required',
+                        'numeric',
+                        'min:-50',
+                        'max:50',
+                    ],
+            ],
 
-        // POType 3 = TransferOut validation
-        if ($poType === 3) {
-            $rules['VehicleType'] = ['required', 'string'];
-            $rules['Vehicle_tempOut'] = ['required', 'numeric', 'min:-50', 'max:50'];
-            $rules['DeliveryPermitNumber'] = ['required', 'string', 'max:255'];
-            $rules['Notes'] = ['nullable', 'string', 'max:1000'];
-            $rules['seal_number'] = ['required', 'string', 'max:1000'];
-            $rules['goods_type'] = ['required', 'integer'];
-            $rules['driver_name'] = ['nullable', 'string', 'max:255'];
-            $rules['vehicle_number'] = ['nullable', 'string', 'max:50'];
-        }
+            3 => [
+                'VehicleType' => ['required', 'string'],
+                'Vehicle_tempOut' => ['required', 'numeric', 'min:-50', 'max:50'],
+                'DeliveryPermitNumber' => ['required', 'string', 'max:255'],
+                'Notes' => ['nullable', 'string', 'max:1000'],
+                'seal_number' => ['required', 'string', 'max:1000'],
+                'goods_type' => ['required', 'integer'],
+                'driver_name' => ['nullable', 'string', 'max:255'],
+                'vehicle_number' => ['nullable', 'string', 'max:50'],
+            ],
 
-        if ($poType === 2) {
-            $rules['Vehicle_tempIN'] = ['required', 'numeric', 'min:-50', 'max:50'];
+            default => [],
+        };
 
-            // Partial commit
-            if ($this->route()->getActionMethod() === 'partialCommitOrder') {
-                $rules['Vehicle_tempIN'] = ['nullable', 'numeric', 'min:-50', 'max:50'];
-                $rules['isClosed'] = ['required', 'integer', 'in:0,1'];
-            }
+        if ($poType === 2 && $isPartialCommit) {
+            $rules['isClosed'] = ['required', 'integer', 'in:0,1'];
         }
 
         return $rules;
     }
+
 
     public function messages(): array
     {

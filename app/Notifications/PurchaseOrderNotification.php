@@ -215,7 +215,8 @@ class PurchaseOrderNotification extends Mailable
                         'quantity_received' => 0,
                         'quantity_IN' => 0,
                         'quantity_issued' => 0,
-                        'diff' => -$quantityRequested,
+                        // OUT: 0 issued - ordered = -ordered; IN: 0 received - 0 issued = 0.
+                        'diff' => $this->perspective === 'from_store' ? -$quantityRequested : 0,
                         'production_date' => null,
                         'expire_date' => null,
                     ]
@@ -223,9 +224,10 @@ class PurchaseOrderNotification extends Mailable
             }
 
             // Create one row per info (batch)
-            // Track remaining quantity for diff calculation
+            // Diff is cumulative across batch rows (running total per entry).
             $rows = [];
-            $remainingQuantity = $quantityRequested;
+            $cumulativeIssued = 0;
+            $cumulativeIN = 0;
             $isFirstRow = true;
 
             foreach ($infos as $info) {
@@ -254,9 +256,15 @@ class PurchaseOrderNotification extends Mailable
                     $displayQuantityReceived = $info->quantity_issued ?? 0;
                 }
 
-                // Subtract current quantity from remaining to get diff
-                $currentQuantity = $info->quantity_issued ?? $info->quantity_IN ?? 0;
-                $remainingQuantity -= $currentQuantity;
+                // Use the raw info quantities for the diff (not the display values,
+                // which are zeroed per perspective above).
+                // from_store (OUT): issued - ordered
+                // to_store   (IN) : received(quantity_IN) - issued
+                $cumulativeIssued += $info->quantity_issued ?? 0;
+                $cumulativeIN += $info->quantity_IN ?? 0;
+                $diff = $this->perspective === 'from_store'
+                    ? $cumulativeIssued - $quantityRequested
+                    : $cumulativeIN - $cumulativeIssued;
 
                 $rows[] = (object)[
                     'lookupcode' => $lookupCode,
@@ -264,8 +272,10 @@ class PurchaseOrderNotification extends Mailable
                     'quantity_requested' => $isFirstRow ? $quantityRequested : null,
                     'quantity_received' => $displayQuantityReceived,
                     'quantity_IN' => $info->quantity_IN ?? 0,
-                    'quantity_issued' => $displayQuantityIssued,
-                    'diff' => $remainingQuantity,
+                    // Raw issued so the IN view can display the Issued column
+                    // (displayQuantityIssued is zeroed per perspective above).
+                    'quantity_issued' => $info->quantity_issued ?? 0,
+                    'diff' => $diff,
                     'production_date' => $info->production_date ?? null,
                     'expire_date' => $info->expire_date ?? null,
                 ];

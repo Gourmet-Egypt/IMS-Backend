@@ -8,10 +8,10 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Resources\Dashboard\UserResource;
 use App\Models\User;
 use App\Traits\Responses;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Hash;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -30,7 +30,7 @@ class AuthenticatedSessionController extends Controller
 
 
         $user->tokens()->delete();
-        
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         $guard = $request->input('guard', 'web');

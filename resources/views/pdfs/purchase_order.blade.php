@@ -367,6 +367,7 @@
                 <th>Diff</th>
             @else
                 <th>Qty Ordered</th>
+                <th>Qty Issued</th>
                 <th>Qty Received</th>
                 <th>Diff</th>
             @endif
@@ -375,32 +376,7 @@
         </tr>
         </thead>
         <tbody>
-        @foreach($items as $item)
-            <tr>
-                <td>{{ $item->lookupcode }}</td>
-                <td>{{ $item->description }}</td>
-                @if(isset($perspective) && $perspective === 'from_store')
-                    {{-- Transfer OUT: Show Ordered, Issued, Diff --}}
-                    <td>{{ $item->quantity_requested !== null ? number_format($item->quantity_requested, 1) : '' }}</td>
-                    <td>{{ number_format($item->quantity_issued, 1) }}</td>
-                    <td>{{ number_format($item->diff, 1) }}</td>
-                @else
-                    {{-- Transfer IN: Show Ordered, Received, Diff --}}
-                    <td>{{ $item->quantity_requested !== null ? number_format($item->quantity_requested, 1) : '' }}</td>
-                    <td>{{ number_format($item->quantity_IN, 1) }}</td>
-                    <td>{{ number_format($item->diff, 1) }}</td>
-                @endif
-                <td>
-                    {{ $item->production_date ?
-                \Carbon\Carbon::parse($item->production_date)->format('d/m/Y') :
-                '' }}
-                </td>
-                <td>
-                    {{ $item->expire_date ?
-                \Carbon\Carbon::parse($item->expire_date)->format('d/m/Y') : '' }}
-                </td>
-            </tr>
-        @endforeach
+        <x-pdf.item-rows :items="$items" :perspective="$perspective ?? null" />
         </tbody>
     </table>
     <!-- FOOTER -->
