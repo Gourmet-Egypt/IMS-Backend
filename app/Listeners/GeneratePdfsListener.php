@@ -4,9 +4,10 @@ namespace App\Listeners;
 
 use App\Events\PurchaseOrderCommitted;
 use App\Services\PurchaseOrderPdfService;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
-class GeneratePdfsListener
+class GeneratePdfsListener implements ShouldQueue
 {
     use InteractsWithQueue;
 
@@ -23,6 +24,4 @@ class GeneratePdfsListener
 
         $this->pdfService->generatePdf($purchaseOrder);
     }
-
-
 }

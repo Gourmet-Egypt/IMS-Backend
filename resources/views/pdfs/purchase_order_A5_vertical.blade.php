@@ -260,11 +260,21 @@
     <!-- VEHICLE -->
     <div class="section-title">Vehicle Info</div>
     <table class="info-table">
-        <tr><td><span class="bold1">Driver: </span>{{ $condition->Driver_name ?? '' }}</td></tr>
-        <tr><td><span class="bold1">Vehicle #: </span>{{ $condition->Vehicle_number ?? '' }}</td></tr>
-        <tr><td><span class="bold1">Seal #: </span>{{ $condition->seal_number ?? '' }}</td></tr>
-        <tr><td><span class="bold1">Temp In: </span>{{ $condition->vehicle_tempIN ?? 'N/A' }}</td></tr>
-        <tr><td><span class="bold1">Temp Out: </span>{{ $condition->vehicle_tempOut ?? 'N/A' }}</td></tr>
+        <tr>
+            <td><span class="bold1">Driver: </span>{{ $condition->Driver_name ?? '' }}</td>
+        </tr>
+        <tr>
+            <td><span class="bold1">Vehicle #: </span>{{ $condition->Vehicle_number ?? '' }}</td>
+        </tr>
+        <tr>
+            <td><span class="bold1">Seal #: </span>{{ $condition->seal_number ?? '' }}</td>
+        </tr>
+        <tr>
+            <td><span class="bold1">Temp In: </span>{{ $condition->vehicle_tempIN ?? 'N/A' }}</td>
+        </tr>
+        <tr>
+            <td><span class="bold1">Temp Out: </span>{{ $condition->vehicle_tempOut ?? 'N/A' }}</td>
+        </tr>
     </table>
 
     <!-- ITEMS -->
@@ -278,27 +288,14 @@
                 <th>Iss</th>
             @else
                 <th>Ord</th>
+                <th>Iss</th>
                 <th>Rcv</th>
             @endif
             <th>Diff</th>
         </tr>
         </thead>
         <tbody>
-        @foreach($items as $item)
-            <tr>
-                <td>{{ $item->lookupcode }}</td>
-                <td>{{ Str::limit($item->description, 15) }}</td>
-                @if(isset($perspective) && $perspective === 'from_store')
-                    <td>{{ number_format($item->quantity_requested, 1) }}</td>
-                    <td>{{ $item->quantity_issued }}</td>
-                    <td>{{ number_format($item->quantity_requested - $item->quantity_issued, 1) }}</td>
-                @else
-                    <td>{{ number_format($item->quantity_requested, 1) }}</td>
-                    <td>{{ number_format($item->quantity_received, 1) }}</td>
-                    <td>{{ number_format($item->quantity_received - $item->quantity_requested, 1) }}</td>
-                @endif
-            </tr>
-        @endforeach
+        <x-pdf.item-rows :items="$items" :perspective="$perspective ?? null" />
         </tbody>
     </table>
 

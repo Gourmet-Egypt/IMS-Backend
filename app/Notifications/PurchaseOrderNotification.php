@@ -179,8 +179,8 @@ class PurchaseOrderNotification extends Mailable
             'otherStore'
         ]);
 
-        // Transform items data - one row per item with summed quantities
-        $items = $this->purchaseOrder->entries->map(function ($entry) {
+        // Transform items data - one row per info (batch)
+        $items = $this->purchaseOrder->entries->flatMap(function ($entry) {
             $infos = $entry->infos;
 
             // Get quantity from transfer request item
@@ -202,52 +202,88 @@ class PurchaseOrderNotification extends Mailable
                 }
             }
 
-            // Sum quantity_issued for all infos of the same item
-            $totalQuantityIssued = $infos->sum('quantity_issued');
-            $totalQuantityReceived = $infos->sum('quantity_issued');
-
-            // Set values based on perspective AND POType
+            $lookupCode = \App\Models\Item::where('ID', $entry->ItemID)->value('ItemLookupCode') ?? 'N/A';
             $poType = (int)$this->purchaseOrder->POType;
 
-            if ($poType == 3) {
-                // TransferOUT: Goods are being sent out
-                if ($this->perspective === 'from_store') {
-                    // FROM store (sending): show what was issued
-                    $displayQuantityIssued = $totalQuantityIssued;
-                    $displayQuantityReceived = 0;
-                } else {
-                    // TO store (receiving): nothing received yet at commit time
-                    $displayQuantityIssued = 0;
-                    $displayQuantityReceived = 0;
-                }
-            } elseif ($poType == 2) {
-                // TransferIN: Goods are being received
-                if ($this->perspective === 'to_store') {
-                    // TO store (receiving): show what was received
-                    $displayQuantityIssued = 0;
-                    $displayQuantityReceived = $totalQuantityReceived;
-                } else {
-                    // FROM store (sending from other store): nothing from their perspective
-                    $displayQuantityIssued = 0;
-                    $displayQuantityReceived = 0;
-                }
-            } else {
-                // Default: show both actual values
-                $displayQuantityIssued = $totalQuantityIssued;
-                $displayQuantityReceived = $totalQuantityReceived;
+            // If no infos exist, return one row for the entry
+            if ($infos->isEmpty()) {
+                return [
+                    (object)[
+                        'lookupcode' => $lookupCode,
+                        'description' => $entry->ItemDescription ?? 'N/A',
+                        'quantity_requested' => $quantityRequested,
+                        'quantity_received' => 0,
+                        'quantity_IN' => 0,
+                        'quantity_issued' => 0,
+                        // OUT: 0 issued - ordered = -ordered; IN: 0 received - 0 issued = 0.
+                        'diff' => $this->perspective === 'from_store' ? -$quantityRequested : 0,
+                        'production_date' => null,
+                        'expire_date' => null,
+                    ]
+                ];
             }
 
-            $itemData = (object)[
-                'lookupcode' => \App\Models\Item::where('ID', $entry->ItemID)->value('ItemLookupCode') ?? 'N/A',
-                'description' => $entry->ItemDescription ?? 'N/A',
-                'quantity_requested' => $quantityRequested,
-                'quantity_received' => $displayQuantityReceived,
-                'quantity_issued' => $displayQuantityIssued,
-                'production_date' => $infos->first()?->production_date ?? null,
-                'expire_date' => $infos->first()?->expire_date ?? null,
-            ];
+            // Create one row per info (batch)
+            // Diff is cumulative across batch rows (running total per entry).
+            $rows = [];
+            $cumulativeIssued = 0;
+            $cumulativeIN = 0;
+            $isFirstRow = true;
 
-            return $itemData;
+            foreach ($infos as $info) {
+                // Set values based on perspective AND POType
+                if ($poType == 3) {
+                    // TransferOUT: Goods are being sent out
+                    if ($this->perspective === 'from_store') {
+                        $displayQuantityIssued = $info->quantity_issued ?? 0;
+                        $displayQuantityReceived = 0;
+                    } else {
+                        $displayQuantityIssued = 0;
+                        $displayQuantityReceived = 0;
+                    }
+                } elseif ($poType == 2) {
+                    // TransferIN: Goods are being received
+                    if ($this->perspective === 'to_store') {
+                        $displayQuantityIssued = 0;
+                        $displayQuantityReceived = $info->quantity_issued ?? 0;
+                    } else {
+                        $displayQuantityIssued = 0;
+                        $displayQuantityReceived = 0;
+                    }
+                } else {
+                    // Default: show both actual values
+                    $displayQuantityIssued = $info->quantity_issued ?? 0;
+                    $displayQuantityReceived = $info->quantity_issued ?? 0;
+                }
+
+                // Use the raw info quantities for the diff (not the display values,
+                // which are zeroed per perspective above).
+                // from_store (OUT): issued - ordered
+                // to_store   (IN) : received(quantity_IN) - issued
+                $cumulativeIssued += $info->quantity_issued ?? 0;
+                $cumulativeIN += $info->quantity_IN ?? 0;
+                $diff = $this->perspective === 'from_store'
+                    ? $cumulativeIssued - $quantityRequested
+                    : $cumulativeIN - $cumulativeIssued;
+
+                $rows[] = (object)[
+                    'lookupcode' => $lookupCode,
+                    'description' => $entry->ItemDescription ?? 'N/A',
+                    'quantity_requested' => $isFirstRow ? $quantityRequested : null,
+                    'quantity_received' => $displayQuantityReceived,
+                    'quantity_IN' => $info->quantity_IN ?? 0,
+                    // Raw issued so the IN view can display the Issued column
+                    // (displayQuantityIssued is zeroed per perspective above).
+                    'quantity_issued' => $info->quantity_issued ?? 0,
+                    'diff' => $diff,
+                    'production_date' => $info->production_date ?? null,
+                    'expire_date' => $info->expire_date ?? null,
+                ];
+
+                $isFirstRow = false;
+            }
+
+            return $rows;
         });
 
         $data = [

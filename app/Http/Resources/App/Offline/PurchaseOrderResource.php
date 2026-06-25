@@ -18,6 +18,7 @@ class PurchaseOrderResource extends JsonResource
             'id' => $this->ID,
             'title' => $this->POTitle,
             'type' => $this->POType,
+            'status' => $this->Status,
             'from_store_id' => $this->StoreID,
             'from_store_name' => $this->currentStore?->Name,
             'to_store_id' => $this->OtherStoreID,

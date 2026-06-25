@@ -63,7 +63,7 @@ class LoginRequest extends FormRequest
         $modelClass = $this->guardConfig[$guard]['model'];
 
         $query = $modelClass::where($loginField, $credentials['email']);
-
+        
         if ($guard === 'web') {
             $storeId = Configuration::value('StoreID');
             $query->where('store_id', $storeId);

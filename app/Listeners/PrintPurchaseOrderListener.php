@@ -4,9 +4,10 @@ namespace App\Listeners;
 
 use App\Events\PurchaseOrderCommitted;
 use App\Services\PurchaseOrderPrintService;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
-class PrintPurchaseOrderListener
+class PrintPurchaseOrderListener implements ShouldQueue
 {
     use InteractsWithQueue;
 

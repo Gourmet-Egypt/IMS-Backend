@@ -8,6 +8,7 @@ use App\Http\Resources\App\Item\ShowItemResource;
 use App\Models\Item;
 use App\Traits\Responses;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class ItemController extends Controller
 {

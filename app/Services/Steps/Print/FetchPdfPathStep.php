@@ -14,7 +14,12 @@ class FetchPdfPathStep
         }
 
         $pdfPath = PurchaseOrderPdf::where('purchase_order_id', $payload->purchaseOrder->ID)
+            ->latest()
             ->value('file_path');
+
+        if (!$pdfPath) {
+            throw new \Exception("No PDF record found for purchase order: {$payload->purchaseOrder->ID}");
+        }
 
         $fullPath = storage_path('app/'.$pdfPath);
 

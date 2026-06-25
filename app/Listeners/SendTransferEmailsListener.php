@@ -4,9 +4,10 @@ namespace App\Listeners;
 
 use App\Events\PurchaseOrderCommitted;
 use App\Services\PurchaseOrderEmailService;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
-class SendTransferEmailsListener
+class SendTransferEmailsListener implements ShouldQueue
 {
     use InteractsWithQueue;
 
@@ -23,8 +24,6 @@ class SendTransferEmailsListener
 
         $this->emailService->sendNotifications($purchaseOrder);
     }
-
-
 
 
 }

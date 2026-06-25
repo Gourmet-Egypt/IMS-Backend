@@ -29,13 +29,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/purchase-orders/{purchaseOrder}/test-mail',
-    [PurchaseOrderController::class, 'testMail']);
-
-Route::post('/purchase-orders/test-pdf-email-print',
-    [PurchaseOrderController::class, 'testPdfEmailPrint']);
-
-
 Route::middleware(['auth.multi'])->group(function () {
 
     Route::prefix('transfer-requests')->group(function () {
@@ -94,6 +87,9 @@ Route::middleware(['auth.multi'])->group(function () {
 
         Route::post('/{purchaseOrder}/commit', [PurchaseOrderController::class, 'commitOrder'])
             ->name('purchase-orders.commit');
+
+        Route::post('/{purchaseOrder}/partial-commit', [PurchaseOrderController::class, 'partialCommitOrder'])
+            ->name('purchase-orders.partial-commit');
 
     });
 
@@ -156,7 +152,7 @@ Route::middleware('auth.multi')->group(function () {
 });
 
 
-Route::get('/test/{purchaseOrder}', [PurchaseOrderController::class, 'test']);
+
 
 
 
