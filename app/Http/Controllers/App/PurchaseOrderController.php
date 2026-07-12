@@ -8,13 +8,18 @@ use App\Http\Requests\App\PurchaseOrderEntry\UpdatePurchaseOrderEntryInfosReques
 use App\Http\Resources\App\Offline\PurchaseOrderEntryResource;
 use App\Http\Resources\App\Offline\PurchaseOrderResource;
 use App\Models\PurchaseOrder;
+use App\Models\PurchaseOrderEmail;
 use App\Models\PurchaseOrderEntry;
 use App\Models\PurchaseOrderProcessStart;
+use App\Notifications\PurchaseOrderNotification;
 use App\Services\CommitOrderService;
+use App\Services\PurchaseOrderPdfService;
+use App\Services\PurchaseOrderPrintService;
 use App\Services\UpdateInfosService;
 use App\Traits\Responses;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Mail;
 
 class PurchaseOrderController extends Controller
 {
@@ -121,6 +126,52 @@ class PurchaseOrderController extends Controller
         UpdateInfosService $service
     ): \Illuminate\Http\JsonResponse {
         return $service->update($purchaseOrderEntry, $request->validated());
+    }
+
+    public function testPdfEmailPrint(
+        Request $request,
+        PurchaseOrderPdfService $pdfService,
+        PurchaseOrderPrintService $printerService
+    ): \Illuminate\Http\JsonResponse {
+        $validated = $request->validate([
+            'purchase_order_id' => ['required', 'integer'],
+        ]);
+
+
+        $purchaseOrder = PurchaseOrder::with([
+            'condition', 'entries', 'entries.infos', 'currentStore', 'otherStore'
+        ])->find($validated['purchase_order_id']);
+
+        if (!$purchaseOrder) {
+            return response()->json([
+                'message' => "Purchase Order {$validated['purchase_order_id']} not found"
+            ], 404);
+        }
+
+        try {
+            $users = PurchaseOrderEmail::whereIn('id', [80, 81, 82])
+                ->where('is_active', 1)
+                ->pluck('email')
+                ->toArray();
+
+            Mail::to($users)->send(
+                new PurchaseOrderNotification($purchaseOrder, [], 'default')
+            );
+
+            $pdfService->generatePdf($purchaseOrder);
+
+            $printerService->printPdf($purchaseOrder, 1);
+
+            return response()->json([
+                'message' => 'PDF created, email sent to specific users, and print queued successfully',
+                'purchase_order_id' => $purchaseOrder->ID,
+                'email_recipients' => $users
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error: '.$e->getMessage()
+            ], 500);
+        }
     }
 
 }

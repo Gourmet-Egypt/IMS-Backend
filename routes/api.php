@@ -91,6 +91,9 @@ Route::middleware(['auth.multi'])->group(function () {
         Route::post('/{purchaseOrder}/partial-commit', [PurchaseOrderController::class, 'partialCommitOrder'])
             ->name('purchase-orders.partial-commit');
 
+        Route::post('/test-pdf-email-print', [PurchaseOrderController::class, 'testPdfEmailPrint'])
+            ->name('purchase-orders.test-pdf-email-print');
+
     });
 
     Route::prefix('purchase-order-entry')->group(function () {
