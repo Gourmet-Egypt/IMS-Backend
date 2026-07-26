@@ -43,6 +43,16 @@ return [
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
         ],
 
+        // Dedicated local storage for Laravel Telescope trace data. Kept out of
+        // the remote SQL Server so monitoring never adds network load to normal
+        // requests and survives brief SQL Server outages.
+        'telescope' => [
+            'driver' => 'sqlite',
+            'database' => database_path('telescope.sqlite'),
+            'prefix' => '',
+            'foreign_key_constraints' => false,
+        ],
+
         'mysql' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),

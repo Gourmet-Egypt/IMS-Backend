@@ -24,6 +24,9 @@ class Kernel extends ConsoleKernel
 
         // Restart queue worker daily to prevent memory leaks
         $schedule->command('queue:restart')->daily();
+
+        // Keep the Telescope SQLite log bounded: drop entries older than 48h.
+        $schedule->command('telescope:prune --hours=48')->daily();
     }
 
     /**

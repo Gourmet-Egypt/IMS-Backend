@@ -24,7 +24,7 @@ class ValidateStep
             );
         }
 
-        $payload->poTypeEnum = $poTypeEnum->name;
+        $payload->poTypeEnum = $poTypeEnum->apiTransactionType()->name;
         $payload->storeId = DB::table('Configuration')->select('StoreID')->value('StoreID');
 
         return $next($payload);
