@@ -16,6 +16,12 @@ class SupplierList extends Model
 
     protected $hidden = ['DBTimeStamp'];
 
+        protected $casts = [
+        'ID' => 'integer',
+        'ItemID' => 'integer',
+        'SupplierID' => 'integer',
+    ];
+
     public function item(): BelongsTo
     {
         return $this->belongsTo(Item::class, 'ItemID', 'ID');
