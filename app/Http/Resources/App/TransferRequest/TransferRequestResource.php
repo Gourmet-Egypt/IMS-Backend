@@ -20,7 +20,8 @@ class TransferRequestResource extends JsonResource
             'title' => $this->title,
             'from_store_id' => $this->store_id,
             'to_store_id' => $this->other_store_id,
-            'to_store_name' => $this->otherStore->Name,
+            'to_store_name' => $this->otherStore?->Name,
+            'supplier_id' => $this->supplier_id,
             'status' => $this->status,
             'type' => TransferRequestTypeEnum::from($this->type)->number(),
             'delivery_date' => $this->delivery_date,
@@ -34,4 +35,3 @@ class TransferRequestResource extends JsonResource
         ];
     }
 }
-

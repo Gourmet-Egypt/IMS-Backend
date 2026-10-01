@@ -20,6 +20,7 @@ class ItemResource extends JsonResource
             'Description' => $this->Description,
             'HQID' => $this->HQID,
             'Aliases' => $this->aliases?->pluck('Alias'),
+            'suppliers_ids' => $this->supplierLists?->pluck('SupplierID')->values(),
             'Price' => $this->Price,
             'Quantity' => $this->Quantity,
             'LastUpdated' => $this->LastUpdated,

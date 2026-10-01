@@ -14,6 +14,7 @@ enum TransferRequestTypeEnum: string
         return match ($this) {
             self::TransferIN => 2,
             self::TransferOut => 3,
+            self::ReturnToSupplier => self::ReturnToSupplier->value,
             default => [],
         };
     }

@@ -3,6 +3,7 @@
 use App\Http\Controllers\App\ItemController;
 use App\Http\Controllers\App\PrinterController;
 use App\Http\Controllers\App\PurchaseOrderController;
+use App\Http\Controllers\App\SupplierController;
 use App\Http\Controllers\App\TransferRequestController;
 use App\Http\Controllers\App\TransferRequestItemController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -52,6 +53,9 @@ Route::middleware(['auth.multi'])->group(function () {
         Route::post('/{transferRequest}/status', [TransferRequestController::class, 'createOrder'])
             ->name('transfer-request.createOrder');
 
+        Route::post('/{transferRequest}/v2-status', [TransferRequestController::class, 'createOrderV2'])
+            ->name('transfer-request.createOrder.v2');
+
 
         // TransferRequestsItems Routes
         Route::post('{transferRequest}/items', [TransferRequestItemController::class, 'storeOrUpdate']);
@@ -90,6 +94,11 @@ Route::middleware(['auth.multi'])->group(function () {
 
         Route::post('/{purchaseOrder}/partial-commit', [PurchaseOrderController::class, 'partialCommitOrder'])
             ->name('purchase-orders.partial-commit');
+
+        // Rebuilt commit flow (factory + strategy). One endpoint for full and
+        // partial; the request flag `isClosed` selects the mode.
+        Route::post('/{purchaseOrder}/v2-commit', [PurchaseOrderController::class, 'commit'])
+            ->name('purchase-orders.v2-commit');
 
         Route::post('/test-pdf-email-print', [PurchaseOrderController::class, 'testPdfEmailPrint'])
             ->name('purchase-orders.test-pdf-email-print');
@@ -138,6 +147,15 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store'])
 Route::get('/items', [ItemController::class, 'index'])
     ->name('item.index');
 
+Route::get('/suppliers', [SupplierController::class, 'index'])
+    ->name('supplier.index');
+
+Route::get('/suppliers/{supplier}/items/search', [SupplierController::class, 'searchItem'])
+    ->name('supplier.items.search');
+
+Route::get('/suppliers/{supplier}', [SupplierController::class, 'show'])
+    ->name('supplier.show');
+
 
 Route::get('/cashiers', [CashierController::class, 'index'])
     ->middleware('guest')
@@ -153,9 +171,6 @@ Route::middleware('auth.multi')->group(function () {
     Route::post('/change-password', [AuthenticatedSessionController::class, 'changePassword'])
         ->name('password.change');
 });
-
-
-
 
 
 

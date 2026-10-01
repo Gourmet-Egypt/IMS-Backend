@@ -2,6 +2,7 @@
 
 namespace App\Services\Steps\CreateOrder;
 
+use App\Enums\TransferRequestTypeEnum;
 use App\Traits\Responses;
 use Illuminate\Http\Response;
 
@@ -27,6 +28,19 @@ class ValidateStep
             return $this->error(
                 status: Response::HTTP_NOT_FOUND,
                 message: 'Cashier not found'
+            );
+        }
+
+        if (
+            in_array($transferRequest->type, [
+                TransferRequestTypeEnum::PO->value,
+                TransferRequestTypeEnum::ReturnToSupplier->value,
+            ], true)
+            && !$transferRequest->supplier_id
+        ) {
+            return $this->error(
+                status: Response::HTTP_UNPROCESSABLE_ENTITY,
+                message: 'A supplier is required for this order type.'
             );
         }
 

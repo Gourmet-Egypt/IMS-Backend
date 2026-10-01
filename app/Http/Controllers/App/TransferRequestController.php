@@ -10,6 +10,7 @@ use App\Http\Resources\App\TransferRequest\TransferRequestResource;
 use App\Models\Store;
 use App\Models\TransferRequest;
 use App\Services\CreateOrderService;
+use App\Services\CreateOrderServiceV2;
 use App\Traits\Responses;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -38,18 +39,21 @@ class TransferRequestController extends Controller
         $user = $request->user();
         $type = $request->input('type');
         $otherStoreId = $request->input('other_store_id');
+        $supplierId = $request->input('supplier_id');
 
-        $stores = Store::whereIn('ID', [$user->store_id, $otherStoreId])
+        $storeIds = array_filter([$user->store_id, $otherStoreId]);
+        $stores = Store::whereIn('ID', $storeIds)
             ->pluck('Name', 'ID');
 
         $userStoreName = $stores[$user->store_id];
-        $otherStoreName = $stores[$otherStoreId];
+        $otherStoreName = $otherStoreId ? $stores[$otherStoreId] : null;
 
         // Generate title with proper logic
         $title = $request->input('title') ?? $this->generateTransferTitle(
             $type,
             $userStoreName,
-            $otherStoreName
+            $otherStoreName,
+            $supplierId
         );
 
         // Create transfer request
@@ -58,6 +62,7 @@ class TransferRequestController extends Controller
             'type' => $type,
             'store_id' => $user->store_id,
             'other_store_id' => $otherStoreId,
+            'supplier_id' => $supplierId,
             'status' => TransferRequestStatusEnum::OPEN->value,
             'delivery_date' => $request->input('delivery_date'),
         ]);
@@ -75,11 +80,14 @@ class TransferRequestController extends Controller
     private function generateTransferTitle(
         string $type,
         string $fromStore,
-        string $toStore
+        ?string $toStore,
+        ?int $supplierId = null
     ): string {
-        return $type === 'TransferIN'
-            ? "Request from {$fromStore} to {$toStore}"
-            : "Transfer Out from {$fromStore} to {$toStore}";
+        return match ($type) {
+            'TransferIN' => "Request from {$fromStore} to {$toStore}",
+            'ReturnToSupplier' => "Return to supplier {$supplierId} from {$fromStore}",
+            default => "Transfer Out from {$fromStore} to {$toStore}",
+        };
     }
 
     public function show(TransferRequest $transferRequest)
@@ -111,6 +119,14 @@ class TransferRequestController extends Controller
         return $service->create($transferRequest, $request);
     }
 
+    public function createOrderV2(
+        TransferRequest $transferRequest,
+        Request $request,
+        CreateOrderServiceV2 $service
+    ) {
+        return $service->create($transferRequest, $request);
+    }
+
     public function update(UpdateTransferRequest $request, TransferRequest $transferRequest)
     {
 
@@ -123,4 +139,3 @@ class TransferRequestController extends Controller
         );
     }
 }
-
