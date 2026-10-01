@@ -1,0 +1,2285 @@
+{
+  "info": {
+    "name": "IMS — Suppliers, Items and PO Creation",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Source-based illustrative examples. Supplier endpoints are public. PO transfer creation, item addition and create-order requests require a bearer token. Set base_url, supplier_id, lookupcode, token, transfer_request_id and item_hq_id. PO workflow: create transfer, add items, create order using either status or v2-status. Validation returns only the first error. Items list is public; item lookup requires a bearer token."
+  },
+  "auth": {
+    "type": "noauth"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost/IMS"
+    },
+    {
+      "key": "supplier_id",
+      "value": "1"
+    },
+    {
+      "key": "lookupcode",
+      "value": "ITEM001"
+    },
+    {
+      "value": "",
+      "key": "token"
+    },
+    {
+      "value": "25",
+      "key": "transfer_request_id"
+    },
+    {
+      "value": "200",
+      "key": "item_hq_id"
+    }
+  ],
+  "item": [
+    {
+      "name": "List suppliers",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/suppliers",
+        "description": "All suppliers ordered by SupplierName; no pagination or filters."
+      },
+      "response": [
+        {
+          "name": "200 — Suppliers found",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/suppliers",
+            "description": "All suppliers ordered by SupplierName; no pagination or filters."
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 200,\n  \"message\": \"Suppliers retrieved successfully\",\n  \"data\": [\n    {\n      \"id\": 1,\n      \"hq_id\": 101,\n      \"code\": \"SUP001\",\n      \"supplier_name\": \"Example Supplier\",\n      \"contact_name\": \"Contact\",\n      \"phone_number\": \"01000000000\",\n      \"email_address\": \"supplier@example.com\",\n      \"country\": \"Egypt\",\n      \"state\": null,\n      \"city\": \"Cairo\",\n      \"last_updated\": \"2026-10-01 10:00:00\"\n    }\n  ]\n}"
+        },
+        {
+          "name": "200 — Empty list",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/suppliers",
+            "description": "All suppliers ordered by SupplierName; no pagination or filters."
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 200,\n  \"message\": \"Suppliers retrieved successfully\",\n  \"data\": []\n}"
+        }
+      ]
+    },
+    {
+      "name": "Supplier details and items",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/suppliers/{{supplier_id}}",
+        "description": "supplier_id is Supplier.ID. Includes all linked items ordered by ItemID. items[].id is Item.ID; orphaned item relations yield null lookupcode/description. No separate /suppliers/{supplier}/items route."
+      },
+      "response": [
+        {
+          "name": "200 — With items",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/suppliers/{{supplier_id}}",
+            "description": "supplier_id is Supplier.ID. Includes all linked items ordered by ItemID. items[].id is Item.ID; orphaned item relations yield null lookupcode/description. No separate /suppliers/{supplier}/items route."
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 200,\n  \"message\": \"Supplier retrieved successfully\",\n  \"data\": {\n    \"id\": 1,\n    \"hq_id\": 101,\n    \"code\": \"SUP001\",\n    \"supplier_name\": \"Example Supplier\",\n    \"contact_name\": \"Contact\",\n    \"phone_number\": \"01000000000\",\n    \"email_address\": \"supplier@example.com\",\n    \"items\": [\n      {\n        \"id\": 20,\n        \"lookupcode\": \"ITEM001\",\n        \"description\": \"Example Item\"\n      }\n    ]\n  }\n}"
+        },
+        {
+          "name": "200 — Without items",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/suppliers/{{supplier_id}}",
+            "description": "supplier_id is Supplier.ID. Includes all linked items ordered by ItemID. items[].id is Item.ID; orphaned item relations yield null lookupcode/description. No separate /suppliers/{supplier}/items route."
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 200,\n  \"message\": \"Supplier retrieved successfully\",\n  \"data\": {\n    \"id\": 1,\n    \"hq_id\": 101,\n    \"code\": \"SUP001\",\n    \"supplier_name\": \"Example Supplier\",\n    \"contact_name\": \"Contact\",\n    \"phone_number\": \"01000000000\",\n    \"email_address\": \"supplier@example.com\",\n    \"items\": []\n  }\n}"
+        },
+        {
+          "name": "404 — Supplier missing",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/suppliers/{{supplier_id}}",
+            "description": "supplier_id is Supplier.ID. Includes all linked items ordered by ItemID. items[].id is Item.ID; orphaned item relations yield null lookupcode/description. No separate /suppliers/{supplier}/items route."
+          },
+          "status": "Not Found",
+          "code": 404,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 404,\n  \"message\": \"Resource not found.\",\n  \"data\": null,\n  \"exception\": \"No query results for model [App\\\\Models\\\\Supplier] 999999\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Search supplier item",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/suppliers/{{supplier_id}}/items/search?lookupcode={{lookupcode}}",
+        "description": "Required lookupcode query string; exact ItemLookupCode match subject to DB collation, no partial/name/alias search. Trims whitespace, converts blank to null. Item must exist and belong to supplier. data.id is Item.HQID, unlike the supplier items list. Supplier binding precedes validation. For array validation failure send lookupcode[]=ITEM001."
+      },
+      "response": [
+        {
+          "name": "200 — Linked item found",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/suppliers/{{supplier_id}}/items/search?lookupcode={{lookupcode}}",
+            "description": "Required lookupcode query string; exact ItemLookupCode match subject to DB collation, no partial/name/alias search. Trims whitespace, converts blank to null. Item must exist and belong to supplier. data.id is Item.HQID, unlike the supplier items list. Supplier binding precedes validation. For array validation failure send lookupcode[]=ITEM001."
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 200,\n  \"message\": \"Supplier item search completed successfully\",\n  \"data\": {\n    \"id\": 200,\n    \"lookupcode\": \"ITEM001\",\n    \"description\": \"Example Item\"\n  }\n}"
+        },
+        {
+          "name": "404 — Supplier missing",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/suppliers/{{supplier_id}}/items/search?lookupcode={{lookupcode}}",
+            "description": "Required lookupcode query string; exact ItemLookupCode match subject to DB collation, no partial/name/alias search. Trims whitespace, converts blank to null. Item must exist and belong to supplier. data.id is Item.HQID, unlike the supplier items list. Supplier binding precedes validation. For array validation failure send lookupcode[]=ITEM001."
+          },
+          "status": "Not Found",
+          "code": 404,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 404,\n  \"message\": \"Resource not found.\",\n  \"data\": null,\n  \"exception\": \"No query results for model [App\\\\Models\\\\Supplier] 999999\"\n}"
+        },
+        {
+          "name": "404 — Item missing",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/suppliers/{{supplier_id}}/items/search?lookupcode={{lookupcode}}",
+            "description": "Required lookupcode query string; exact ItemLookupCode match subject to DB collation, no partial/name/alias search. Trims whitespace, converts blank to null. Item must exist and belong to supplier. data.id is Item.HQID, unlike the supplier items list. Supplier binding precedes validation. For array validation failure send lookupcode[]=ITEM001."
+          },
+          "status": "Not Found",
+          "code": 404,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 404,\n  \"message\": \"Item not found\",\n  \"data\": null\n}"
+        },
+        {
+          "name": "404 — Existing item not linked",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/suppliers/{{supplier_id}}/items/search?lookupcode={{lookupcode}}",
+            "description": "Required lookupcode query string; exact ItemLookupCode match subject to DB collation, no partial/name/alias search. Trims whitespace, converts blank to null. Item must exist and belong to supplier. data.id is Item.HQID, unlike the supplier items list. Supplier binding precedes validation. For array validation failure send lookupcode[]=ITEM001."
+          },
+          "status": "Not Found",
+          "code": 404,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 404,\n  \"message\": \"Item is not related to this supplier\",\n  \"data\": null\n}"
+        },
+        {
+          "name": "422 — Missing lookupcode",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/suppliers/{{supplier_id}}/items/search?lookupcode={{lookupcode}}",
+            "description": "Required lookupcode query string; exact ItemLookupCode match subject to DB collation, no partial/name/alias search. Trims whitespace, converts blank to null. Item must exist and belong to supplier. data.id is Item.HQID, unlike the supplier items list. Supplier binding precedes validation. For array validation failure send lookupcode[]=ITEM001."
+          },
+          "status": "Unprocessable Entity",
+          "code": 422,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 422,\n  \"message\": \"Item lookup code is required.\",\n  \"data\": null\n}"
+        }
+      ]
+    },
+    {
+      "name": "Create transfer as PO",
+      "request": {
+        "method": "POST",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/transfer-requests",
+        "description": "Creates an open transfer request, not the final purchase order. type must be exactly PO. supplier_id is required integer Supplier.ID. other_store_id is optional for PO; omit it. store_id comes from the token user. Optional title (string max 255); omit to use the server-generated title. Optional delivery_date must be a date today or later; omit when unused, not null. Response type is [] for PO in the current enum. items is omitted on creation. Use the returned id as transfer_request_id, add items, then create order. Current default PO title uses the generic Transfer Out template; supply title for a clear PO name.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"type\": \"PO\",\n  \"supplier_id\": \"{{supplier_id}}\",\n  \"title\": \"Supplier purchase order\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [
+        {
+          "name": "201 — Created",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests",
+            "description": "Creates an open transfer request, not the final purchase order. type must be exactly PO. supplier_id is required integer Supplier.ID. other_store_id is optional for PO; omit it. store_id comes from the token user. Optional title (string max 255); omit to use the server-generated title. Optional delivery_date must be a date today or later; omit when unused, not null. Response type is [] for PO in the current enum. items is omitted on creation. Use the returned id as transfer_request_id, add items, then create order. Current default PO title uses the generic Transfer Out template; supply title for a clear PO name.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"PO\",\n  \"supplier_id\": \"{{supplier_id}}\",\n  \"title\": \"Supplier purchase order\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 201,\n  \"message\": \"Transfer request created successfully\",\n  \"data\": {\n    \"id\": 25,\n    \"title\": \"Supplier purchase order\",\n    \"from_store_id\": 1,\n    \"to_store_id\": null,\n    \"to_store_name\": null,\n    \"supplier_id\": 1,\n    \"status\": \"open\",\n    \"type\": [],\n    \"delivery_date\": null,\n    \"purchase_order_id\": null,\n    \"created_at\": \"2026-10-01\",\n    \"updated_at\": \"2026-10-01\"\n  }\n}"
+        },
+        {
+          "name": "422 — Supplier missing",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests",
+            "description": "Creates an open transfer request, not the final purchase order. type must be exactly PO. supplier_id is required integer Supplier.ID. other_store_id is optional for PO; omit it. store_id comes from the token user. Optional title (string max 255); omit to use the server-generated title. Optional delivery_date must be a date today or later; omit when unused, not null. Response type is [] for PO in the current enum. items is omitted on creation. Use the returned id as transfer_request_id, add items, then create order. Current default PO title uses the generic Transfer Out template; supply title for a clear PO name.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"PO\",\n  \"supplier_id\": \"{{supplier_id}}\",\n  \"title\": \"Supplier purchase order\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "status": "Unprocessable Entity",
+          "code": 422,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 422,\n  \"message\": \"You must specify a supplier.\",\n  \"data\": null\n}"
+        },
+        {
+          "name": "422 — Supplier not found",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests",
+            "description": "Creates an open transfer request, not the final purchase order. type must be exactly PO. supplier_id is required integer Supplier.ID. other_store_id is optional for PO; omit it. store_id comes from the token user. Optional title (string max 255); omit to use the server-generated title. Optional delivery_date must be a date today or later; omit when unused, not null. Response type is [] for PO in the current enum. items is omitted on creation. Use the returned id as transfer_request_id, add items, then create order. Current default PO title uses the generic Transfer Out template; supply title for a clear PO name.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"PO\",\n  \"supplier_id\": \"{{supplier_id}}\",\n  \"title\": \"Supplier purchase order\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "status": "Unprocessable Entity",
+          "code": 422,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 422,\n  \"message\": \"The selected supplier does not exist.\",\n  \"data\": null\n}"
+        },
+        {
+          "name": "422 — Invalid supplier ID",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests",
+            "description": "Creates an open transfer request, not the final purchase order. type must be exactly PO. supplier_id is required integer Supplier.ID. other_store_id is optional for PO; omit it. store_id comes from the token user. Optional title (string max 255); omit to use the server-generated title. Optional delivery_date must be a date today or later; omit when unused, not null. Response type is [] for PO in the current enum. items is omitted on creation. Use the returned id as transfer_request_id, add items, then create order. Current default PO title uses the generic Transfer Out template; supply title for a clear PO name.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"PO\",\n  \"supplier_id\": \"{{supplier_id}}\",\n  \"title\": \"Supplier purchase order\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "status": "Unprocessable Entity",
+          "code": 422,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 422,\n  \"message\": \"Invalid supplier ID format.\",\n  \"data\": null\n}"
+        },
+        {
+          "name": "422 — Type missing",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests",
+            "description": "Creates an open transfer request, not the final purchase order. type must be exactly PO. supplier_id is required integer Supplier.ID. other_store_id is optional for PO; omit it. store_id comes from the token user. Optional title (string max 255); omit to use the server-generated title. Optional delivery_date must be a date today or later; omit when unused, not null. Response type is [] for PO in the current enum. items is omitted on creation. Use the returned id as transfer_request_id, add items, then create order. Current default PO title uses the generic Transfer Out template; supply title for a clear PO name.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"PO\",\n  \"supplier_id\": \"{{supplier_id}}\",\n  \"title\": \"Supplier purchase order\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "status": "Unprocessable Entity",
+          "code": 422,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 422,\n  \"message\": \"Transfer type is required.\",\n  \"data\": null\n}"
+        },
+        {
+          "name": "422 — Invalid type (current source message)",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests",
+            "description": "Creates an open transfer request, not the final purchase order. type must be exactly PO. supplier_id is required integer Supplier.ID. other_store_id is optional for PO; omit it. store_id comes from the token user. Optional title (string max 255); omit to use the server-generated title. Optional delivery_date must be a date today or later; omit when unused, not null. Response type is [] for PO in the current enum. items is omitted on creation. Use the returned id as transfer_request_id, add items, then create order. Current default PO title uses the generic Transfer Out template; supply title for a clear PO name.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"PO\",\n  \"supplier_id\": \"{{supplier_id}}\",\n  \"title\": \"Supplier purchase order\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "status": "Unprocessable Entity",
+          "code": 422,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 422,\n  \"message\": \"Transfer type must be either TransferOut or TransferIn.\",\n  \"data\": null\n}"
+        },
+        {
+          "name": "422 — Title too long",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests",
+            "description": "Creates an open transfer request, not the final purchase order. type must be exactly PO. supplier_id is required integer Supplier.ID. other_store_id is optional for PO; omit it. store_id comes from the token user. Optional title (string max 255); omit to use the server-generated title. Optional delivery_date must be a date today or later; omit when unused, not null. Response type is [] for PO in the current enum. items is omitted on creation. Use the returned id as transfer_request_id, add items, then create order. Current default PO title uses the generic Transfer Out template; supply title for a clear PO name.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"PO\",\n  \"supplier_id\": \"{{supplier_id}}\",\n  \"title\": \"Supplier purchase order\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "status": "Unprocessable Entity",
+          "code": 422,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 422,\n  \"message\": \"The title cannot exceed 255 characters.\",\n  \"data\": null\n}"
+        },
+        {
+          "name": "422 — Invalid delivery date",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests",
+            "description": "Creates an open transfer request, not the final purchase order. type must be exactly PO. supplier_id is required integer Supplier.ID. other_store_id is optional for PO; omit it. store_id comes from the token user. Optional title (string max 255); omit to use the server-generated title. Optional delivery_date must be a date today or later; omit when unused, not null. Response type is [] for PO in the current enum. items is omitted on creation. Use the returned id as transfer_request_id, add items, then create order. Current default PO title uses the generic Transfer Out template; supply title for a clear PO name.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"PO\",\n  \"supplier_id\": \"{{supplier_id}}\",\n  \"title\": \"Supplier purchase order\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "status": "Unprocessable Entity",
+          "code": 422,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 422,\n  \"message\": \"The delivery date field must be a valid date.\",\n  \"data\": null\n}"
+        },
+        {
+          "name": "422 — Past delivery date",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests",
+            "description": "Creates an open transfer request, not the final purchase order. type must be exactly PO. supplier_id is required integer Supplier.ID. other_store_id is optional for PO; omit it. store_id comes from the token user. Optional title (string max 255); omit to use the server-generated title. Optional delivery_date must be a date today or later; omit when unused, not null. Response type is [] for PO in the current enum. items is omitted on creation. Use the returned id as transfer_request_id, add items, then create order. Current default PO title uses the generic Transfer Out template; supply title for a clear PO name.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"PO\",\n  \"supplier_id\": \"{{supplier_id}}\",\n  \"title\": \"Supplier purchase order\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "status": "Unprocessable Entity",
+          "code": 422,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 422,\n  \"message\": \"The delivery date field must be a date after or equal to today.\",\n  \"data\": null\n}"
+        },
+        {
+          "name": "401 — Missing or invalid token",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests",
+            "description": "Creates an open transfer request, not the final purchase order. type must be exactly PO. supplier_id is required integer Supplier.ID. other_store_id is optional for PO; omit it. store_id comes from the token user. Optional title (string max 255); omit to use the server-generated title. Optional delivery_date must be a date today or later; omit when unused, not null. Response type is [] for PO in the current enum. items is omitted on creation. Use the returned id as transfer_request_id, add items, then create order. Current default PO title uses the generic Transfer Out template; supply title for a clear PO name.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"PO\",\n  \"supplier_id\": \"{{supplier_id}}\",\n  \"title\": \"Supplier purchase order\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "status": "Unauthorized",
+          "code": 401,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": false,\n  \"message\": \"Unauthenticated.\"\n}"
+        },
+        {
+          "name": "401 — Expired token",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests",
+            "description": "Creates an open transfer request, not the final purchase order. type must be exactly PO. supplier_id is required integer Supplier.ID. other_store_id is optional for PO; omit it. store_id comes from the token user. Optional title (string max 255); omit to use the server-generated title. Optional delivery_date must be a date today or later; omit when unused, not null. Response type is [] for PO in the current enum. items is omitted on creation. Use the returned id as transfer_request_id, add items, then create order. Current default PO title uses the generic Transfer Out template; supply title for a clear PO name.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"PO\",\n  \"supplier_id\": \"{{supplier_id}}\",\n  \"title\": \"Supplier purchase order\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "status": "Unauthorized",
+          "code": 401,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": false,\n  \"message\": \"Token expired.\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Add item to PO transfer",
+      "request": {
+        "method": "POST",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/transfer-requests/{{transfer_request_id}}/items",
+        "description": "Prerequisite for creating an order. id is Item.HQID, matching supplier-item search data.id; it is not supplier-details items[].id. quantity is required numeric; current rules do not enforce a positive minimum. notes is optional nullable string max 1000. Existing items are updated, otherwise added. No supplier-item membership validation is implemented here.",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": \"{{item_hq_id}}\",\n  \"quantity\": 2,\n  \"notes\": \"Optional note\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": [
+        {
+          "name": "200 — Item added",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests/{{transfer_request_id}}/items",
+            "description": "Prerequisite for creating an order. id is Item.HQID, matching supplier-item search data.id; it is not supplier-details items[].id. quantity is required numeric; current rules do not enforce a positive minimum. notes is optional nullable string max 1000. Existing items are updated, otherwise added. No supplier-item membership validation is implemented here.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{item_hq_id}}\",\n  \"quantity\": 2,\n  \"notes\": \"Optional note\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 200,\n  \"message\": \"Item added successfully\",\n  \"data\": {\n    \"transfer_request_id\": 25,\n    \"item_id\": 200,\n    \"LookupCode\": \"ITEM001\",\n    \"Description\": \"Example Item\",\n    \"quantity\": 2,\n    \"notes\": \"Optional note\",\n    \"created_at\": \"2026-10-01 10:00:00\",\n    \"updated_at\": \"2026-10-01 10:00:00\"\n  }\n}"
+        },
+        {
+          "name": "200 — Item updated",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests/{{transfer_request_id}}/items",
+            "description": "Prerequisite for creating an order. id is Item.HQID, matching supplier-item search data.id; it is not supplier-details items[].id. quantity is required numeric; current rules do not enforce a positive minimum. notes is optional nullable string max 1000. Existing items are updated, otherwise added. No supplier-item membership validation is implemented here.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{item_hq_id}}\",\n  \"quantity\": 2,\n  \"notes\": \"Optional note\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 200,\n  \"message\": \"Item updated successfully\",\n  \"data\": {\n    \"transfer_request_id\": 25,\n    \"item_id\": 200,\n    \"LookupCode\": \"ITEM001\",\n    \"Description\": \"Example Item\",\n    \"quantity\": 2,\n    \"notes\": \"Optional note\",\n    \"created_at\": \"2026-10-01 10:00:00\",\n    \"updated_at\": \"2026-10-01 10:00:00\"\n  }\n}"
+        },
+        {
+          "name": "404 — Transfer not found",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests/{{transfer_request_id}}/items",
+            "description": "Prerequisite for creating an order. id is Item.HQID, matching supplier-item search data.id; it is not supplier-details items[].id. quantity is required numeric; current rules do not enforce a positive minimum. notes is optional nullable string max 1000. Existing items are updated, otherwise added. No supplier-item membership validation is implemented here.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{item_hq_id}}\",\n  \"quantity\": 2,\n  \"notes\": \"Optional note\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "status": "Not Found",
+          "code": 404,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 404,\n  \"message\": \"Resource not found.\",\n  \"data\": null,\n  \"exception\": \"No query results for model [App\\\\Models\\\\TransferRequest] 999999\"\n}"
+        },
+        {
+          "name": "422 — Item missing",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests/{{transfer_request_id}}/items",
+            "description": "Prerequisite for creating an order. id is Item.HQID, matching supplier-item search data.id; it is not supplier-details items[].id. quantity is required numeric; current rules do not enforce a positive minimum. notes is optional nullable string max 1000. Existing items are updated, otherwise added. No supplier-item membership validation is implemented here.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{item_hq_id}}\",\n  \"quantity\": 2,\n  \"notes\": \"Optional note\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "status": "Unprocessable Entity",
+          "code": 422,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 422,\n  \"message\": \"Validation failed\",\n  \"data\": \"Item ID is required.\"\n}"
+        },
+        {
+          "name": "422 — Item not found",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests/{{transfer_request_id}}/items",
+            "description": "Prerequisite for creating an order. id is Item.HQID, matching supplier-item search data.id; it is not supplier-details items[].id. quantity is required numeric; current rules do not enforce a positive minimum. notes is optional nullable string max 1000. Existing items are updated, otherwise added. No supplier-item membership validation is implemented here.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{item_hq_id}}\",\n  \"quantity\": 2,\n  \"notes\": \"Optional note\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "status": "Unprocessable Entity",
+          "code": 422,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 422,\n  \"message\": \"Validation failed\",\n  \"data\": \"The selected item does not exist.\"\n}"
+        },
+        {
+          "name": "422 — Quantity missing",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests/{{transfer_request_id}}/items",
+            "description": "Prerequisite for creating an order. id is Item.HQID, matching supplier-item search data.id; it is not supplier-details items[].id. quantity is required numeric; current rules do not enforce a positive minimum. notes is optional nullable string max 1000. Existing items are updated, otherwise added. No supplier-item membership validation is implemented here.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{item_hq_id}}\",\n  \"quantity\": 2,\n  \"notes\": \"Optional note\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "status": "Unprocessable Entity",
+          "code": 422,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 422,\n  \"message\": \"Validation failed\",\n  \"data\": \"Quantity is required.\"\n}"
+        },
+        {
+          "name": "422 — Quantity invalid",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests/{{transfer_request_id}}/items",
+            "description": "Prerequisite for creating an order. id is Item.HQID, matching supplier-item search data.id; it is not supplier-details items[].id. quantity is required numeric; current rules do not enforce a positive minimum. notes is optional nullable string max 1000. Existing items are updated, otherwise added. No supplier-item membership validation is implemented here.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{item_hq_id}}\",\n  \"quantity\": 2,\n  \"notes\": \"Optional note\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "status": "Unprocessable Entity",
+          "code": 422,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 422,\n  \"message\": \"Validation failed\",\n  \"data\": \"The quantity field must be a number.\"\n}"
+        },
+        {
+          "name": "401 — Missing or invalid token",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests/{{transfer_request_id}}/items",
+            "description": "Prerequisite for creating an order. id is Item.HQID, matching supplier-item search data.id; it is not supplier-details items[].id. quantity is required numeric; current rules do not enforce a positive minimum. notes is optional nullable string max 1000. Existing items are updated, otherwise added. No supplier-item membership validation is implemented here.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{item_hq_id}}\",\n  \"quantity\": 2,\n  \"notes\": \"Optional note\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "status": "Unauthorized",
+          "code": 401,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": false,\n  \"message\": \"Unauthenticated.\"\n}"
+        },
+        {
+          "name": "401 — Expired token",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests/{{transfer_request_id}}/items",
+            "description": "Prerequisite for creating an order. id is Item.HQID, matching supplier-item search data.id; it is not supplier-details items[].id. quantity is required numeric; current rules do not enforce a positive minimum. notes is optional nullable string max 1000. Existing items are updated, otherwise added. No supplier-item membership validation is implemented here.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{item_hq_id}}\",\n  \"quantity\": 2,\n  \"notes\": \"Optional note\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "status": "Unauthorized",
+          "code": 401,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": false,\n  \"message\": \"Token expired.\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Create order",
+      "request": {
+        "method": "POST",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/transfer-requests/{{transfer_request_id}}/status",
+        "description": "Creates the actual order using the stored transfer type, supplier and items. No request body needed. Requires existing items and a cashier associated with the token user. For PO, downstream Order uses SupplierID and OtherStoreID=0; successful order closes the transfer and saves the downstream id as purchase_order_id (can be null if downstream omits id). No closed-status rejection is implemented. Downstream rejection status/message are forwarded with data:null; there is no fixed local list of downstream errors. V1 success text mentions a sync job even for PO; PO itself does not dispatch that job."
+      },
+      "response": [
+        {
+          "name": "200 — PO created and transfer closed",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests/{{transfer_request_id}}/status",
+            "description": "Creates the actual order using the stored transfer type, supplier and items. No request body needed. Requires existing items and a cashier associated with the token user. For PO, downstream Order uses SupplierID and OtherStoreID=0; successful order closes the transfer and saves the downstream id as purchase_order_id (can be null if downstream omits id). No closed-status rejection is implemented. Downstream rejection status/message are forwarded with data:null; there is no fixed local list of downstream errors. V1 success text mentions a sync job even for PO; PO itself does not dispatch that job."
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 200,\n  \"message\": \"Transfer request status updated successfully. PO sync job dispatched.\",\n  \"data\": {\n    \"id\": 25,\n    \"title\": \"Supplier purchase order\",\n    \"from_store_id\": 1,\n    \"to_store_id\": null,\n    \"to_store_name\": null,\n    \"supplier_id\": 1,\n    \"status\": \"closed\",\n    \"type\": [],\n    \"delivery_date\": null,\n    \"purchase_order_id\": 500,\n    \"created_at\": \"2026-10-01\",\n    \"updated_at\": \"2026-10-01\",\n    \"items\": [\n      {\n        \"transfer_request_id\": 25,\n        \"item_id\": 200,\n        \"LookupCode\": \"ITEM001\",\n        \"Description\": \"Example Item\",\n        \"quantity\": 2,\n        \"notes\": \"Optional note\",\n        \"created_at\": \"2026-10-01 10:00:00\",\n        \"updated_at\": \"2026-10-01 10:00:00\"\n      }\n    ]\n  }\n}"
+        },
+        {
+          "name": "404 — Transfer not found",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests/{{transfer_request_id}}/status",
+            "description": "Creates the actual order using the stored transfer type, supplier and items. No request body needed. Requires existing items and a cashier associated with the token user. For PO, downstream Order uses SupplierID and OtherStoreID=0; successful order closes the transfer and saves the downstream id as purchase_order_id (can be null if downstream omits id). No closed-status rejection is implemented. Downstream rejection status/message are forwarded with data:null; there is no fixed local list of downstream errors. V1 success text mentions a sync job even for PO; PO itself does not dispatch that job."
+          },
+          "status": "Not Found",
+          "code": 404,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 404,\n  \"message\": \"Resource not found.\",\n  \"data\": null,\n  \"exception\": \"No query results for model [App\\\\Models\\\\TransferRequest] 999999\"\n}"
+        },
+        {
+          "name": "406 — No items",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests/{{transfer_request_id}}/status",
+            "description": "Creates the actual order using the stored transfer type, supplier and items. No request body needed. Requires existing items and a cashier associated with the token user. For PO, downstream Order uses SupplierID and OtherStoreID=0; successful order closes the transfer and saves the downstream id as purchase_order_id (can be null if downstream omits id). No closed-status rejection is implemented. Downstream rejection status/message are forwarded with data:null; there is no fixed local list of downstream errors. V1 success text mentions a sync job even for PO; PO itself does not dispatch that job."
+          },
+          "status": "Not Acceptable",
+          "code": 406,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 406,\n  \"message\": \"No items were found\",\n  \"data\": []\n}"
+        },
+        {
+          "name": "404 — Cashier not found",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests/{{transfer_request_id}}/status",
+            "description": "Creates the actual order using the stored transfer type, supplier and items. No request body needed. Requires existing items and a cashier associated with the token user. For PO, downstream Order uses SupplierID and OtherStoreID=0; successful order closes the transfer and saves the downstream id as purchase_order_id (can be null if downstream omits id). No closed-status rejection is implemented. Downstream rejection status/message are forwarded with data:null; there is no fixed local list of downstream errors. V1 success text mentions a sync job even for PO; PO itself does not dispatch that job."
+          },
+          "status": "Not Found",
+          "code": 404,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 404,\n  \"message\": \"Cashier not found\",\n  \"data\": null\n}"
+        },
+        {
+          "name": "422 — PO supplier missing",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests/{{transfer_request_id}}/status",
+            "description": "Creates the actual order using the stored transfer type, supplier and items. No request body needed. Requires existing items and a cashier associated with the token user. For PO, downstream Order uses SupplierID and OtherStoreID=0; successful order closes the transfer and saves the downstream id as purchase_order_id (can be null if downstream omits id). No closed-status rejection is implemented. Downstream rejection status/message are forwarded with data:null; there is no fixed local list of downstream errors. V1 success text mentions a sync job even for PO; PO itself does not dispatch that job."
+          },
+          "status": "Unprocessable Entity",
+          "code": 422,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 422,\n  \"message\": \"A supplier is required for this order type.\",\n  \"data\": null\n}"
+        },
+        {
+          "name": "409 — Already processing",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests/{{transfer_request_id}}/status",
+            "description": "Creates the actual order using the stored transfer type, supplier and items. No request body needed. Requires existing items and a cashier associated with the token user. For PO, downstream Order uses SupplierID and OtherStoreID=0; successful order closes the transfer and saves the downstream id as purchase_order_id (can be null if downstream omits id). No closed-status rejection is implemented. Downstream rejection status/message are forwarded with data:null; there is no fixed local list of downstream errors. V1 success text mentions a sync job even for PO; PO itself does not dispatch that job."
+          },
+          "status": "Conflict",
+          "code": 409,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 409,\n  \"message\": \"This transfer request is already being processed. Please wait.\"\n}"
+        },
+        {
+          "name": "401 — Missing or invalid token",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests/{{transfer_request_id}}/status",
+            "description": "Creates the actual order using the stored transfer type, supplier and items. No request body needed. Requires existing items and a cashier associated with the token user. For PO, downstream Order uses SupplierID and OtherStoreID=0; successful order closes the transfer and saves the downstream id as purchase_order_id (can be null if downstream omits id). No closed-status rejection is implemented. Downstream rejection status/message are forwarded with data:null; there is no fixed local list of downstream errors. V1 success text mentions a sync job even for PO; PO itself does not dispatch that job."
+          },
+          "status": "Unauthorized",
+          "code": 401,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": false,\n  \"message\": \"Unauthenticated.\"\n}"
+        },
+        {
+          "name": "401 — Expired token",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests/{{transfer_request_id}}/status",
+            "description": "Creates the actual order using the stored transfer type, supplier and items. No request body needed. Requires existing items and a cashier associated with the token user. For PO, downstream Order uses SupplierID and OtherStoreID=0; successful order closes the transfer and saves the downstream id as purchase_order_id (can be null if downstream omits id). No closed-status rejection is implemented. Downstream rejection status/message are forwarded with data:null; there is no fixed local list of downstream errors. V1 success text mentions a sync job even for PO; PO itself does not dispatch that job."
+          },
+          "status": "Unauthorized",
+          "code": 401,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": false,\n  \"message\": \"Token expired.\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Create order — V2",
+      "request": {
+        "method": "POST",
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/transfer-requests/{{transfer_request_id}}/v2-status",
+        "description": "Creates the actual order using the stored transfer type, supplier and items. No request body needed. Requires existing items and a cashier associated with the token user. For PO, downstream Order uses SupplierID and OtherStoreID=0; successful order closes the transfer and saves the downstream id as purchase_order_id (can be null if downstream omits id). No closed-status rejection is implemented. Downstream rejection status/message are forwarded with data:null; there is no fixed local list of downstream errors. V1 success text mentions a sync job even for PO; PO itself does not dispatch that job."
+      },
+      "response": [
+        {
+          "name": "200 — PO created and transfer closed",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests/{{transfer_request_id}}/v2-status",
+            "description": "Creates the actual order using the stored transfer type, supplier and items. No request body needed. Requires existing items and a cashier associated with the token user. For PO, downstream Order uses SupplierID and OtherStoreID=0; successful order closes the transfer and saves the downstream id as purchase_order_id (can be null if downstream omits id). No closed-status rejection is implemented. Downstream rejection status/message are forwarded with data:null; there is no fixed local list of downstream errors. V1 success text mentions a sync job even for PO; PO itself does not dispatch that job."
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 200,\n  \"message\": \"Transfer request status updated successfully.\",\n  \"data\": {\n    \"id\": 25,\n    \"title\": \"Supplier purchase order\",\n    \"from_store_id\": 1,\n    \"to_store_id\": null,\n    \"to_store_name\": null,\n    \"supplier_id\": 1,\n    \"status\": \"closed\",\n    \"type\": [],\n    \"delivery_date\": null,\n    \"purchase_order_id\": 500,\n    \"created_at\": \"2026-10-01\",\n    \"updated_at\": \"2026-10-01\",\n    \"items\": [\n      {\n        \"transfer_request_id\": 25,\n        \"item_id\": 200,\n        \"LookupCode\": \"ITEM001\",\n        \"Description\": \"Example Item\",\n        \"quantity\": 2,\n        \"notes\": \"Optional note\",\n        \"created_at\": \"2026-10-01 10:00:00\",\n        \"updated_at\": \"2026-10-01 10:00:00\"\n      }\n    ]\n  }\n}"
+        },
+        {
+          "name": "404 — Transfer not found",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests/{{transfer_request_id}}/v2-status",
+            "description": "Creates the actual order using the stored transfer type, supplier and items. No request body needed. Requires existing items and a cashier associated with the token user. For PO, downstream Order uses SupplierID and OtherStoreID=0; successful order closes the transfer and saves the downstream id as purchase_order_id (can be null if downstream omits id). No closed-status rejection is implemented. Downstream rejection status/message are forwarded with data:null; there is no fixed local list of downstream errors. V1 success text mentions a sync job even for PO; PO itself does not dispatch that job."
+          },
+          "status": "Not Found",
+          "code": 404,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 404,\n  \"message\": \"Resource not found.\",\n  \"data\": null,\n  \"exception\": \"No query results for model [App\\\\Models\\\\TransferRequest] 999999\"\n}"
+        },
+        {
+          "name": "406 — No items",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests/{{transfer_request_id}}/v2-status",
+            "description": "Creates the actual order using the stored transfer type, supplier and items. No request body needed. Requires existing items and a cashier associated with the token user. For PO, downstream Order uses SupplierID and OtherStoreID=0; successful order closes the transfer and saves the downstream id as purchase_order_id (can be null if downstream omits id). No closed-status rejection is implemented. Downstream rejection status/message are forwarded with data:null; there is no fixed local list of downstream errors. V1 success text mentions a sync job even for PO; PO itself does not dispatch that job."
+          },
+          "status": "Not Acceptable",
+          "code": 406,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 406,\n  \"message\": \"No items were found\",\n  \"data\": []\n}"
+        },
+        {
+          "name": "404 — Cashier not found",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests/{{transfer_request_id}}/v2-status",
+            "description": "Creates the actual order using the stored transfer type, supplier and items. No request body needed. Requires existing items and a cashier associated with the token user. For PO, downstream Order uses SupplierID and OtherStoreID=0; successful order closes the transfer and saves the downstream id as purchase_order_id (can be null if downstream omits id). No closed-status rejection is implemented. Downstream rejection status/message are forwarded with data:null; there is no fixed local list of downstream errors. V1 success text mentions a sync job even for PO; PO itself does not dispatch that job."
+          },
+          "status": "Not Found",
+          "code": 404,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 404,\n  \"message\": \"Cashier not found\",\n  \"data\": null\n}"
+        },
+        {
+          "name": "422 — PO supplier missing",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests/{{transfer_request_id}}/v2-status",
+            "description": "Creates the actual order using the stored transfer type, supplier and items. No request body needed. Requires existing items and a cashier associated with the token user. For PO, downstream Order uses SupplierID and OtherStoreID=0; successful order closes the transfer and saves the downstream id as purchase_order_id (can be null if downstream omits id). No closed-status rejection is implemented. Downstream rejection status/message are forwarded with data:null; there is no fixed local list of downstream errors. V1 success text mentions a sync job even for PO; PO itself does not dispatch that job."
+          },
+          "status": "Unprocessable Entity",
+          "code": 422,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 422,\n  \"message\": \"A supplier is required for this order type.\",\n  \"data\": null\n}"
+        },
+        {
+          "name": "422 — TransferIN/TransferOut destination missing",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests/{{transfer_request_id}}/v2-status",
+            "description": "Creates the actual order using the stored transfer type, supplier and items. No request body needed. Requires existing items and a cashier associated with the token user. For PO, downstream Order uses SupplierID and OtherStoreID=0; successful order closes the transfer and saves the downstream id as purchase_order_id (can be null if downstream omits id). No closed-status rejection is implemented. Downstream rejection status/message are forwarded with data:null; there is no fixed local list of downstream errors. V1 success text mentions a sync job even for PO; PO itself does not dispatch that job."
+          },
+          "status": "Unprocessable Entity",
+          "code": 422,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 422,\n  \"message\": \"A destination store is required for this transfer type.\",\n  \"data\": null\n}"
+        },
+        {
+          "name": "409 — Already processing",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests/{{transfer_request_id}}/v2-status",
+            "description": "Creates the actual order using the stored transfer type, supplier and items. No request body needed. Requires existing items and a cashier associated with the token user. For PO, downstream Order uses SupplierID and OtherStoreID=0; successful order closes the transfer and saves the downstream id as purchase_order_id (can be null if downstream omits id). No closed-status rejection is implemented. Downstream rejection status/message are forwarded with data:null; there is no fixed local list of downstream errors. V1 success text mentions a sync job even for PO; PO itself does not dispatch that job."
+          },
+          "status": "Conflict",
+          "code": 409,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 409,\n  \"message\": \"This transfer request is already being processed. Please wait.\"\n}"
+        },
+        {
+          "name": "401 — Missing or invalid token",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests/{{transfer_request_id}}/v2-status",
+            "description": "Creates the actual order using the stored transfer type, supplier and items. No request body needed. Requires existing items and a cashier associated with the token user. For PO, downstream Order uses SupplierID and OtherStoreID=0; successful order closes the transfer and saves the downstream id as purchase_order_id (can be null if downstream omits id). No closed-status rejection is implemented. Downstream rejection status/message are forwarded with data:null; there is no fixed local list of downstream errors. V1 success text mentions a sync job even for PO; PO itself does not dispatch that job."
+          },
+          "status": "Unauthorized",
+          "code": 401,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": false,\n  \"message\": \"Unauthenticated.\"\n}"
+        },
+        {
+          "name": "401 — Expired token",
+          "originalRequest": {
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/transfer-requests/{{transfer_request_id}}/v2-status",
+            "description": "Creates the actual order using the stored transfer type, supplier and items. No request body needed. Requires existing items and a cashier associated with the token user. For PO, downstream Order uses SupplierID and OtherStoreID=0; successful order closes the transfer and saves the downstream id as purchase_order_id (can be null if downstream omits id). No closed-status rejection is implemented. Downstream rejection status/message are forwarded with data:null; there is no fixed local list of downstream errors. V1 success text mentions a sync job even for PO; PO itself does not dispatch that job."
+          },
+          "status": "Unauthorized",
+          "code": 401,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": false,\n  \"message\": \"Token expired.\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "List items",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/items?page=1",
+        "description": "Public endpoint. Optional page (default 1), fixed 2000 items per page. Optional last_updated filters LastUpdated strictly greater than supplied value; e.g. append &last_updated=2026-10-01%2000:00:00. Only Inactive=0 and HQID<>0 items are returned. No lookup/name search supported by this endpoint. data.page contains items and data.pagination contains navigation. Aliases is an array of alias strings; suppliers_ids is an array of Supplier.ID values. HQID is used for adding transfer items. No explicit last_updated validation is implemented.",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "auth": {
+          "type": "noauth"
+        }
+      },
+      "response": [
+        {
+          "name": "200 — Items found",
+          "originalRequest": {
+            "method": "GET",
+            "url": "{{base_url}}/api/items?page=1",
+            "description": "Public endpoint. Optional page (default 1), fixed 2000 items per page. Optional last_updated filters LastUpdated strictly greater than supplied value; e.g. append &last_updated=2026-10-01%2000:00:00. Only Inactive=0 and HQID<>0 items are returned. No lookup/name search supported by this endpoint. data.page contains items and data.pagination contains navigation. Aliases is an array of alias strings; suppliers_ids is an array of Supplier.ID values. HQID is used for adding transfer items. No explicit last_updated validation is implemented.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "code": 200,
+          "status": "OK",
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 200,\n  \"message\": \"Items retrieved successfully\",\n  \"data\": {\n    \"page\": [\n      {\n        \"ID\": 20,\n        \"ItemLookupCode\": \"ITEM001\",\n        \"Description\": \"Example Item\",\n        \"HQID\": 200,\n        \"Aliases\": [\n          \"ALT001\"\n        ],\n        \"suppliers_ids\": [\n          1\n        ],\n        \"Price\": 25,\n        \"Quantity\": 10,\n        \"LastUpdated\": \"2026-10-01 10:00:00\",\n        \"DateCreated\": \"2026-09-01 10:00:00\"\n      }\n    ],\n    \"pagination\": {\n      \"current_page\": 1,\n      \"per_page\": 2000,\n      \"total\": 1,\n      \"last_page\": 1,\n      \"next_page_url\": null,\n      \"prev_page_url\": null,\n      \"current_page_url\": \"http://localhost/IMS/api/items?page=1\"\n    }\n  }\n}"
+        },
+        {
+          "name": "200 — No items match",
+          "originalRequest": {
+            "method": "GET",
+            "url": "{{base_url}}/api/items?page=1",
+            "description": "Public endpoint. Optional page (default 1), fixed 2000 items per page. Optional last_updated filters LastUpdated strictly greater than supplied value; e.g. append &last_updated=2026-10-01%2000:00:00. Only Inactive=0 and HQID<>0 items are returned. No lookup/name search supported by this endpoint. data.page contains items and data.pagination contains navigation. Aliases is an array of alias strings; suppliers_ids is an array of Supplier.ID values. HQID is used for adding transfer items. No explicit last_updated validation is implemented.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "code": 200,
+          "status": "OK",
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 200,\n  \"message\": \"Items retrieved successfully\",\n  \"data\": {\n    \"page\": [],\n    \"pagination\": {\n      \"current_page\": 1,\n      \"per_page\": 2000,\n      \"total\": 0,\n      \"last_page\": 1,\n      \"next_page_url\": null,\n      \"prev_page_url\": null,\n      \"current_page_url\": \"http://localhost/IMS/api/items?page=1\"\n    }\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Lookup item",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/api/items/{{lookupcode}}",
+        "description": "Requires bearer token. Matches ItemLookupCode LIKE lookup%, returning the first matching item without an explicit sort. This is a prefix lookup, not an exact search; aliases are not searched. SQL LIKE wildcards in the input are not escaped. No active/HQID filter is applied. Success data.id is Item.HQID. Current implementation does not handle no match: ShowItemResource accesses a null model, causing a 500 instead of an Item not found 404. Saved missing-item example assumes APP_DEBUG=false; debug=true exposes the exception message and trace.",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "response": [
+        {
+          "name": "200 — Item found",
+          "originalRequest": {
+            "method": "GET",
+            "url": "{{base_url}}/api/items/{{lookupcode}}",
+            "description": "Requires bearer token. Matches ItemLookupCode LIKE lookup%, returning the first matching item without an explicit sort. This is a prefix lookup, not an exact search; aliases are not searched. SQL LIKE wildcards in the input are not escaped. No active/HQID filter is applied. Success data.id is Item.HQID. Current implementation does not handle no match: ShowItemResource accesses a null model, causing a 500 instead of an Item not found 404. Saved missing-item example assumes APP_DEBUG=false; debug=true exposes the exception message and trace.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "code": 200,
+          "status": "OK",
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 200,\n  \"message\": \"Item Retrieved Successfully\",\n  \"data\": {\n    \"id\": 200,\n    \"lookupcode\": \"ITEM001\",\n    \"description\": \"Example Item\"\n  }\n}"
+        },
+        {
+          "name": "401 — Missing or invalid token",
+          "originalRequest": {
+            "method": "GET",
+            "url": "{{base_url}}/api/items/{{lookupcode}}",
+            "description": "Requires bearer token. Matches ItemLookupCode LIKE lookup%, returning the first matching item without an explicit sort. This is a prefix lookup, not an exact search; aliases are not searched. SQL LIKE wildcards in the input are not escaped. No active/HQID filter is applied. Success data.id is Item.HQID. Current implementation does not handle no match: ShowItemResource accesses a null model, causing a 500 instead of an Item not found 404. Saved missing-item example assumes APP_DEBUG=false; debug=true exposes the exception message and trace.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "code": 401,
+          "status": "Unauthorized",
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": false,\n  \"message\": \"Unauthenticated.\"\n}"
+        },
+        {
+          "name": "401 — Expired token",
+          "originalRequest": {
+            "method": "GET",
+            "url": "{{base_url}}/api/items/{{lookupcode}}",
+            "description": "Requires bearer token. Matches ItemLookupCode LIKE lookup%, returning the first matching item without an explicit sort. This is a prefix lookup, not an exact search; aliases are not searched. SQL LIKE wildcards in the input are not escaped. No active/HQID filter is applied. Success data.id is Item.HQID. Current implementation does not handle no match: ShowItemResource accesses a null model, causing a 500 instead of an Item not found 404. Saved missing-item example assumes APP_DEBUG=false; debug=true exposes the exception message and trace.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "code": 401,
+          "status": "Unauthorized",
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": false,\n  \"message\": \"Token expired.\"\n}"
+        },
+        {
+          "name": "500 — No matching item (current behavior, debug off)",
+          "originalRequest": {
+            "method": "GET",
+            "url": "{{base_url}}/api/items/{{lookupcode}}",
+            "description": "Requires bearer token. Matches ItemLookupCode LIKE lookup%, returning the first matching item without an explicit sort. This is a prefix lookup, not an exact search; aliases are not searched. SQL LIKE wildcards in the input are not escaped. No active/HQID filter is applied. Success data.id is Item.HQID. Current implementation does not handle no match: ShowItemResource accesses a null model, causing a 500 instead of an Item not found 404. Saved missing-item example assumes APP_DEBUG=false; debug=true exposes the exception message and trace.",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "code": 500,
+          "status": "Internal Server Error",
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"status\": 500,\n  \"message\": \"An unexpected error occurred. Please try again later.\",\n  \"data\": null,\n  \"trace\": null\n}"
+        }
+      ]
+    }
+  ]
+}
