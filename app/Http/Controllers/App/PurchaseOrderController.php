@@ -12,6 +12,7 @@ use App\Models\PurchaseOrderEmail;
 use App\Models\PurchaseOrderEntry;
 use App\Models\PurchaseOrderProcessStart;
 use App\Notifications\PurchaseOrderNotification;
+use App\Services\Commit\CommitService;
 use App\Services\CommitOrderService;
 use App\Services\PurchaseOrderPdfService;
 use App\Services\PurchaseOrderPrintService;
@@ -97,6 +98,14 @@ class PurchaseOrderController extends Controller
         PurchaseOrder $purchaseOrder,
         CommitOrderRequest $request,
         CommitOrderService $service
+    ): \Illuminate\Http\JsonResponse {
+        return $service->commit($purchaseOrder, $request);
+    }
+
+    public function commit(
+        PurchaseOrder $purchaseOrder,
+        Request $request,
+        CommitService $service
     ): \Illuminate\Http\JsonResponse {
         return $service->commit($purchaseOrder, $request);
     }
