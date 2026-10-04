@@ -8,6 +8,7 @@ use App\Http\Requests\App\TransferRequest\StoreTransferRequest;
 use App\Http\Requests\App\TransferRequest\UpdateTransferRequest;
 use App\Http\Resources\App\TransferRequest\TransferRequestResource;
 use App\Models\Store;
+use App\Models\Supplier;
 use App\Models\TransferRequest;
 use App\Services\CreateOrderService;
 use App\Services\CreateOrderServiceV2;
@@ -49,12 +50,14 @@ class TransferRequestController extends Controller
         $userStoreName = $stores[$user->store_id];
         $otherStoreName = $otherStoreId ? $stores[$otherStoreId] : null;
 
+        $supplierName = $supplierId ? Supplier::whereKey($supplierId)->value('SupplierName') : null;
+
         // Generate title with proper logic
         $title = $request->input('title') ?? $this->generateTransferTitle(
             $type,
             $userStoreName,
             $otherStoreName,
-            $supplierId
+            $supplierName ?? $supplierId
         );
 
         // Create transfer request
@@ -82,12 +85,12 @@ class TransferRequestController extends Controller
         string $type,
         string $fromStore,
         ?string $toStore,
-        ?int $supplierId = null
+        string|int|null $supplier = null
     ): string {
         return match ($type) {
             'TransferIN' => "Request from {$fromStore} to {$toStore}",
-            'PO' => "PO from {$supplierId} to {$fromStore}",
-            'ReturnToSupplier' => "Return to supplier {$supplierId} from {$fromStore}",
+            'PO' => "PO from {$supplier} to {$fromStore}",
+            'ReturnToSupplier' => "Return to supplier {$supplier} from {$fromStore}",
             default => "Transfer Out from {$fromStore} to {$toStore}",
         };
     }

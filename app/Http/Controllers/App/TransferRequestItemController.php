@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\App;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\App\TransferRequestItem\BulkStoreTransferRequestItemRequest;
 use App\Http\Requests\App\TransferRequestItem\StoreTransferRequestItemRequest;
 use App\Http\Resources\App\TransferRequest\TransferRequestItemResource;
 use App\Models\TransferRequest;
@@ -45,7 +46,25 @@ class TransferRequestItemController extends Controller
     }
 
 
-    public function destroy(TransferRequest $transferRequest, Request $request)
+    public function bulkStore(BulkStoreTransferRequestItemRequest $request, TransferRequest $transferRequest)
+    {
+        $ids = $request->input('ids');
+
+        $transferRequest->items()->syncWithoutDetaching(
+            array_fill_keys($ids, ['quantity' => 1])
+        );
+
+        return $this->success(
+            status: Response::HTTP_OK,
+            message: 'Items saved successfully',
+            data: TransferRequestItemResource::collection(
+                $transferRequest->items()->whereIn('item_id', $ids)->get()
+            )
+        );
+    }
+
+
+    public function destroy( TransferRequest $transferRequest, Request $request)
     {
         $request->validate([
             'item_id' => 'required|integer'
