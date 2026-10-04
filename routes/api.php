@@ -60,6 +60,9 @@ Route::middleware(['auth.multi'])->group(function () {
         // TransferRequestsItems Routes
         Route::post('{transferRequest}/items', [TransferRequestItemController::class, 'storeOrUpdate']);
 
+        Route::post('{transferRequest}/items/bulk', [TransferRequestItemController::class, 'bulkStore'])
+            ->name('transfer-requests.items.bulk');
+
         Route::delete('items/{transferRequest}', [TransferRequestItemController::class, 'destroy'])
             ->name('transfer-requests.items.destroy');
 
@@ -99,6 +102,9 @@ Route::middleware(['auth.multi'])->group(function () {
         // partial; the request flag `isClosed` selects the mode.
         Route::post('/{purchaseOrder}/v2-commit', [PurchaseOrderController::class, 'commit'])
             ->name('purchase-orders.v2-commit');
+
+        Route::post('/{purchaseOrder}/conditions', [PurchaseOrderController::class, 'conditions'])
+            ->name('purchase-orders.conditions');
 
         Route::post('/test-pdf-email-print', [PurchaseOrderController::class, 'testPdfEmailPrint'])
             ->name('purchase-orders.test-pdf-email-print');
