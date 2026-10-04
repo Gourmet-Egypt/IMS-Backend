@@ -24,7 +24,7 @@ class TransferRequestResource extends JsonResource
             'supplier_id' => $this->supplier_id,
             'supplier_name' => $this->supplier?->SupplierName,
             'status' => $this->status,
-            'type' => TransferRequestTypeEnum::from($this->type),
+            'type' => TransferRequestTypeEnum::from($this->type)->number(),
             'delivery_date' => $this->delivery_date,
             'purchase_order_id' => $this->purchase_order_id,
             'created_at' => $this->created_at->format('Y-m-d'),

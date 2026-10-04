@@ -9,13 +9,13 @@ enum TransferRequestTypeEnum: string
     case TransferOut = 'TransferOut';
     case ReturnToSupplier = 'ReturnToSupplier';
 
-    public function number(): int|string|array
+    public function number(): int
     {
         return match ($this) {
+            self::PO => 1,
+            self::ReturnToSupplier => 0,
             self::TransferIN => 2,
             self::TransferOut => 3,
-            self::ReturnToSupplier => self::ReturnToSupplier->value,
-            default => [],
         };
     }
 

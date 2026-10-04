@@ -86,6 +86,7 @@ class TransferRequestController extends Controller
     ): string {
         return match ($type) {
             'TransferIN' => "Request from {$fromStore} to {$toStore}",
+            'PO' => "PO from {$supplierId} to {$fromStore}",
             'ReturnToSupplier' => "Return to supplier {$supplierId} from {$fromStore}",
             default => "Transfer Out from {$fromStore} to {$toStore}",
         };
