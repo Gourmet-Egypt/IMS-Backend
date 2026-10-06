@@ -1,0 +1,441 @@
+{
+    "info":  {
+                 "name":  "IMS - PO Conditions",
+                 "description":  "Standalone collection for the authenticated IMS PO conditions endpoint. Set base_url, token, and purchase_order_id before sending. Includes documented optional fields and the observed upstream invoice-only limitation.",
+                 "schema":  "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+             },
+    "variable":  [
+                     {
+                         "key":  "base_url",
+                         "type":  "string",
+                         "value":  "http://localhost/IMS"
+                     },
+                     {
+                         "key":  "token",
+                         "type":  "string",
+                         "value":  ""
+                     },
+                     {
+                         "key":  "purchase_order_id",
+                         "type":  "string",
+                         "value":  "201469"
+                     }
+                 ],
+    "item":  [
+                 {
+                     "name":  "PO conditions",
+                     "request":  {
+                                     "method":  "POST",
+                                     "auth":  {
+                                                  "type":  "bearer",
+                                                  "bearer":  [
+                                                                 {
+                                                                     "key":  "token",
+                                                                     "value":  "{{token}}",
+                                                                     "type":  "string"
+                                                                 }
+                                                             ]
+                                              },
+                                     "header":  [
+                                                    {
+                                                        "key":  "Accept",
+                                                        "value":  "application/json"
+                                                    },
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "value":  "application/json"
+                                                    }
+                                                ],
+                                     "url":  "{{base_url}}/api/purchase-order/{{purchase_order_id}}/conditions",
+                                     "description":  "PO only (POType 0 = PO, 1 = HQ PO). Records or updates the PO delivery conditions and supplier invoice number via /api/po-conditions. A separate step from commit: call it before or after a partial receipt, but not after the PO is closed. supplier_invoice_number is required; vehicle_type, vehicle_tempOut, vehicle_tempIN, delivery_permit_number, notes, seal_number, Driver_Name, Vehicle_Number and Goods_Type are optional and only sent when provided. Other types are rejected (TransferIN/TransferOut send their conditions in the commit). Shares the commit lock for the order. This request targets the IMS wrapper: purchase_order_id comes from the URL and is added to the upstream payload. Do not send StoreID. Known upstream issue observed in testing: an invoice-only insert returns HTTP 500 because vehicle_type is non-nullable in the backend database. Supplying full conditions is a workaround until backend optional-field handling is fixed. Response type is a JSON integer: 0=PO, 1=HQ PO, 2=TransferIN, 4=HQ TransferIN; 3/5 are TransferOut or ReturnToSupplier, distinguished by other-store versus supplier IDs.",
+                                     "body":  {
+                                                  "mode":  "raw",
+                                                  "raw":  "{\n  \"supplier_invoice_number\": \"INV-2026-4471\",\n  \"vehicle_type\": \"Truck\",\n  \"vehicle_tempOut\": -5,\n  \"vehicle_tempIN\": -4.2,\n  \"delivery_permit_number\": \"DP-1001\",\n  \"notes\": \"Cold chain\",\n  \"seal_number\": \"SEAL-001\",\n  \"Driver_Name\": \"Ahmed\",\n  \"Vehicle_Number\": \"ABC-123\",\n  \"Goods_Type\": 1\n}",
+                                                  "options":  {
+                                                                  "raw":  {
+                                                                              "language":  "json"
+                                                                          }
+                                                              }
+                                              }
+                                 },
+                     "response":  [
+                                      {
+                                          "name":  "500 - Invoice-only insert: observed backend limitation",
+                                          "originalRequest":  {
+                                                                  "method":  "POST",
+                                                                  "auth":  {
+                                                                               "type":  "bearer",
+                                                                               "bearer":  [
+                                                                                              {
+                                                                                                  "key":  "token",
+                                                                                                  "value":  "{{token}}",
+                                                                                                  "type":  "string"
+                                                                                              }
+                                                                                          ]
+                                                                           },
+                                                                  "header":  [
+                                                                                 {
+                                                                                     "key":  "Accept",
+                                                                                     "value":  "application/json"
+                                                                                 },
+                                                                                 {
+                                                                                     "key":  "Content-Type",
+                                                                                     "value":  "application/json"
+                                                                                 }
+                                                                             ],
+                                                                  "url":  "{{base_url}}/api/purchase-order/{{purchase_order_id}}/conditions",
+                                                                  "description":  "PO only (POType 0 = PO, 1 = HQ PO). Records or updates the PO delivery conditions and supplier invoice number via /api/po-conditions. A separate step from commit: call it before or after a partial receipt, but not after the PO is closed. supplier_invoice_number is required; vehicle_type, vehicle_tempOut, vehicle_tempIN, delivery_permit_number, notes, seal_number, Driver_Name, Vehicle_Number and Goods_Type are optional and only sent when provided. Other types are rejected (TransferIN/TransferOut send their conditions in the commit). Shares the commit lock for the order. This request targets the IMS wrapper: purchase_order_id comes from the URL and is added to the upstream payload. Do not send StoreID. Known upstream issue observed in testing: an invoice-only insert returns HTTP 500 because vehicle_type is non-nullable in the backend database. Supplying full conditions is a workaround until backend optional-field handling is fixed. Response type is a JSON integer: 0=PO, 1=HQ PO, 2=TransferIN, 4=HQ TransferIN; 3/5 are TransferOut or ReturnToSupplier, distinguished by other-store versus supplier IDs.",
+                                                                  "body":  {
+                                                                               "mode":  "raw",
+                                                                               "raw":  "{\n  \"supplier_invoice_number\": \"INV-2026-4471\"\n}",
+                                                                               "options":  {
+                                                                                               "raw":  {
+                                                                                                           "language":  "json"
+                                                                                                       }
+                                                                                           }
+                                                                           }
+                                                              },
+                                          "status":  "Internal Server Error",
+                                          "code":  500,
+                                          "_postman_previewlanguage":  "json",
+                                          "header":  [
+                                                         {
+                                                             "key":  "Content-Type",
+                                                             "value":  "application/json"
+                                                         }
+                                                     ],
+                                          "body":  "{\r\n    \"status\":  500,\r\n    \"message\":  \"Cannot insert the value NULL into column \\u0027vehicle_type\\u0027, table \\u0027Zamalek.dbo.IMS_PurchaseOrder_Conditions\\u0027; column does not allow nulls. INSERT fails.\\r\\nThe statement has been terminated.\",\r\n    \"data\":  null\r\n}"
+                                      },
+                                      {
+                                          "name":  "200 Ã¢â‚¬â€ Full conditions",
+                                          "originalRequest":  {
+                                                                  "method":  "POST",
+                                                                  "auth":  {
+                                                                               "type":  "bearer",
+                                                                               "bearer":  [
+                                                                                              {
+                                                                                                  "key":  "token",
+                                                                                                  "value":  "{{token}}",
+                                                                                                  "type":  "string"
+                                                                                              }
+                                                                                          ]
+                                                                           },
+                                                                  "header":  [
+                                                                                 {
+                                                                                     "key":  "Accept",
+                                                                                     "value":  "application/json"
+                                                                                 },
+                                                                                 {
+                                                                                     "key":  "Content-Type",
+                                                                                     "value":  "application/json"
+                                                                                 }
+                                                                             ],
+                                                                  "url":  "{{base_url}}/api/purchase-order/{{purchase_order_id}}/conditions",
+                                                                  "description":  "PO only (POType 0 = PO, 1 = HQ PO). Records or updates the PO delivery conditions and supplier invoice number via /api/po-conditions. A separate step from commit: call it before or after a partial receipt, but not after the PO is closed. supplier_invoice_number is required; vehicle_type, vehicle_tempOut, vehicle_tempIN, delivery_permit_number, notes, seal_number, Driver_Name, Vehicle_Number and Goods_Type are optional and only sent when provided. Other types are rejected (TransferIN/TransferOut send their conditions in the commit). Shares the commit lock for the order. This request targets the IMS wrapper: purchase_order_id comes from the URL and is added to the upstream payload. Do not send StoreID. Known upstream issue observed in testing: an invoice-only insert returns HTTP 500 because vehicle_type is non-nullable in the backend database. Supplying full conditions is a workaround until backend optional-field handling is fixed. Response type is a JSON integer: 0=PO, 1=HQ PO, 2=TransferIN, 4=HQ TransferIN; 3/5 are TransferOut or ReturnToSupplier, distinguished by other-store versus supplier IDs.",
+                                                                  "body":  {
+                                                                               "mode":  "raw",
+                                                                               "raw":  "{\n  \"supplier_invoice_number\": \"INV-2026-4471\",\n  \"vehicle_type\": \"Truck\",\n  \"vehicle_tempOut\": -5,\n  \"vehicle_tempIN\": -4.2,\n  \"delivery_permit_number\": \"DP-1001\",\n  \"notes\": \"Cold chain\",\n  \"seal_number\": \"SEAL-001\",\n  \"Driver_Name\": \"Ahmed\",\n  \"Vehicle_Number\": \"ABC-123\",\n  \"Goods_Type\": 1\n}",
+                                                                               "options":  {
+                                                                                               "raw":  {
+                                                                                                           "language":  "json"
+                                                                                                       }
+                                                                                           }
+                                                                           }
+                                                              },
+                                          "status":  "OK",
+                                          "code":  200,
+                                          "_postman_previewlanguage":  "json",
+                                          "header":  [
+                                                         {
+                                                             "key":  "Content-Type",
+                                                             "value":  "application/json"
+                                                         }
+                                                     ],
+                                          "body":  "{\r\n    \"status\":  200,\r\n    \"message\":  \"Purchase Order Conditions Saved Successfully\",\r\n    \"data\":  {\r\n                 \"id\":  78912,\r\n                 \"title\":  \"PO from Acme Foods to Main Store\",\r\n                 \"type\":  0,\r\n                 \"status\":  1,\r\n                 \"from_store_id\":  7,\r\n                 \"from_store_name\":  \"Main Store\",\r\n                 \"to_store_id\":  0,\r\n                 \"to_store_name\":  null,\r\n                 \"created_at\":  \"2026-10-05\",\r\n                 \"po_number\":  \"PO-78912\",\r\n                 \"supplier_id\":  1,\r\n                 \"supplier_name\":  \"Acme Foods\",\r\n                 \"items\":  [\r\n\r\n                           ],\r\n                 \"condition\":  {\r\n                                   \"vehicle_type\":  \"Truck\",\r\n                                   \"purchase_order_id\":  78912,\r\n                                   \"vehicle_tempOut\":  -5,\r\n                                   \"vehicle_tempIN\":  -4.2,\r\n                                   \"delivery_permit_number\":  \"DP-1001\",\r\n                                   \"status\":  null,\r\n                                   \"notes\":  \"Cold chain\",\r\n                                   \"seal_number\":  \"SEAL-001\",\r\n                                   \"driver_name\":  \"Ahmed\",\r\n                                   \"vehicle_number\":  \"ABC-123\",\r\n                                   \"goods_type\":  1,\r\n                                   \"receiver_name\":  null,\r\n                                   \"created_at\":  \"2026-10-05\"\r\n                               }\r\n             }\r\n}"
+                                      },
+                                      {
+                                          "name":  "422 Ã¢â‚¬â€ Invoice number missing",
+                                          "originalRequest":  {
+                                                                  "method":  "POST",
+                                                                  "auth":  {
+                                                                               "type":  "bearer",
+                                                                               "bearer":  [
+                                                                                              {
+                                                                                                  "key":  "token",
+                                                                                                  "value":  "{{token}}",
+                                                                                                  "type":  "string"
+                                                                                              }
+                                                                                          ]
+                                                                           },
+                                                                  "header":  [
+                                                                                 {
+                                                                                     "key":  "Accept",
+                                                                                     "value":  "application/json"
+                                                                                 },
+                                                                                 {
+                                                                                     "key":  "Content-Type",
+                                                                                     "value":  "application/json"
+                                                                                 }
+                                                                             ],
+                                                                  "url":  "{{base_url}}/api/purchase-order/{{purchase_order_id}}/conditions",
+                                                                  "description":  "PO only (POType 0 = PO, 1 = HQ PO). Records or updates the PO delivery conditions and supplier invoice number via /api/po-conditions. A separate step from commit: call it before or after a partial receipt, but not after the PO is closed. supplier_invoice_number is required; vehicle_type, vehicle_tempOut, vehicle_tempIN, delivery_permit_number, notes, seal_number, Driver_Name, Vehicle_Number and Goods_Type are optional and only sent when provided. Other types are rejected (TransferIN/TransferOut send their conditions in the commit). Shares the commit lock for the order. This request targets the IMS wrapper: purchase_order_id comes from the URL and is added to the upstream payload. Do not send StoreID. Known upstream issue observed in testing: an invoice-only insert returns HTTP 500 because vehicle_type is non-nullable in the backend database. Supplying full conditions is a workaround until backend optional-field handling is fixed. Response type is a JSON integer: 0=PO, 1=HQ PO, 2=TransferIN, 4=HQ TransferIN; 3/5 are TransferOut or ReturnToSupplier, distinguished by other-store versus supplier IDs.",
+                                                                  "body":  {
+                                                                               "mode":  "raw",
+                                                                               "raw":  "{}",
+                                                                               "options":  {
+                                                                                               "raw":  {
+                                                                                                           "language":  "json"
+                                                                                                       }
+                                                                                           }
+                                                                           }
+                                                              },
+                                          "status":  "Unprocessable Entity",
+                                          "code":  422,
+                                          "_postman_previewlanguage":  "json",
+                                          "header":  [
+                                                         {
+                                                             "key":  "Content-Type",
+                                                             "value":  "application/json"
+                                                         }
+                                                     ],
+                                          "body":  "{\r\n    \"status\":  422,\r\n    \"message\":  \"Supplier invoice number is required.\",\r\n    \"data\":  null\r\n}"
+                                      },
+                                      {
+                                          "name":  "422 Ã¢â‚¬â€ Not a PO",
+                                          "originalRequest":  {
+                                                                  "method":  "POST",
+                                                                  "auth":  {
+                                                                               "type":  "bearer",
+                                                                               "bearer":  [
+                                                                                              {
+                                                                                                  "key":  "token",
+                                                                                                  "value":  "{{token}}",
+                                                                                                  "type":  "string"
+                                                                                              }
+                                                                                          ]
+                                                                           },
+                                                                  "header":  [
+                                                                                 {
+                                                                                     "key":  "Accept",
+                                                                                     "value":  "application/json"
+                                                                                 },
+                                                                                 {
+                                                                                     "key":  "Content-Type",
+                                                                                     "value":  "application/json"
+                                                                                 }
+                                                                             ],
+                                                                  "url":  "{{base_url}}/api/purchase-order/{{purchase_order_id}}/conditions",
+                                                                  "description":  "PO only (POType 0 = PO, 1 = HQ PO). Records or updates the PO delivery conditions and supplier invoice number via /api/po-conditions. A separate step from commit: call it before or after a partial receipt, but not after the PO is closed. supplier_invoice_number is required; vehicle_type, vehicle_tempOut, vehicle_tempIN, delivery_permit_number, notes, seal_number, Driver_Name, Vehicle_Number and Goods_Type are optional and only sent when provided. Other types are rejected (TransferIN/TransferOut send their conditions in the commit). Shares the commit lock for the order. This request targets the IMS wrapper: purchase_order_id comes from the URL and is added to the upstream payload. Do not send StoreID. Known upstream issue observed in testing: an invoice-only insert returns HTTP 500 because vehicle_type is non-nullable in the backend database. Supplying full conditions is a workaround until backend optional-field handling is fixed. Response type is a JSON integer: 0=PO, 1=HQ PO, 2=TransferIN, 4=HQ TransferIN; 3/5 are TransferOut or ReturnToSupplier, distinguished by other-store versus supplier IDs.",
+                                                                  "body":  {
+                                                                               "mode":  "raw",
+                                                                               "raw":  "{\n  \"supplier_invoice_number\": \"INV-2026-4471\"\n}",
+                                                                               "options":  {
+                                                                                               "raw":  {
+                                                                                                           "language":  "json"
+                                                                                                       }
+                                                                                           }
+                                                                           }
+                                                              },
+                                          "status":  "Unprocessable Entity",
+                                          "code":  422,
+                                          "_postman_previewlanguage":  "json",
+                                          "header":  [
+                                                         {
+                                                             "key":  "Content-Type",
+                                                             "value":  "application/json"
+                                                         }
+                                                     ],
+                                          "body":  "{\r\n    \"status\":  422,\r\n    \"message\":  \"Conditions are not supported for this purchase order type\",\r\n    \"data\":  null\r\n}"
+                                      },
+                                      {
+                                          "name":  "409 Ã¢â‚¬â€ PO already closed",
+                                          "originalRequest":  {
+                                                                  "method":  "POST",
+                                                                  "auth":  {
+                                                                               "type":  "bearer",
+                                                                               "bearer":  [
+                                                                                              {
+                                                                                                  "key":  "token",
+                                                                                                  "value":  "{{token}}",
+                                                                                                  "type":  "string"
+                                                                                              }
+                                                                                          ]
+                                                                           },
+                                                                  "header":  [
+                                                                                 {
+                                                                                     "key":  "Accept",
+                                                                                     "value":  "application/json"
+                                                                                 },
+                                                                                 {
+                                                                                     "key":  "Content-Type",
+                                                                                     "value":  "application/json"
+                                                                                 }
+                                                                             ],
+                                                                  "url":  "{{base_url}}/api/purchase-order/{{purchase_order_id}}/conditions",
+                                                                  "description":  "PO only (POType 0 = PO, 1 = HQ PO). Records or updates the PO delivery conditions and supplier invoice number via /api/po-conditions. A separate step from commit: call it before or after a partial receipt, but not after the PO is closed. supplier_invoice_number is required; vehicle_type, vehicle_tempOut, vehicle_tempIN, delivery_permit_number, notes, seal_number, Driver_Name, Vehicle_Number and Goods_Type are optional and only sent when provided. Other types are rejected (TransferIN/TransferOut send their conditions in the commit). Shares the commit lock for the order. This request targets the IMS wrapper: purchase_order_id comes from the URL and is added to the upstream payload. Do not send StoreID. Known upstream issue observed in testing: an invoice-only insert returns HTTP 500 because vehicle_type is non-nullable in the backend database. Supplying full conditions is a workaround until backend optional-field handling is fixed. Response type is a JSON integer: 0=PO, 1=HQ PO, 2=TransferIN, 4=HQ TransferIN; 3/5 are TransferOut or ReturnToSupplier, distinguished by other-store versus supplier IDs.",
+                                                                  "body":  {
+                                                                               "mode":  "raw",
+                                                                               "raw":  "{\n  \"supplier_invoice_number\": \"INV-2026-4471\"\n}",
+                                                                               "options":  {
+                                                                                               "raw":  {
+                                                                                                           "language":  "json"
+                                                                                                       }
+                                                                                           }
+                                                                           }
+                                                              },
+                                          "status":  "Conflict",
+                                          "code":  409,
+                                          "_postman_previewlanguage":  "json",
+                                          "header":  [
+                                                         {
+                                                             "key":  "Content-Type",
+                                                             "value":  "application/json"
+                                                         }
+                                                     ],
+                                          "body":  "{\r\n    \"status\":  409,\r\n    \"message\":  \"Purchase order is already committed\",\r\n    \"data\":  null\r\n}"
+                                      },
+                                      {
+                                          "name":  "409 Ã¢â‚¬â€ Being processed",
+                                          "originalRequest":  {
+                                                                  "method":  "POST",
+                                                                  "auth":  {
+                                                                               "type":  "bearer",
+                                                                               "bearer":  [
+                                                                                              {
+                                                                                                  "key":  "token",
+                                                                                                  "value":  "{{token}}",
+                                                                                                  "type":  "string"
+                                                                                              }
+                                                                                          ]
+                                                                           },
+                                                                  "header":  [
+                                                                                 {
+                                                                                     "key":  "Accept",
+                                                                                     "value":  "application/json"
+                                                                                 },
+                                                                                 {
+                                                                                     "key":  "Content-Type",
+                                                                                     "value":  "application/json"
+                                                                                 }
+                                                                             ],
+                                                                  "url":  "{{base_url}}/api/purchase-order/{{purchase_order_id}}/conditions",
+                                                                  "description":  "PO only (POType 0 = PO, 1 = HQ PO). Records or updates the PO delivery conditions and supplier invoice number via /api/po-conditions. A separate step from commit: call it before or after a partial receipt, but not after the PO is closed. supplier_invoice_number is required; vehicle_type, vehicle_tempOut, vehicle_tempIN, delivery_permit_number, notes, seal_number, Driver_Name, Vehicle_Number and Goods_Type are optional and only sent when provided. Other types are rejected (TransferIN/TransferOut send their conditions in the commit). Shares the commit lock for the order. This request targets the IMS wrapper: purchase_order_id comes from the URL and is added to the upstream payload. Do not send StoreID. Known upstream issue observed in testing: an invoice-only insert returns HTTP 500 because vehicle_type is non-nullable in the backend database. Supplying full conditions is a workaround until backend optional-field handling is fixed. Response type is a JSON integer: 0=PO, 1=HQ PO, 2=TransferIN, 4=HQ TransferIN; 3/5 are TransferOut or ReturnToSupplier, distinguished by other-store versus supplier IDs.",
+                                                                  "body":  {
+                                                                               "mode":  "raw",
+                                                                               "raw":  "{\n  \"supplier_invoice_number\": \"INV-2026-4471\"\n}",
+                                                                               "options":  {
+                                                                                               "raw":  {
+                                                                                                           "language":  "json"
+                                                                                                       }
+                                                                                           }
+                                                                           }
+                                                              },
+                                          "status":  "Conflict",
+                                          "code":  409,
+                                          "_postman_previewlanguage":  "json",
+                                          "header":  [
+                                                         {
+                                                             "key":  "Content-Type",
+                                                             "value":  "application/json"
+                                                         }
+                                                     ],
+                                          "body":  "{\r\n    \"status\":  409,\r\n    \"message\":  \"This order is already being processed. Please wait.\",\r\n    \"data\":  null\r\n}"
+                                      },
+                                      {
+                                          "name":  "400 Ã¢â‚¬â€ Rejected by order service",
+                                          "originalRequest":  {
+                                                                  "method":  "POST",
+                                                                  "auth":  {
+                                                                               "type":  "bearer",
+                                                                               "bearer":  [
+                                                                                              {
+                                                                                                  "key":  "token",
+                                                                                                  "value":  "{{token}}",
+                                                                                                  "type":  "string"
+                                                                                              }
+                                                                                          ]
+                                                                           },
+                                                                  "header":  [
+                                                                                 {
+                                                                                     "key":  "Accept",
+                                                                                     "value":  "application/json"
+                                                                                 },
+                                                                                 {
+                                                                                     "key":  "Content-Type",
+                                                                                     "value":  "application/json"
+                                                                                 }
+                                                                             ],
+                                                                  "url":  "{{base_url}}/api/purchase-order/{{purchase_order_id}}/conditions",
+                                                                  "description":  "PO only (POType 0 = PO, 1 = HQ PO). Records or updates the PO delivery conditions and supplier invoice number via /api/po-conditions. A separate step from commit: call it before or after a partial receipt, but not after the PO is closed. supplier_invoice_number is required; vehicle_type, vehicle_tempOut, vehicle_tempIN, delivery_permit_number, notes, seal_number, Driver_Name, Vehicle_Number and Goods_Type are optional and only sent when provided. Other types are rejected (TransferIN/TransferOut send their conditions in the commit). Shares the commit lock for the order. This request targets the IMS wrapper: purchase_order_id comes from the URL and is added to the upstream payload. Do not send StoreID. Known upstream issue observed in testing: an invoice-only insert returns HTTP 500 because vehicle_type is non-nullable in the backend database. Supplying full conditions is a workaround until backend optional-field handling is fixed. Response type is a JSON integer: 0=PO, 1=HQ PO, 2=TransferIN, 4=HQ TransferIN; 3/5 are TransferOut or ReturnToSupplier, distinguished by other-store versus supplier IDs.",
+                                                                  "body":  {
+                                                                               "mode":  "raw",
+                                                                               "raw":  "{\n  \"supplier_invoice_number\": \"INV-2026-4471\"\n}",
+                                                                               "options":  {
+                                                                                               "raw":  {
+                                                                                                           "language":  "json"
+                                                                                                       }
+                                                                                           }
+                                                                           }
+                                                              },
+                                          "status":  "Bad Request",
+                                          "code":  400,
+                                          "_postman_previewlanguage":  "json",
+                                          "header":  [
+                                                         {
+                                                             "key":  "Content-Type",
+                                                             "value":  "application/json"
+                                                         }
+                                                     ],
+                                          "body":  "{\r\n    \"status\":  400,\r\n    \"message\":  \"PO is not Open or Partial\",\r\n    \"data\":  null\r\n}"
+                                      },
+                                      {
+                                          "name":  "401 Ã¢â‚¬â€ Missing or invalid token",
+                                          "originalRequest":  {
+                                                                  "method":  "POST",
+                                                                  "auth":  {
+                                                                               "type":  "bearer",
+                                                                               "bearer":  [
+                                                                                              {
+                                                                                                  "key":  "token",
+                                                                                                  "value":  "{{token}}",
+                                                                                                  "type":  "string"
+                                                                                              }
+                                                                                          ]
+                                                                           },
+                                                                  "header":  [
+                                                                                 {
+                                                                                     "key":  "Accept",
+                                                                                     "value":  "application/json"
+                                                                                 },
+                                                                                 {
+                                                                                     "key":  "Content-Type",
+                                                                                     "value":  "application/json"
+                                                                                 }
+                                                                             ],
+                                                                  "url":  "{{base_url}}/api/purchase-order/{{purchase_order_id}}/conditions",
+                                                                  "description":  "PO only (POType 0 = PO, 1 = HQ PO). Records or updates the PO delivery conditions and supplier invoice number via /api/po-conditions. A separate step from commit: call it before or after a partial receipt, but not after the PO is closed. supplier_invoice_number is required; vehicle_type, vehicle_tempOut, vehicle_tempIN, delivery_permit_number, notes, seal_number, Driver_Name, Vehicle_Number and Goods_Type are optional and only sent when provided. Other types are rejected (TransferIN/TransferOut send their conditions in the commit). Shares the commit lock for the order. This request targets the IMS wrapper: purchase_order_id comes from the URL and is added to the upstream payload. Do not send StoreID. Known upstream issue observed in testing: an invoice-only insert returns HTTP 500 because vehicle_type is non-nullable in the backend database. Supplying full conditions is a workaround until backend optional-field handling is fixed. Response type is a JSON integer: 0=PO, 1=HQ PO, 2=TransferIN, 4=HQ TransferIN; 3/5 are TransferOut or ReturnToSupplier, distinguished by other-store versus supplier IDs.",
+                                                                  "body":  {
+                                                                               "mode":  "raw",
+                                                                               "raw":  "{\n  \"supplier_invoice_number\": \"INV-2026-4471\"\n}",
+                                                                               "options":  {
+                                                                                               "raw":  {
+                                                                                                           "language":  "json"
+                                                                                                       }
+                                                                                           }
+                                                                           }
+                                                              },
+                                          "status":  "Unauthorized",
+                                          "code":  401,
+                                          "_postman_previewlanguage":  "json",
+                                          "header":  [
+                                                         {
+                                                             "key":  "Content-Type",
+                                                             "value":  "application/json"
+                                                         }
+                                                     ],
+                                          "body":  "{\r\n    \"message\":  \"Unauthenticated.\"\r\n}"
+                                      }
+                                  ]
+                 }
+             ]
+}

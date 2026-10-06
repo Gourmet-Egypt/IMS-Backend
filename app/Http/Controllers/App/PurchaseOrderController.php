@@ -14,6 +14,7 @@ use App\Models\PurchaseOrderProcessStart;
 use App\Notifications\PurchaseOrderNotification;
 use App\Services\Commit\CommitService;
 use App\Services\CommitOrderService;
+use App\Services\Conditions\ConditionsService;
 use App\Services\PurchaseOrderPdfService;
 use App\Services\PurchaseOrderPrintService;
 use App\Services\UpdateInfosService;
@@ -116,6 +117,14 @@ class PurchaseOrderController extends Controller
         CommitOrderService $service
     ): \Illuminate\Http\JsonResponse {
         return $service->commit($purchaseOrder, $request);
+    }
+
+    public function conditions(
+        PurchaseOrder $purchaseOrder,
+        Request $request,
+        ConditionsService $service
+    ): \Illuminate\Http\JsonResponse {
+        return $service->save($purchaseOrder, $request);
     }
 
     public function allInfos(PurchaseOrderEntry $purchaseOrderEntry): \Illuminate\Http\JsonResponse

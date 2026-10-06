@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Services\Conditions;
+
+use App\Enums\PurchaseOrderTypeEnum;
+use App\Services\Commit\CommitException;
+use App\Services\Conditions\Strategies\PurchaseOrderConditionsStrategy;
+use Illuminate\Http\Response;
+
+/**
+ * Conditions are only saved for POs: 0 and 1.
+ */
+class ConditionsStrategyFactory
+{
+    public function for(PurchaseOrderTypeEnum $type): ConditionsStrategy
+    {
+        $class = match ($type) {
+            PurchaseOrderTypeEnum::LOCAL_PO_SUPPLIER_0,
+            PurchaseOrderTypeEnum::LOCAL_PO_SUPPLIER_1 => PurchaseOrderConditionsStrategy::class,
+
+            default => throw new CommitException(
+                'Conditions are not supported for this purchase order type',
+                Response::HTTP_UNPROCESSABLE_ENTITY
+            ),
+        };
+
+        return app($class);
+    }
+}
