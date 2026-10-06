@@ -2,7 +2,6 @@
 
 namespace App\Services\CreateOrder\Strategies;
 
-use App\Jobs\SyncPurchaseOrderJob;
 use App\Models\TransferRequest;
 use App\Services\CreateOrder\Contracts\OrderTypeStrategy;
 
@@ -23,16 +22,6 @@ class TransferInStrategy implements OrderTypeStrategy
 
     public function resolvePurchaseOrderId(TransferRequest $transferRequest, array $apiResponse): ?int
     {
-        $purchaseOrderNumber = sprintf(
-            '%05d_%05d_%s',
-            $transferRequest->other_store_id,
-            $transferRequest->store_id,
-            $apiResponse['poNumber']
-        );
-
-        SyncPurchaseOrderJob::dispatch($transferRequest->id, $purchaseOrderNumber)
-            ->delay(now()->addMinutes(3));
-
-        return null;
+        return $apiResponse['id'] ?? null;
     }
 }

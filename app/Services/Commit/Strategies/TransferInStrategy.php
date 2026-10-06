@@ -42,16 +42,16 @@ class TransferInStrategy implements TransactionTypeStrategy
         if ($this->isClosing($ctx)) {
             return ['Order' => $ctx->basePayload() + [
                 'isClosed'       => 1,
-                'Vehicle_tempIN' => $request->input('Vehicle_tempIN', 0),
+                'Vehicle_TempIN' => (float) $request->input('vehicle_TempIN', $request->input('Vehicle_tempIN', 0)),
                 'receiver_name'  => $ctx->cashier->Name ?? '',
             ]];
         }
 
         return ['Order' => $ctx->basePayload() + [
-            'IsClosed'             => 0,
-            'Vehicle_tempIN'       => (float) $request->input('vehicle_TempIN', $request->input('Vehicle_tempIN', 0)),
+            'isClosed'             => 0,
+            'Vehicle_TempIN'       => (float) $request->input('vehicle_TempIN', $request->input('Vehicle_tempIN', 0)),
             'VehicleType'          => (string) $request->input('vehicleType', ''),
-            'Vehicle_tempOut'      => (float) $request->input('vehicle_TempOut', 0),
+            'Vehicle_TempOut'      => (float) $request->input('vehicle_TempOut', 0),
             'DeliveryPermitNumber' => (string) $request->input('deliveryPermitNumber', ''),
             'Notes'                => (string) $request->input('notes', ''),
             'seal_number'          => (string) $request->input('seal_number', ''),

@@ -9,6 +9,7 @@ use App\Http\Resources\App\Supplier\ShowSupplierResource;
 use App\Http\Resources\App\Supplier\SupplierResource;
 use App\Models\Item;
 use App\Models\Supplier;
+use App\Models\SupplierList;
 use App\Traits\Responses;
 use Illuminate\Http\Response;
 
@@ -43,6 +44,19 @@ class SupplierController extends Controller
 
     public function show(Supplier $supplier)
     {
+        if ($supplier->hasAllItems()) {
+            $supplier->setRelation('supplierItems', Item::IndexSearch()
+                ->orderBy('ID')
+                ->get(['ID', 'ItemLookupCode', 'Description'])
+                ->map(fn (Item $item) => (new SupplierList)->forceFill(['ItemID' => $item->ID])->setRelation('item', $item)));
+
+            return $this->success(
+                status: Response::HTTP_OK,
+                message: 'Supplier retrieved successfully',
+                data: new ShowSupplierResource($supplier)
+            );
+        }
+
         $supplier->load([
             'supplierItems' => fn ($query) => $query
                 ->select(['ID', 'SupplierID', 'ItemID'])
@@ -63,7 +77,7 @@ class SupplierController extends Controller
             ->where('ItemLookupCode', $request->validated('lookupcode'))
             ->first();
 
-        if (! $supplier->supplierItems()->where('ItemID', $item->ID)->exists()) {
+        if (! $supplier->hasAllItems() && ! $supplier->supplierItems()->where('ItemID', $item->ID)->exists()) {
             return $this->error(
                 status: Response::HTTP_NOT_FOUND,
                 message: 'Item is not related to this supplier',

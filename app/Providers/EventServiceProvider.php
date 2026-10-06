@@ -2,10 +2,6 @@
 
 namespace App\Providers;
 
-use App\Events\PurchaseOrderCommitted;
-use App\Listeners\GeneratePdfsListener;
-use App\Listeners\PrintPurchaseOrderListener;
-use App\Listeners\SendTransferEmailsListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -21,11 +17,6 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
-        PurchaseOrderCommitted::class => [
-            GeneratePdfsListener::class,
-            SendTransferEmailsListener::class,
-            PrintPurchaseOrderListener::class,
-        ]
     ];
 
     /**

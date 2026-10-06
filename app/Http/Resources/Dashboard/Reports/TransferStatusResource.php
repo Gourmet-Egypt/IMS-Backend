@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources\Dashboard\Reports;
 
-use App\Enums\PurchaseOrderTypeEnum;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -20,7 +19,7 @@ class TransferStatusResource extends JsonResource
                 'id' => $this->ID,
                 'title' => $this->POtitle,
                 'number' => $this->PONumber,
-                'type' => PurchaseOrderTypeEnum::tryFrom($this->POType)->name,
+                'type' => (int) $this->POType,
                 'created_at' => $this->DateCreated->format('Y-m-d H:i:s'),
             ],
 

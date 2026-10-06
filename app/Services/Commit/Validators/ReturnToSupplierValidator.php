@@ -8,16 +8,11 @@ class ReturnToSupplierValidator implements CommitValidator
 {
     public function rules(): array
     {
-        return [
-            'transactionType' => ['required', 'string', 'in:ReturnToSupplier'],
-        ];
+        return [];
     }
 
     public function messages(): array
     {
-        return [
-            'transactionType.required' => 'Transaction type is required.',
-            'transactionType.in' => 'Transaction type must be ReturnToSupplier.',
-        ];
+        return [];
     }
 }

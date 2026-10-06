@@ -28,9 +28,9 @@ class ReturnToSupplierStrategy implements TransactionTypeStrategy
 
     public function buildPayload(CommitContext $ctx): array
     {
-        return ['Order' => $ctx->basePayload() + [
+        return ['Order' => [
             'transactionType' => 'ReturnToSupplier',
             'SupplierID' => (int) $ctx->order->SupplierID,
-        ]];
+        ] + $ctx->basePayload()];
     }
 }

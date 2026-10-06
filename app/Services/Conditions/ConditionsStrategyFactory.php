@@ -8,15 +8,15 @@ use App\Services\Conditions\Strategies\PurchaseOrderConditionsStrategy;
 use Illuminate\Http\Response;
 
 /**
- * Conditions are only saved for POs: 0 and 1.
+ * Conditions are only saved for POs: 0 (PO) and 1 (PO_HQ).
  */
 class ConditionsStrategyFactory
 {
     public function for(PurchaseOrderTypeEnum $type): ConditionsStrategy
     {
         $class = match ($type) {
-            PurchaseOrderTypeEnum::LOCAL_PO_SUPPLIER_0,
-            PurchaseOrderTypeEnum::LOCAL_PO_SUPPLIER_1 => PurchaseOrderConditionsStrategy::class,
+            PurchaseOrderTypeEnum::PO,
+            PurchaseOrderTypeEnum::PO_HQ => PurchaseOrderConditionsStrategy::class,
 
             default => throw new CommitException(
                 'Conditions are not supported for this purchase order type',

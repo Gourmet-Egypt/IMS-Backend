@@ -36,7 +36,7 @@ class TransferOutStrategy implements TransactionTypeStrategy
 
         return ['Order' => $ctx->basePayload() + [
             'VehicleType'          => (string) $request->input('VehicleType', ''),
-            'Vehicle_tempOut'      => $request->input('Vehicle_tempOut', 0),
+            'Vehicle_TempOut'      => $request->input('Vehicle_tempOut', 0),
             'DeliveryPermitNumber' => $request->input('DeliveryPermitNumber', ''),
             'Notes'                => $request->input('Notes', ''),
             'seal_number'          => $request->input('seal_number', ''),

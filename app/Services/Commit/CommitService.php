@@ -8,7 +8,6 @@ use App\Jobs\Commit\GeneratePdfJob;
 use App\Jobs\Commit\PrintJob;
 use App\Jobs\Commit\SendEmailsJob;
 use App\Models\PurchaseOrder;
-use App\Services\Commit\Strategies\ReturnToSupplierStrategy;
 use App\Services\Commit\Contracts\CommitApiClient;
 use App\Traits\Responses;
 use Illuminate\Http\JsonResponse;
@@ -74,9 +73,7 @@ class CommitService
         $type = PurchaseOrderTypeEnum::tryFrom((int) $order->POType)
             ?? throw new CommitException('Invalid purchase order type', Response::HTTP_BAD_REQUEST);
 
-        $strategy = $request->input('transactionType') === 'ReturnToSupplier'
-            ? app(ReturnToSupplierStrategy::class)
-            : $this->strategies->for($type);
+        $strategy = $this->strategies->for($type, $order);
 
         $ctx = new CommitContext(
             order: $order,

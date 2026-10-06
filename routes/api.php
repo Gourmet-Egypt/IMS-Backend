@@ -53,9 +53,6 @@ Route::middleware(['auth.multi'])->group(function () {
         Route::post('/{transferRequest}/status', [TransferRequestController::class, 'createOrder'])
             ->name('transfer-request.createOrder');
 
-        Route::post('/{transferRequest}/v2-status', [TransferRequestController::class, 'createOrderV2'])
-            ->name('transfer-request.createOrder.v2');
-
 
         // TransferRequestsItems Routes
         Route::post('{transferRequest}/items', [TransferRequestItemController::class, 'storeOrUpdate']);
@@ -92,16 +89,8 @@ Route::middleware(['auth.multi'])->group(function () {
         Route::post('/{purchaseOrder}/start-process', [PurchaseOrderController::class, 'startProcess'])
             ->name('purchase-order.start-process');
 
-        Route::post('/{purchaseOrder}/commit', [PurchaseOrderController::class, 'commitOrder'])
+        Route::post('/{purchaseOrder}/commit', [PurchaseOrderController::class, 'commit'])
             ->name('purchase-orders.commit');
-
-        Route::post('/{purchaseOrder}/partial-commit', [PurchaseOrderController::class, 'partialCommitOrder'])
-            ->name('purchase-orders.partial-commit');
-
-        // Rebuilt commit flow (factory + strategy). One endpoint for full and
-        // partial; the request flag `isClosed` selects the mode.
-        Route::post('/{purchaseOrder}/v2-commit', [PurchaseOrderController::class, 'commit'])
-            ->name('purchase-orders.v2-commit');
 
         Route::post('/{purchaseOrder}/conditions', [PurchaseOrderController::class, 'conditions'])
             ->name('purchase-orders.conditions');

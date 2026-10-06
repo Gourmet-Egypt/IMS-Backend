@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\App;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\App\PurchaseOrder\CommitOrderRequest;
 use App\Http\Requests\App\PurchaseOrderEntry\UpdatePurchaseOrderEntryInfosRequest;
 use App\Http\Resources\App\Offline\PurchaseOrderEntryResource;
 use App\Http\Resources\App\Offline\PurchaseOrderResource;
@@ -13,7 +12,6 @@ use App\Models\PurchaseOrderEntry;
 use App\Models\PurchaseOrderProcessStart;
 use App\Notifications\PurchaseOrderNotification;
 use App\Services\Commit\CommitService;
-use App\Services\CommitOrderService;
 use App\Services\Conditions\ConditionsService;
 use App\Services\PurchaseOrderPdfService;
 use App\Services\PurchaseOrderPrintService;
@@ -95,26 +93,10 @@ class PurchaseOrderController extends Controller
         );
     }
 
-    public function commitOrder(
-        PurchaseOrder $purchaseOrder,
-        CommitOrderRequest $request,
-        CommitOrderService $service
-    ): \Illuminate\Http\JsonResponse {
-        return $service->commit($purchaseOrder, $request);
-    }
-
     public function commit(
         PurchaseOrder $purchaseOrder,
         Request $request,
         CommitService $service
-    ): \Illuminate\Http\JsonResponse {
-        return $service->commit($purchaseOrder, $request);
-    }
-
-    public function partialCommitOrder(
-        PurchaseOrder $purchaseOrder,
-        CommitOrderRequest $request,
-        CommitOrderService $service
     ): \Illuminate\Http\JsonResponse {
         return $service->commit($purchaseOrder, $request);
     }

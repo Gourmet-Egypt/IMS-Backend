@@ -5,8 +5,8 @@ namespace App\Services;
 use App\Enums\TransferRequestStatusEnum;
 use App\Enums\TransferRequestTypeEnum;
 use App\Http\Resources\App\TransferRequest\TransferRequestResource;
-use App\Jobs\SyncPurchaseOrderJob;
 use App\Models\TransferRequest;
+use App\Services\CreateOrder\StrategyFactory;
 use App\Services\Steps\CreateOrder\AcquireLockStep;
 use App\Services\Steps\CreateOrder\BuildDataStep;
 use App\Services\Steps\CreateOrder\CallApiStep;
@@ -23,7 +23,7 @@ class CreateOrderService
 
     protected Pipeline $pipeline;
 
-    public function __construct()
+    public function __construct(private StrategyFactory $strategies)
     {
         $this->pipeline = new Pipeline();
     }
@@ -38,7 +38,6 @@ class CreateOrderService
             'apiResponse' => null,
         ];
 
-        // Step 1: Validate and build data
         $result = $this->pipeline
             ->send($payload)
             ->through([
@@ -51,7 +50,6 @@ class CreateOrderService
             return $result;
         }
 
-        // Step 2: Acquire lock + Call API
         $apiResult = $this->pipeline
             ->send($result)
             ->through([
@@ -64,36 +62,22 @@ class CreateOrderService
             return $apiResult;
         }
 
-        // Step 3: Handle response and update transfer request
         return $this->handleApiResponse($transferRequest, $apiResult->apiResponse);
     }
 
     private function handleApiResponse(TransferRequest $transferRequest, array $apiResponse): JsonResponse
     {
-        if ($transferRequest->type === TransferRequestTypeEnum::TransferIN->value) {
-            $purchaseOrderNumber = sprintf(
-                '%05d_%05d_%s',
-                $transferRequest->other_store_id,
-                $transferRequest->store_id,
-                $apiResponse['poNumber']
-            );
-
-            SyncPurchaseOrderJob::dispatch($transferRequest->id, $purchaseOrderNumber)
-                ->delay(now()->addMinutes(3));
-
-            $purchaseOrderId = null;
-        } else {
-            $purchaseOrderId = $apiResponse['id'] ?? null;
-        }
+        $type = TransferRequestTypeEnum::from($transferRequest->type);
+        $strategy = $this->strategies->for($type);
 
         $transferRequest->update([
             'status' => TransferRequestStatusEnum::CLOSED,
-            'purchase_order_id' => $purchaseOrderId,
+            'purchase_order_id' => $strategy->resolvePurchaseOrderId($transferRequest, $apiResponse),
         ]);
 
         return $this->success(
             status: Response::HTTP_OK,
-            message: 'Transfer request status updated successfully. PO sync job dispatched.',
+            message: 'Transfer request status updated successfully.',
             data: new TransferRequestResource($transferRequest)
         );
     }

@@ -11,7 +11,6 @@ use App\Models\Store;
 use App\Models\Supplier;
 use App\Models\TransferRequest;
 use App\Services\CreateOrderService;
-use App\Services\CreateOrderServiceV2;
 use App\Traits\Responses;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -120,14 +119,6 @@ class TransferRequestController extends Controller
         TransferRequest $transferRequest,
         Request $request,
         CreateOrderService $service
-    ) {
-        return $service->create($transferRequest, $request);
-    }
-
-    public function createOrderV2(
-        TransferRequest $transferRequest,
-        Request $request,
-        CreateOrderServiceV2 $service
     ) {
         return $service->create($transferRequest, $request);
     }

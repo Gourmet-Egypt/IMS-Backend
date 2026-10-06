@@ -33,7 +33,7 @@ class HttpCommitApiClient implements CommitApiClient
         if (!$response->successful()) {
             throw new CommitException(
                 $this->parseError($response->json() ?? []),
-                Response::HTTP_INTERNAL_SERVER_ERROR
+                $response->clientError() ? $response->status() : Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
 
@@ -45,7 +45,7 @@ class HttpCommitApiClient implements CommitApiClient
      */
     protected function parseError(?array $responseData): string
     {
-        $errorMessage = 'Failed to commit order';
+        $errorMessage = 'The order service rejected the request';
 
         if (!$responseData || !isset($responseData['message'])) {
             return $errorMessage;

@@ -43,7 +43,7 @@ class CommitEmailService
 
         $order->load(['currentStore', 'otherStore']);
 
-        $policy = $this->strategies->for($type)->emailPolicy();
+        $policy = $this->strategies->for($type, $order)->emailPolicy();
 
         $recipients = PurchaseOrderEmail::forStores($policy->recipientStoreIds($order, $config))
             ->get()
