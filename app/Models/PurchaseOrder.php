@@ -209,7 +209,7 @@ class PurchaseOrder extends Model
 
     public function supplier()
     {
-        return $this->belongsTo(Supplier::class, 'Supplierid', 'HQID');
+        return $this->belongsTo(Supplier::class, 'SupplierID', 'HQID');
     }
 
     public function scopeType(Builder $query)

@@ -17,6 +17,7 @@ class PurchaseOrderConditionResource extends JsonResource
         return [
             'vehicle_type' => $this->vehicle_type,
             'purchase_order_id' => $this->purchase_order_id,
+            'supplier_invoice_number' => $this->supplier_invoice_number,
             'vehicle_tempOut' => $this->vehicle_tempOut,
             'vehicle_tempIN' => $this->vehicle_tempIN,
             'delivery_permit_number' => $this->delivery_permit_number,
