@@ -102,6 +102,7 @@ class CommitEmailService
         return match ($perspective) {
             'from_store' => "Transfer OUT from {$from} to {$to} - #{$id} - {$title}",
             'to_store'   => "Transfer IN from {$from} to {$to} - #{$id} - {$title}",
+            'return_to_supplier' => "Return to Supplier #{$id} - {$title}",
             default      => "Purchase Order #{$id} - {$title}",
         };
     }

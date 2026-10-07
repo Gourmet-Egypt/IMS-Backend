@@ -14,3 +14,7 @@
 @section('itemRows')
     @include('commit.pdfs.partials.rows_in')
 @endsection
+
+@section('details')
+    @include('commit.pdfs.partials.transfer_details')
+@endsection

@@ -13,3 +13,7 @@
 @section('itemRows')
     @include('commit.pdfs.partials.rows_out')
 @endsection
+
+@section('details')
+    @include('commit.pdfs.partials.transfer_details')
+@endsection

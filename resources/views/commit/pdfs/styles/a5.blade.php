@@ -169,4 +169,11 @@
         margin-top: 3mm;
         width: 50%;
     }
+    /* ================= SUPPLIER ================= */
+    .center { text-align: center; }
+    .date-cell { border: 1px solid #000; padding: 4px; text-align: center; vertical-align: middle; font-size: 10px; }
+    .totals { margin-top: 6mm; }
+    .sign-cell { width: 25%; vertical-align: top; }
+    .sign-cell .signature-line { width: 85%; margin-top: 10mm; }
+    .temp-oval { border: 1px solid #999; border-radius: 50%; width: 30mm; height: 12mm; margin-top: 2mm; }
 </style>

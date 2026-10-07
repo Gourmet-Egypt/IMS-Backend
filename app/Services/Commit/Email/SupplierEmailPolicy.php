@@ -7,7 +7,7 @@ use App\Services\Commit\Contracts\EmailPolicy;
 
 /**
  * Supplier PO: no other-store counterparty, so recipients are the configured
- * store and the notification uses the neutral "default" perspective.
+ * store; perspective is "supplier" for a PO and "return_to_supplier" for a return.
  */
 class SupplierEmailPolicy implements EmailPolicy
 {
@@ -18,7 +18,10 @@ class SupplierEmailPolicy implements EmailPolicy
 
     public function perspective(PurchaseOrder $order, int $recipientStoreId): string
     {
-        return 'default';
+        return (int) $order->OtherStoreID === 0 && (int) $order->SupplierID !== 0
+            && in_array((int) $order->POType, [3, 5], true)
+            ? 'return_to_supplier'
+            : 'supplier';
     }
 
     public function storeFlow(PurchaseOrder $order): array

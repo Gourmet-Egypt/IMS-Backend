@@ -74,8 +74,13 @@ class CommitPurchaseOrderNotification extends Mailable
             return [];
         }
 
-        $label = $this->perspective === 'from_store' ? 'out' : 'in';
-        $fileName = "transfer_{$label}_{$this->purchaseOrder->PONumber}.pdf";
+        $label = match ($this->perspective) {
+            'from_store' => 'transfer_out',
+            'supplier' => 'purchase_order',
+            'return_to_supplier' => 'return_to_supplier',
+            default => 'transfer_in',
+        };
+        $fileName = "{$label}_{$this->purchaseOrder->PONumber}.pdf";
 
         return [
             Attachment::fromData(fn() => $this->pdf->output(), $fileName)

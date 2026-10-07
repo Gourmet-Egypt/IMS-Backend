@@ -2,6 +2,7 @@
 
 namespace App\Services\Commit;
 
+use App\Enums\PurchaseOrderTypeEnum;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderPdf;
 use Illuminate\Support\Facades\Storage;
@@ -22,9 +23,10 @@ class CommitPdfService
      */
     public function generate(PurchaseOrder $order): string
     {
-        $pdf = $this->builder->build($order, $this->canonicalPerspective($order));
+        $perspective = $this->canonicalPerspective($order);
+        $pdf = $this->builder->build($order, $perspective);
 
-        $fileName  = "transfer_request_{$order->PONumber}_" . time() . ".pdf";
+        $fileName  = $this->filePrefix($perspective) . "_{$order->PONumber}_" . time() . ".pdf";
         $path      = "pdfs/purchase_order/{$order->PONumber}/{$fileName}";
         $directory = dirname($path);
 
@@ -45,14 +47,27 @@ class CommitPdfService
 
     /**
      * The single perspective the stored/printed document is rendered from,
-     * derived from the PO type (HQ 4/5 follow 2/3). Supplier POs use 'default'.
+     * derived from the PO operation (HQ types follow their standard ones).
      */
     private function canonicalPerspective(PurchaseOrder $order): string
     {
-        return match ((string) $order->POType) {
-            '2', '4' => 'to_store',
-            '3', '5' => 'from_store',
-            default  => 'default',
+        $type = PurchaseOrderTypeEnum::tryFrom((int) $order->POType);
+
+        return match ($type?->operation((int) $order->SupplierID, (int) $order->OtherStoreID)) {
+            'TransferIN'       => 'to_store',
+            'TransferOut'      => 'from_store',
+            'PO'               => 'supplier',
+            'ReturnToSupplier' => 'return_to_supplier',
+            default            => 'default',
+        };
+    }
+
+    private function filePrefix(string $perspective): string
+    {
+        return match ($perspective) {
+            'supplier'           => 'purchase_order',
+            'return_to_supplier' => 'return_to_supplier',
+            default              => 'transfer_request',
         };
     }
 }

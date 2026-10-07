@@ -27,6 +27,7 @@ class CommitTransferPdfBuilder
             'entries.transferRequest' => fn ($q) => $q->with('items'),
             'currentStore',
             'otherStore',
+            'supplier',
         ]);
 
         $items = $this->transformItems($order, $perspective);
@@ -38,6 +39,8 @@ class CommitTransferPdfBuilder
         $view = match ($perspective) {
             'from_store' => 'commit.pdfs.from_store',
             'to_store'   => 'commit.pdfs.to_store',
+            'supplier'   => 'commit.pdfs.supplier',
+            'return_to_supplier' => 'commit.pdfs.return_to_supplier',
             default      => 'commit.pdfs.default',
         };
 
@@ -60,7 +63,7 @@ class CommitTransferPdfBuilder
      * One row per batch. Diff is a reconciliation total, so it is shown only on
      * the last batch row of an item (null on the others), like quantity_requested
      * is shown only on the first row.
-     *   from_store (OUT): Diff = issued - ordered
+     *   from_store (OUT) / supplier / return_to_supplier: Diff = issued - ordered
      *   to_store   (IN) : Diff = received(quantity_IN) - issued
      */
     private function transformItems(PurchaseOrder $order, string $perspective)
@@ -84,13 +87,14 @@ class CommitTransferPdfBuilder
             $cumulativeIN = 0;
             $isFirstRow = true;
             $lastIndex = $entry->infos->count() - 1;
+            $issuedVsOrdered = $perspective !== 'to_store' && $perspective !== 'default';
 
             foreach ($entry->infos as $index => $info) {
                 $cumulativeIssued += $info->quantity_issued ?? 0;
                 $cumulativeIN += $info->quantity_IN ?? 0;
 
                 $diff = $index === $lastIndex
-                    ? ($perspective === 'from_store'
+                    ? ($issuedVsOrdered
                         ? $cumulativeIssued - $quantityRequested
                         : $cumulativeIN - $cumulativeIssued)
                     : null;
@@ -121,7 +125,7 @@ class CommitTransferPdfBuilder
                     'production_date' => null,
                     'expire_date' => null,
                     'quantity_issued' => 0,
-                    'diff' => $perspective === 'from_store' ? -$quantityRequested : 0,
+                    'diff' => $perspective !== 'to_store' && $perspective !== 'default' ? -$quantityRequested : 0,
                     'sn' => null,
                 ];
             }
