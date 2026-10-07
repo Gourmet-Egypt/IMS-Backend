@@ -756,7 +756,7 @@ PO:
 }
 ```
 
-TransferIN (`vehicle_TempIN` or `Vehicle_tempIN` is required; the other fields are only used on a partial receipt):
+TransferIN (`vehicle_TempIN` is required; the other fields are only used on a partial receipt):
 
 ```json
 {
