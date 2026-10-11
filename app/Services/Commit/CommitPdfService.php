@@ -45,6 +45,31 @@ class CommitPdfService
         return $path;
     }
 
+    public function storeInvoices(PurchaseOrder $order, array $files): void
+    {
+        $directory = $this->invoiceDirectory($order);
+
+        if (!Storage::exists($directory)) {
+            Storage::makeDirectory($directory, 0775, true);
+        }
+
+        foreach ($files as $file) {
+            $name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $safe = trim(preg_replace("/[^A-Za-z0-9_-]+/", "_", $name), "_") ?: "invoice";
+            $file->storeAs($directory, "{$safe}_" . time() . "_" . bin2hex(random_bytes(2)) . ".pdf");
+        }
+    }
+
+    public function invoicePaths(PurchaseOrder $order): array
+    {
+        return Storage::files($this->invoiceDirectory($order));
+    }
+
+    private function invoiceDirectory(PurchaseOrder $order): string
+    {
+        return "pdfs/purchase_order/{$order->PONumber}/invoices";
+    }
+
     /**
      * The single perspective the stored/printed document is rendered from,
      * derived from the PO operation (HQ types follow their standard ones).

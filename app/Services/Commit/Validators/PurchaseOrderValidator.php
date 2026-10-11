@@ -10,6 +10,8 @@ class PurchaseOrderValidator implements CommitValidator
     {
         return [
             'isClosed' => ['required', 'integer', 'in:0,1'],
+            'invoices' => ['nullable', 'array'],
+            'invoices.*' => ['file', 'mimes:pdf', 'max:10240'],
         ];
     }
 
@@ -18,6 +20,8 @@ class PurchaseOrderValidator implements CommitValidator
         return [
             'isClosed.required' => 'isClosed is required.',
             'isClosed.in' => 'isClosed must be 0 or 1.',
+            'invoices.*.mimes' => 'Invoices must be PDF files.',
+            'invoices.*.max' => 'Each invoice must be 10MB or less.',
         ];
     }
 }

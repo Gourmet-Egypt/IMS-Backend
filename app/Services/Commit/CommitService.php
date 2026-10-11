@@ -9,6 +9,7 @@ use App\Jobs\Commit\PrintJob;
 use App\Jobs\Commit\SendEmailsJob;
 use App\Models\PurchaseOrder;
 use App\Services\Commit\Contracts\CommitApiClient;
+use App\Services\Commit\Strategies\SupplierStrategy;
 use App\Traits\Responses;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -34,12 +35,14 @@ class CommitService
     public function __construct(
         private StrategyFactory $strategies,
         private CommitApiClient $api,
+        private CommitPdfService $pdfs,
     ) {}
 
     public function commit(PurchaseOrder $order, Request $request): JsonResponse
     {
         try {
             $ctx = $this->prepare($order, $request);   // resolve strategy + validate
+            $this->storeInvoices($ctx);
             $this->commitUnderLock($ctx);               // guard -> build -> gateway
         } catch (ValidationException $e) {
             return $this->error(
@@ -94,6 +97,15 @@ class CommitService
         )->validate();
 
         return $ctx;
+    }
+
+    private function storeInvoices(CommitContext $ctx): void
+    {
+        $files = $ctx->request->file('invoices', []);
+
+        if ($ctx->strategy instanceof SupplierStrategy && !empty($files)) {
+            $this->pdfs->storeInvoices($ctx->order, $files);
+        }
     }
 
     /**

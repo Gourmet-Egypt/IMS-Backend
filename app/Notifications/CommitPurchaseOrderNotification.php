@@ -27,6 +27,7 @@ class CommitPurchaseOrderNotification extends Mailable
         public string $fromStore,
         public string $toStore,
         public string $perspective,
+        public array $invoicePaths = [],
     ) {
     }
 
@@ -70,8 +71,13 @@ class CommitPurchaseOrderNotification extends Mailable
 
     public function attachments(): array
     {
+        $invoices = array_map(
+            fn (string $path) => Attachment::fromStorage($path)->withMime('application/pdf'),
+            $this->invoicePaths
+        );
+
         if (!$this->pdf) {
-            return [];
+            return $invoices;
         }
 
         $label = match ($this->perspective) {
@@ -85,6 +91,7 @@ class CommitPurchaseOrderNotification extends Mailable
         return [
             Attachment::fromData(fn() => $this->pdf->output(), $fileName)
                 ->withMime('application/pdf'),
+            ...$invoices,
         ];
     }
 }

@@ -22,6 +22,7 @@ class CommitEmailService
     public function __construct(
         private StrategyFactory $strategies,
         private CommitTransferPdfBuilder $pdfBuilder,
+        private CommitPdfService $pdfs,
     ) {}
 
     public function send(PurchaseOrder $order): void
@@ -60,6 +61,7 @@ class CommitEmailService
             ->toArray();
 
         [$fromStore, $toStore] = $policy->storeFlow($order);
+        $invoices = $this->pdfs->invoicePaths($order);
 
         foreach ($recipients as $storeId => $records) {
             $perspective = $policy->perspective($order, (int) $storeId);
@@ -81,7 +83,8 @@ class CommitEmailService
                         $senderName,
                         $fromStore,
                         $toStore,
-                        $perspective
+                        $perspective,
+                        $invoices
                     ));
                 } catch (\Throwable $e) {
                     Log::error('Failed to send PO email to ' . $record->email . ': ' . $e->getMessage());
