@@ -228,6 +228,11 @@ class PurchaseOrder extends Model
         return $query->whereIn('POType', (array) $type);
     }
 
+    public function processStart()
+    {
+        return $this->hasOne(PurchaseOrderProcessStart::class, 'purchase_order_id', 'ID');
+    }
+
     public function pdfs()
     {
         return $this->hasMany(PurchaseOrderPdf::class, 'purchase_order_id', 'ID');

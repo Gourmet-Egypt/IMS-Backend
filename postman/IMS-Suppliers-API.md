@@ -535,6 +535,64 @@ Creates the actual order using the stored transfer type, supplier and items. No 
 }
 ```
 
+## Start process
+
+POST {{base_url}}/api/purchase-order/{{purchase_order_id}}/start-process
+
+Records when work on a purchase order starts. Call it once when the user opens the order to start receiving/issuing, before saving batches, conditions or committing. No request body. Saves start_date (UTC, now) in purchase_order_process_starts. A second call for the same order is rejected with 400 and the original start time is kept. The matching end time is saved automatically by Commit order (every successful commit updates it, so a partially committed order ends at its latest commit). The PDFs show both times in Africa/Cairo and the lead time (end minus start): GTRN Start/End/Lead Time on the transfer notes, Start Time/End of Time/Lead Time on the Goods Receipt and Goods Return notes. Works for every order type. If it is never called, those fields stay empty.
+
+### 200 — Process started
+
+```json
+{
+  "status": 200,
+  "message": "Process started successfully",
+  "data": {
+    "purchase_order_id": 38869,
+    "start_date": "2026-10-26T11:56:30.821000Z"
+  }
+}
+```
+
+### 400 — Process already started
+
+```json
+{
+  "status": 400,
+  "message": "Process already started",
+  "data": null
+}
+```
+
+### 404 — Purchase order not found
+
+```json
+{
+  "status": 404,
+  "message": "Resource not found.",
+  "data": null,
+  "exception": "No query results for model [App\\Models\\PurchaseOrder] 999999"
+}
+```
+
+### 401 — Missing or invalid token
+
+```json
+{
+  "success": false,
+  "message": "Unauthenticated."
+}
+```
+
+### 401 — Expired token
+
+```json
+{
+  "success": false,
+  "message": "Token expired."
+}
+```
+
 ## PO conditions
 
 POST {{base_url}}/api/purchase-order/{{purchase_order_id}}/conditions

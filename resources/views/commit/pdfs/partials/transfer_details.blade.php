@@ -73,10 +73,11 @@
         <td class="ship-title">GTRN End of Time</td>
         <td class="ship-title">Lead Time</td>
     </tr>
+    @php($process = $purchaseOrder->processStart)
     <tr>
-        <td class="ship-content"></td>
-        <td class="ship-content"></td>
-        <td class="ship-content"></td>
+        <td class="ship-content gtrn-time">{{ $process?->startLabel() }}</td>
+        <td class="ship-content gtrn-time">{{ $process?->endLabel() }}</td>
+        <td class="ship-content gtrn-time">{{ $process?->leadTimeLabel() }}</td>
     </tr>
 </table>
 <!-- VEHICLE -->

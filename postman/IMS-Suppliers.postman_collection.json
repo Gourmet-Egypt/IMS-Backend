@@ -2,7 +2,7 @@
     "info": {
         "name": "IMS — Suppliers, Items and PO Creation",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-        "description": "Source-based illustrative examples. Supplier endpoints are public; everything else needs a bearer token. Set base_url, token, supplier_id, lookupcode, transfer_request_id, item_hq_id and purchase_order_id. PO workflow: create transfer -> add items (single or bulk) -> create order -> PO conditions -> commit (isClosed 0 for each partial shipment, 1 to close). Validation returns only the first error."
+        "description": "Source-based illustrative examples. Supplier endpoints are public; everything else needs a bearer token. Set base_url, token, supplier_id, lookupcode, transfer_request_id, item_hq_id and purchase_order_id. PO workflow: create transfer -> add items (single or bulk) -> create order -> start process -> PO conditions -> commit (isClosed 0 for each partial shipment, 1 to close). Validation returns only the first error."
     },
     "auth": {
         "type": "noauth"
@@ -2085,6 +2085,202 @@
             ]
         },
         {
+            "name": "Start process",
+            "request": {
+                "method": "POST",
+                "auth": {
+                    "type": "bearer",
+                    "bearer": [
+                        {
+                            "key": "token",
+                            "value": "{{token}}",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "header": [
+                    {
+                        "key": "Accept",
+                        "value": "application/json"
+                    }
+                ],
+                "url": "{{base_url}}/api/purchase-order/{{purchase_order_id}}/start-process",
+                "description": "Records when work on a purchase order starts. Call it once when the user opens the order to start receiving/issuing, before saving batches, conditions or committing. No request body. Saves start_date (UTC, now) in purchase_order_process_starts. A second call for the same order is rejected with 400 and the original start time is kept. The matching end time is saved automatically by Commit order (every successful commit updates it, so a partially committed order ends at its latest commit). The PDFs show both times in Africa/Cairo and the lead time (end minus start): GTRN Start/End/Lead Time on the transfer notes, Start Time/End of Time/Lead Time on the Goods Receipt and Goods Return notes. Works for every order type. If it is never called, those fields stay empty."
+            },
+            "response": [
+                {
+                    "name": "200 — Process started",
+                    "originalRequest": {
+                        "method": "POST",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/purchase-order/{{purchase_order_id}}/start-process",
+                        "description": "Records when work on a purchase order starts. Call it once when the user opens the order to start receiving/issuing, before saving batches, conditions or committing. No request body. Saves start_date (UTC, now) in purchase_order_process_starts. A second call for the same order is rejected with 400 and the original start time is kept. The matching end time is saved automatically by Commit order (every successful commit updates it, so a partially committed order ends at its latest commit). The PDFs show both times in Africa/Cairo and the lead time (end minus start): GTRN Start/End/Lead Time on the transfer notes, Start Time/End of Time/Lead Time on the Goods Receipt and Goods Return notes. Works for every order type. If it is never called, those fields stay empty."
+                    },
+                    "status": "OK",
+                    "code": 200,
+                    "_postman_previewlanguage": "json",
+                    "header": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "body": "{\r\n    \"status\": 200,\r\n    \"message\": \"Process started successfully\",\r\n    \"data\": {\r\n        \"purchase_order_id\": 38869,\r\n        \"start_date\": \"2026-10-26T11:56:30.821000Z\"\r\n    }\r\n}"
+                },
+                {
+                    "name": "400 — Process already started",
+                    "originalRequest": {
+                        "method": "POST",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/purchase-order/{{purchase_order_id}}/start-process",
+                        "description": "Records when work on a purchase order starts. Call it once when the user opens the order to start receiving/issuing, before saving batches, conditions or committing. No request body. Saves start_date (UTC, now) in purchase_order_process_starts. A second call for the same order is rejected with 400 and the original start time is kept. The matching end time is saved automatically by Commit order (every successful commit updates it, so a partially committed order ends at its latest commit). The PDFs show both times in Africa/Cairo and the lead time (end minus start): GTRN Start/End/Lead Time on the transfer notes, Start Time/End of Time/Lead Time on the Goods Receipt and Goods Return notes. Works for every order type. If it is never called, those fields stay empty."
+                    },
+                    "status": "Bad Request",
+                    "code": 400,
+                    "_postman_previewlanguage": "json",
+                    "header": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "body": "{\r\n    \"status\": 400,\r\n    \"message\": \"Process already started\",\r\n    \"data\": null\r\n}"
+                },
+                {
+                    "name": "404 — Purchase order not found",
+                    "originalRequest": {
+                        "method": "POST",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/purchase-order/{{purchase_order_id}}/start-process",
+                        "description": "Records when work on a purchase order starts. Call it once when the user opens the order to start receiving/issuing, before saving batches, conditions or committing. No request body. Saves start_date (UTC, now) in purchase_order_process_starts. A second call for the same order is rejected with 400 and the original start time is kept. The matching end time is saved automatically by Commit order (every successful commit updates it, so a partially committed order ends at its latest commit). The PDFs show both times in Africa/Cairo and the lead time (end minus start): GTRN Start/End/Lead Time on the transfer notes, Start Time/End of Time/Lead Time on the Goods Receipt and Goods Return notes. Works for every order type. If it is never called, those fields stay empty."
+                    },
+                    "status": "Not Found",
+                    "code": 404,
+                    "_postman_previewlanguage": "json",
+                    "header": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "body": "{\r\n    \"status\": 404,\r\n    \"message\": \"Resource not found.\",\r\n    \"data\": null,\r\n    \"exception\": \"No query results for model [App\\\\Models\\\\PurchaseOrder] 999999\"\r\n}"
+                },
+                {
+                    "name": "401 — Missing or invalid token",
+                    "originalRequest": {
+                        "method": "POST",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/purchase-order/{{purchase_order_id}}/start-process",
+                        "description": "Records when work on a purchase order starts. Call it once when the user opens the order to start receiving/issuing, before saving batches, conditions or committing. No request body. Saves start_date (UTC, now) in purchase_order_process_starts. A second call for the same order is rejected with 400 and the original start time is kept. The matching end time is saved automatically by Commit order (every successful commit updates it, so a partially committed order ends at its latest commit). The PDFs show both times in Africa/Cairo and the lead time (end minus start): GTRN Start/End/Lead Time on the transfer notes, Start Time/End of Time/Lead Time on the Goods Receipt and Goods Return notes. Works for every order type. If it is never called, those fields stay empty."
+                    },
+                    "status": "Unauthorized",
+                    "code": 401,
+                    "_postman_previewlanguage": "json",
+                    "header": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "body": "{\r\n    \"success\": false,\r\n    \"message\": \"Unauthenticated.\"\r\n}"
+                },
+                {
+                    "name": "401 — Expired token",
+                    "originalRequest": {
+                        "method": "POST",
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/purchase-order/{{purchase_order_id}}/start-process",
+                        "description": "Records when work on a purchase order starts. Call it once when the user opens the order to start receiving/issuing, before saving batches, conditions or committing. No request body. Saves start_date (UTC, now) in purchase_order_process_starts. A second call for the same order is rejected with 400 and the original start time is kept. The matching end time is saved automatically by Commit order (every successful commit updates it, so a partially committed order ends at its latest commit). The PDFs show both times in Africa/Cairo and the lead time (end minus start): GTRN Start/End/Lead Time on the transfer notes, Start Time/End of Time/Lead Time on the Goods Receipt and Goods Return notes. Works for every order type. If it is never called, those fields stay empty."
+                    },
+                    "status": "Unauthorized",
+                    "code": 401,
+                    "_postman_previewlanguage": "json",
+                    "header": [
+                        {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "body": "{\r\n    \"success\": false,\r\n    \"message\": \"Token expired.\"\r\n}"
+                }
+            ]
+        },
+        {
             "name": "PO conditions",
             "request": {
                 "method": "POST",
@@ -2524,7 +2720,7 @@
                     }
                 ],
                 "url": "{{base_url}}/api/purchase-order/{{purchase_order_id}}/commit",
-                "description": "Commits a purchase order. The flow is picked by the order's POType, not by the body:\n- 0 ReturnToSupplier: no body fields. Always closes via /api/commit-order.\n- 1 PO: isClosed required (0|1). 1 closes via /api/commit-order, 0 receives a partial batch via /api/partial-po.\n- 2/4 TransferIN: isClosed required (0|1) and Vehicle_tempIN (or vehicle_TempIN) required. 1 closes via /api/commit-order, 0 is partial via /api/partial-transfer-in and may carry the delivery conditions.\n- 3/5 TransferOut: VehicleType and seal_number required, other condition fields optional. Always closes.\nAfter every successful commit (partial included) a PDF -> email -> print chain runs. Errors from the order service keep their status (4xx) with its message; server failures are 500, unreachable is 502.",
+                "description": "Commits a purchase order. The flow is picked by the order's POType, not by the body:\n- 0 ReturnToSupplier: no body fields. Always closes via /api/commit-order.\n- 1 PO: isClosed required (0|1). 1 closes via /api/commit-order, 0 receives a partial batch via /api/partial-po.\n- 2/4 TransferIN: isClosed required (0|1) and Vehicle_tempIN (or vehicle_TempIN) required. 1 closes via /api/commit-order, 0 is partial via /api/partial-transfer-in and may carry the delivery conditions.\n- 3/5 TransferOut: VehicleType and seal_number required, other condition fields optional. Always closes.\nAfter every successful commit (partial included) a PDF -> email -> print chain runs. Errors from the order service keep their status (4xx) with its message; server failures are 500, unreachable is 502. On success the order's process end time is set to the commit time (see Start process); the PDFs use it for the end time and lead time.",
                 "body": {
                     "mode": "raw",
                     "raw": "{\n  \"isClosed\": 1\n}",

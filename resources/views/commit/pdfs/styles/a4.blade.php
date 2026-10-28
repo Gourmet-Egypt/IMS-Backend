@@ -90,6 +90,10 @@
         vertical-align: top;
     }
 
+    .ship-content.gtrn-time {
+        height: auto;
+    }
+
     .bold1 {
         font-weight: bold;
         font-size: 10px;

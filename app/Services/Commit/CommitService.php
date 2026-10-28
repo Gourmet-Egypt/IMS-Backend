@@ -8,6 +8,7 @@ use App\Jobs\Commit\GeneratePdfJob;
 use App\Jobs\Commit\PrintJob;
 use App\Jobs\Commit\SendEmailsJob;
 use App\Models\PurchaseOrder;
+use App\Models\PurchaseOrderProcessStart;
 use App\Services\Commit\Contracts\CommitApiClient;
 use App\Services\Commit\Strategies\SupplierStrategy;
 use App\Traits\Responses;
@@ -130,6 +131,9 @@ class CommitService
                 $ctx->strategy->endpoint($ctx),
                 $ctx->strategy->buildPayload($ctx)
             );
+
+            PurchaseOrderProcessStart::where('purchase_order_id', $ctx->order->ID)
+                ->update(['end_date' => now()]);
         } finally {
             $lock->release();
         }

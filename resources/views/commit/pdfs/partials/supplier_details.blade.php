@@ -1,4 +1,5 @@
 @php($supplier = $purchaseOrder->supplier)
+@php($process = $purchaseOrder->processStart)
 <table class="ship-table">
     <tr>
         <td class="ship-title" style="width: 50%">VENDOR</td>
@@ -44,7 +45,7 @@
     <tr>
         <td class="date-cell">{{ $purchaseOrder->DateCreated ? \Carbon\Carbon::parse($purchaseOrder->DateCreated)->format('d/m/Y') : '' }}</td>
         <td class="date-cell">{{ $purchaseOrder->RequiredDate ? \Carbon\Carbon::parse($purchaseOrder->RequiredDate)->format('d/m/Y') : '' }}</td>
-        <td class="date-cell"></td>
+        <td class="date-cell">{{ $process?->leadTimeLabel() }}</td>
         <td class="date-cell">{{ $condition->supplier_invoice_number ?? '' }}</td>
     </tr>
 </table>
@@ -52,12 +53,12 @@
     <tr>
         <td><span class="bold1">Vehicle Type: </span>{{ $condition->vehicle_type ?? '' }}</td>
         <td><span class="bold1">Supplier Return Policy: </span></td>
-        <td><span class="bold1">Start Time: </span></td>
+        <td><span class="bold1">Start Time: </span>{{ $process?->startLabel() }}</td>
     </tr>
     <tr>
         <td><span class="bold1">Item Temp: </span>{{ $condition->item_temp ?? '' }}</td>
         <td><span class="bold1">Payment Term: </span>{{ $supplier->Terms ?? '' }}</td>
-        <td><span class="bold1">End of Time: </span></td>
+        <td><span class="bold1">End of Time: </span>{{ $process?->endLabel() }}</td>
     </tr>
     <tr>
         <td><span class="bold1">Car Temperature: </span>{{ $condition->vehicle_tempIN ?? '' }}</td>

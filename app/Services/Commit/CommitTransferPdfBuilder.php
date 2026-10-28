@@ -28,6 +28,7 @@ class CommitTransferPdfBuilder
             'currentStore',
             'otherStore',
             'supplier',
+            'processStart',
         ]);
 
         $items = $this->transformItems($order, $perspective);
