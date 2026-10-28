@@ -1,8 +1,8 @@
 <!-- SHIP (physical goods flow — driven by POType, not perspective) -->
 <table class="ship-table">
     <tr>
-        <td class="ship-title">SHIP FROM</td>
-        <td class="ship-title">SHIP TO</td>
+        <td class="ship-title" style="width: 50%">SHIP FROM</td>
+        <td class="ship-title" style="width: 50%">SHIP TO</td>
     </tr>
     <tr>
         @if($purchaseOrder->POType == 2)
@@ -82,7 +82,7 @@
 </table>
 <!-- VEHICLE -->
 <div class="section-title">Vehicle Info</div>
-<table class="info-table">
+<table class="info-table vehicle-info">
     <tr>
         <td>
             <span class="bold1">Vehicle Type: </span>

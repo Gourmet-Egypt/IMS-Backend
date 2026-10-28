@@ -18,4 +18,13 @@ class GoodsType extends Model
     protected $connection = 'sqlsrv_rms';
     protected $table = 'goods_types';
     protected $guarded = [];
+
+    public function getTemperatureLabelAttribute(): string
+    {
+        if ($this->min_temp === null || $this->max_temp === null) {
+            return $this->name;
+        }
+
+        return sprintf('%s (%s°C to %s°C)', $this->name, (float) $this->min_temp, (float) $this->max_temp);
+    }
 }

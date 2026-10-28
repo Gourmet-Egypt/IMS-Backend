@@ -103,8 +103,8 @@ class CommitEmailService
         $title = $order->title;
 
         return match ($perspective) {
-            'from_store' => "Transfer OUT from {$from} to {$to} - #{$id} - {$title}",
-            'to_store'   => "Transfer IN from {$from} to {$to} - #{$id} - {$title}",
+            'from_store' => "Stock Out Transfer Note from {$from} to {$to} - #{$id} - {$title}",
+            'to_store'   => "Stock Transfer Note from {$from} to {$to} - #{$id} - {$title}",
             'return_to_supplier' => "Return to Supplier #{$id} - {$title}",
             default      => "Purchase Order #{$id} - {$title}",
         };

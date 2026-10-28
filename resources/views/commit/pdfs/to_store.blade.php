@@ -1,8 +1,8 @@
 @extends('commit.pdfs.layout')
 
-@section('docTitle', 'Transfer IN')
+@section('docTitle', 'Stock Transfer Note')
 
-@section('headerTitle', 'Transfer IN')
+@section('headerTitle', 'Stock Transfer Note')
 
 @section('qtyColumns')
     <th>Qty Ordered</th>

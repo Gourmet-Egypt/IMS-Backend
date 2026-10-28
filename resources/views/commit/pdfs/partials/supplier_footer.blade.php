@@ -9,12 +9,12 @@
     </tr>
 </table>
 <div class="footer">
-    <table class="footer-table">
-        <tr>
+    <table class="footer-table supplier-footer">
+        <tr class="footer-tr">
             <td class="sign-cell">Supplier Signature<div class="signature-line"></div></td>
             <td class="sign-cell">Receiver/WHS Signature<div class="signature-line"></div></td>
             <td class="sign-cell">Store/WHS Manager Signature<div class="signature-line"></div></td>
-            <td class="sign-cell">Temp<div class="temp-oval"></div></td>
+            <td class="circle-cell"><div class="signature-circle"></div></td>
         </tr>
     </table>
 </div>

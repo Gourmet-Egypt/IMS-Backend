@@ -61,6 +61,9 @@
                     Store/WMS Manager Signature
                     <div class="signature-line"></div>
                 </td>
+                <td class="circle-cell">
+                    <div class="signature-circle"></div>
+                </td>
             </tr>
         </table>
     </div>

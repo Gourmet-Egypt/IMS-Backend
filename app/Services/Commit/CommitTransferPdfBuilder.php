@@ -21,7 +21,8 @@ class CommitTransferPdfBuilder
         }
 
         $order->load([
-            'condition',
+            'condition.goodsType',
+            'originCondition.goodsType',
             'entries.infos',
             'entries.itemById',
             'entries.transferRequest' => fn ($q) => $q->with('items'),
@@ -48,7 +49,7 @@ class CommitTransferPdfBuilder
         $pdf = Pdf::loadView($view, [
             'purchaseOrder' => $order,
             'items' => $items,
-            'condition' => $order->condition,
+            'condition' => $order->transfer_condition,
             'perspective' => $perspective,
             'styleView' => $styleView,
         ]);

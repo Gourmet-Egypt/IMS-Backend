@@ -1,13 +1,12 @@
 @extends('commit.pdfs.layout')
 
-@section('docTitle', 'Transfer OUT')
+@section('docTitle', 'Stock Out Transfer Note')
 
-@section('headerTitle', 'Transfer OUT')
+@section('headerTitle', 'Stock Out Transfer Note')
 
 @section('qtyColumns')
     <th>Qty Ordered</th>
     <th>Qty Issued</th>
-    <th>Diff</th>
 @endsection
 
 @section('itemRows')

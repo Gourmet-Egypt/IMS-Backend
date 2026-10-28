@@ -1,8 +1,8 @@
 @extends('commit.pdfs.layout')
 
-@section('docTitle', 'Return to Supplier')
+@section('docTitle', 'Goods Return Note (GRN)')
 
-@section('headerTitle', 'Return to Supplier')
+@section('headerTitle', 'Goods Return Note (GRN)')
 
 @section('details')
     @include('commit.pdfs.partials.supplier_details')
@@ -11,7 +11,6 @@
 @section('qtyColumns')
     <th>Qty Ordered</th>
     <th>Qty Returned</th>
-    <th>Diff</th>
 @endsection
 
 @section('itemRows')

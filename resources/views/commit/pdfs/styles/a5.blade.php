@@ -109,6 +109,15 @@
         margin-top: 1mm;
     }
 
+    .vehicle-info {
+        table-layout: fixed;
+    }
+
+    .vehicle-info td {
+        width: 50%;
+        vertical-align: top;
+    }
+
     .info-table td {
         padding: 1px 0;
     }
@@ -173,7 +182,10 @@
     .center { text-align: center; }
     .date-cell { border: 1px solid #000; padding: 4px; text-align: center; vertical-align: middle; font-size: 10px; }
     .totals { margin-top: 6mm; }
-    .sign-cell { width: 25%; vertical-align: top; }
+    .supplier-footer { table-layout: fixed; }
+    .supplier-footer .footer-tr td.circle-cell { width: 28%; }
+    .sign-cell { width: 24%; vertical-align: top; }
     .sign-cell .signature-line { width: 85%; margin-top: 10mm; }
-    .temp-oval { border: 1px solid #999; border-radius: 50%; width: 30mm; height: 12mm; margin-top: 2mm; }
+    .footer-tr td.circle-cell { width: 24mm; text-align: right; vertical-align: bottom; }
+    .signature-circle { border: 1px solid #000; border-radius: 50%; width: 22mm; height: 22mm; margin-left: auto; }
 </style>
