@@ -30,7 +30,7 @@ class StoreTransferRequest extends FormRequest
         $type = $this->input('type');
 
         return [
-            'title' => ['sometimes', 'string', 'max:255'],
+            'title' => ['sometimes', 'string', 'max:50'],
 
             'type' => [
                 'required',
@@ -79,7 +79,7 @@ class StoreTransferRequest extends FormRequest
         return [
             'title.required' => 'A transfer request must have a title.',
             'title.string' => 'The title must be a valid string.',
-            'title.max' => 'The title cannot exceed 255 characters.',
+            'title.max' => 'The title cannot exceed 50 characters.',
 
             'type.required' => 'Transfer type is required.',
             'type.in' => 'Transfer type must be either TransferOut or TransferIn.',

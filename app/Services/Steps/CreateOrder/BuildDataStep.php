@@ -17,7 +17,7 @@ class BuildDataStep
 
         $payload->apiData = [
             "Order" => [
-                "POTitle" => $transferRequest->title,
+                "POTitle" => mb_substr((string) $transferRequest->title, 0, 50),
                 "transactionType" => $transferRequest->type,
                 "StoreID" => (int) $transferRequest->store_id,
                 "HH_ID" => (string) $transferRequest->id,

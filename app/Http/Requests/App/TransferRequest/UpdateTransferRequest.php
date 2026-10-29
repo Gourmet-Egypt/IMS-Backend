@@ -29,7 +29,7 @@ class UpdateTransferRequest extends FormRequest
         $currentUserStoreId = request()->user()->store_id;
 
         return [
-            'title' => ['sometimes', 'string', 'max:255'],
+            'title' => ['sometimes', 'string', 'max:50'],
             'other_store_id' => [
                 'required',
                 'exists:Store,ID',
