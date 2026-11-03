@@ -8,6 +8,7 @@ use App\Http\Requests\App\TransferRequest\StoreTransferRequest;
 use App\Http\Requests\App\TransferRequest\UpdateTransferRequest;
 use App\Http\Resources\App\TransferRequest\TransferRequestResource;
 use App\Models\Store;
+use App\Models\Supplier;
 use App\Models\TransferRequest;
 use App\Services\CreateOrderService;
 use App\Traits\Responses;
@@ -24,7 +25,8 @@ class TransferRequestController extends Controller
 
     public function index()
     {
-        $transferRequests = TransferRequest::with('items')->where('status', 'open')->paginate(15);
+        $transferRequests = TransferRequest::with(['items', 'supplier:ID,SupplierName'])->where('status',
+            'open')->paginate(15);
 
         return $this->appSuccessPaginated(
             status: Response::HTTP_OK,
@@ -38,18 +40,23 @@ class TransferRequestController extends Controller
         $user = $request->user();
         $type = $request->input('type');
         $otherStoreId = $request->input('other_store_id');
+        $supplierId = $request->input('supplier_id');
 
-        $stores = Store::whereIn('ID', [$user->store_id, $otherStoreId])
+        $storeIds = array_filter([$user->store_id, $otherStoreId]);
+        $stores = Store::whereIn('ID', $storeIds)
             ->pluck('Name', 'ID');
 
         $userStoreName = $stores[$user->store_id];
-        $otherStoreName = $stores[$otherStoreId];
+        $otherStoreName = $otherStoreId ? $stores[$otherStoreId] : null;
+
+        $supplierName = $supplierId ? Supplier::whereKey($supplierId)->value('SupplierName') : null;
 
         // Generate title with proper logic
         $title = $request->input('title') ?? $this->generateTransferTitle(
             $type,
             $userStoreName,
-            $otherStoreName
+            $otherStoreName,
+            $supplierName ?? $supplierId
         );
 
         // Create transfer request
@@ -58,6 +65,7 @@ class TransferRequestController extends Controller
             'type' => $type,
             'store_id' => $user->store_id,
             'other_store_id' => $otherStoreId,
+            'supplier_id' => $supplierId,
             'status' => TransferRequestStatusEnum::OPEN->value,
             'delivery_date' => $request->input('delivery_date'),
         ]);
@@ -75,11 +83,15 @@ class TransferRequestController extends Controller
     private function generateTransferTitle(
         string $type,
         string $fromStore,
-        string $toStore
+        ?string $toStore,
+        string|int|null $supplier = null
     ): string {
-        return $type === 'TransferIN'
-            ? "Request from {$fromStore} to {$toStore}"
-            : "Transfer Out from {$fromStore} to {$toStore}";
+        return match ($type) {
+            'TransferIN' => "Request from {$fromStore} to {$toStore}",
+            'PO' => "PO from {$supplier} to {$fromStore}",
+            'ReturnToSupplier' => "Return to supplier {$supplier} from {$fromStore}",
+            default => "Transfer Out from {$fromStore} to {$toStore}",
+        };
     }
 
     public function show(TransferRequest $transferRequest)
@@ -123,4 +135,3 @@ class TransferRequestController extends Controller
         );
     }
 }
-

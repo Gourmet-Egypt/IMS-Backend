@@ -30,22 +30,36 @@ class StoreTransferRequest extends FormRequest
         $type = $this->input('type');
 
         return [
-            'title' => ['sometimes', 'string', 'max:255'],
+            'title' => ['sometimes', 'string', 'max:50'],
 
             'type' => [
                 'required',
                 'string',
-                Rule::in(TransferRequestTypeEnum::cases())
+                Rule::in(array_column(TransferRequestTypeEnum::cases(), 'value'))
             ],
 
             'other_store_id' => [
+                Rule::requiredIf(! in_array($type, [
+                    TransferRequestTypeEnum::PO->value,
+                    TransferRequestTypeEnum::ReturnToSupplier->value,
+                ], true)),
+                'nullable',
                 'exists:Store,ID',
                 'integer',
                 function ($attribute, $value, $fail) use ($currentUserStoreId) {
-                    if ($value == $currentUserStoreId) {
+                    if ($value && $value == $currentUserStoreId) {
                         $fail('Cannot transfer from your own store');
                     }
                 }
+            ],
+            'supplier_id' => [
+                Rule::requiredIf(in_array($type, [
+                    TransferRequestTypeEnum::PO->value,
+                    TransferRequestTypeEnum::ReturnToSupplier->value,
+                ], true)),
+                'nullable',
+                'integer',
+                'exists:Supplier,ID',
             ],
             'delivery_date' => [
                 'sometimes',
@@ -65,7 +79,7 @@ class StoreTransferRequest extends FormRequest
         return [
             'title.required' => 'A transfer request must have a title.',
             'title.string' => 'The title must be a valid string.',
-            'title.max' => 'The title cannot exceed 255 characters.',
+            'title.max' => 'The title cannot exceed 50 characters.',
 
             'type.required' => 'Transfer type is required.',
             'type.in' => 'Transfer type must be either TransferOut or TransferIn.',
@@ -73,6 +87,10 @@ class StoreTransferRequest extends FormRequest
             'other_store_id.required' => 'You must specify a destination store.',
             'other_store_id.exists' => 'The selected store does not exist.',
             'other_store_id.integer' => 'Invalid store ID format.',
+
+            'supplier_id.required' => 'You must specify a supplier.',
+            'supplier_id.exists' => 'The selected supplier does not exist.',
+            'supplier_id.integer' => 'Invalid supplier ID format.',
         ];
     }
 

@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources\Dashboard\Reports;
 
-use App\Enums\PurchaseOrderTypeEnum;
 use App\Enums\TransferRequestStatusEnum;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -18,7 +17,7 @@ class TransferListResource extends JsonResource
             'store_receive' => $this->otherStore?->Name,
             'date' => $this->DateCreated,
             'status' => TransferRequestStatusEnum::fromInt($this->Status),
-            'type' => PurchaseOrderTypeEnum::tryFrom($this->POType)?->name
+            'type' => (int) $this->POType
         ];
     }
 }

@@ -71,5 +71,9 @@ class Item extends Model
         return $this->hasMany(Alias::class, 'ItemID', 'ID');
     }
 
+    public function supplierLists(): HasMany
+    {
+        return $this->hasMany(SupplierList::class, 'ItemID', 'ID');
+    }
 
 }

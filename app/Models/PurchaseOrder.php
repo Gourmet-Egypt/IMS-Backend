@@ -207,9 +207,25 @@ class PurchaseOrder extends Model
         return $this->hasOne(TransferCondition::class, 'purchase_order_id', 'ID');
     }
 
+    // The receiving store's copy (PONumber "..._IMS<originId>") has no condition of its own.
+    public function originCondition()
+    {
+        return $this->hasOne(TransferCondition::class, 'purchase_order_id', 'origin_po_id');
+    }
+
+    public function getOriginPoIdAttribute(): ?int
+    {
+        return preg_match('/_IMS(\d+)$/', (string) $this->PONumber, $m) ? (int) $m[1] : null;
+    }
+
+    public function getTransferConditionAttribute(): ?TransferCondition
+    {
+        return $this->condition ?? $this->originCondition;
+    }
+
     public function supplier()
     {
-        return $this->belongsTo(Supplier::class, 'Supplierid', 'HQID');
+        return $this->belongsTo(Supplier::class, 'SupplierID', 'ID'); //-> return $this->belongsTo(Supplier::class, 'Supplierid', 'HQID');
     }
 
     public function scopeType(Builder $query)
@@ -226,6 +242,11 @@ class PurchaseOrder extends Model
         }
 
         return $query->whereIn('POType', (array) $type);
+    }
+
+    public function processStart()
+    {
+        return $this->hasOne(PurchaseOrderProcessStart::class, 'purchase_order_id', 'ID');
     }
 
     public function pdfs()

@@ -19,9 +19,9 @@ class CallApiStep
             ->post("http://{$server}/api/update-order-details", $payload->apiData);
 
         if (!$response->successful()) {
-            return $this->error(
-                status: Response::HTTP_INTERNAL_SERVER_ERROR,
-                message: $response->body()
+             return $this->error(
+                status: $response->status(),
+                message: $response->json('message')
             );
         }
 

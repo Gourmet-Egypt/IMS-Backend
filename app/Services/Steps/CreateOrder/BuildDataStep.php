@@ -2,21 +2,27 @@
 
 namespace App\Services\Steps\CreateOrder;
 
+use App\Enums\TransferRequestTypeEnum;
+use App\Services\CreateOrder\StrategyFactory;
+
 class BuildDataStep
 {
+    public function __construct(private StrategyFactory $strategies) {}
+
     public function handle($payload, \Closure $next)
     {
         $transferRequest = $payload->transferRequest;
+        $type = TransferRequestTypeEnum::from($transferRequest->type);
+        $strategy = $this->strategies->for($type);
 
         $payload->apiData = [
             "Order" => [
-                "POTitle" => $transferRequest->title,
+                "POTitle" => mb_substr((string) $transferRequest->title, 0, 50),
                 "transactionType" => $transferRequest->type,
                 "StoreID" => (int) $transferRequest->store_id,
-                "OtherStoreID" => (int) $transferRequest->other_store_id,
-                "SupplierID" => 0,
                 "HH_ID" => (string) $transferRequest->id,
                 "CashierID" => $payload->cashier->ID,
+                ...$strategy->buildOrderFields($transferRequest),
             ],
             "OrderItems" => $transferRequest->items->map(function ($item) {
                 return [

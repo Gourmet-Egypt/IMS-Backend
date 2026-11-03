@@ -24,7 +24,9 @@ class ValidateStep
             );
         }
 
-        $payload->poTypeEnum = $poTypeEnum->apiTransactionType()->name;
+        $order = $purchaseOrderEntry->purchaseOrder;
+        $isReturn = $poTypeEnum->operation((int) $order->SupplierID, (int) $order->OtherStoreID) === 'ReturnToSupplier';
+        $payload->poTypeEnum = $isReturn ? 'ReturnToSupplier' : $poTypeEnum->apiTransactionType()->name;
         $payload->storeId = DB::table('Configuration')->select('StoreID')->value('StoreID');
 
         return $next($payload);

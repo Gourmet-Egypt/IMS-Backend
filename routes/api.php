@@ -3,6 +3,7 @@
 use App\Http\Controllers\App\ItemController;
 use App\Http\Controllers\App\PrinterController;
 use App\Http\Controllers\App\PurchaseOrderController;
+use App\Http\Controllers\App\SupplierController;
 use App\Http\Controllers\App\TransferRequestController;
 use App\Http\Controllers\App\TransferRequestItemController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -56,6 +57,9 @@ Route::middleware(['auth.multi'])->group(function () {
         // TransferRequestsItems Routes
         Route::post('{transferRequest}/items', [TransferRequestItemController::class, 'storeOrUpdate']);
 
+        Route::post('{transferRequest}/items/bulk', [TransferRequestItemController::class, 'bulkStore'])
+            ->name('transfer-requests.items.bulk');
+
         Route::delete('items/{transferRequest}', [TransferRequestItemController::class, 'destroy'])
             ->name('transfer-requests.items.destroy');
 
@@ -85,11 +89,11 @@ Route::middleware(['auth.multi'])->group(function () {
         Route::post('/{purchaseOrder}/start-process', [PurchaseOrderController::class, 'startProcess'])
             ->name('purchase-order.start-process');
 
-        Route::post('/{purchaseOrder}/commit', [PurchaseOrderController::class, 'commitOrder'])
+        Route::post('/{purchaseOrder}/commit', [PurchaseOrderController::class, 'commit'])
             ->name('purchase-orders.commit');
 
-        Route::post('/{purchaseOrder}/partial-commit', [PurchaseOrderController::class, 'partialCommitOrder'])
-            ->name('purchase-orders.partial-commit');
+        Route::post('/{purchaseOrder}/conditions', [PurchaseOrderController::class, 'conditions'])
+            ->name('purchase-orders.conditions');
 
         Route::post('/test-pdf-email-print', [PurchaseOrderController::class, 'testPdfEmailPrint'])
             ->name('purchase-orders.test-pdf-email-print');
@@ -138,6 +142,15 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store'])
 Route::get('/items', [ItemController::class, 'index'])
     ->name('item.index');
 
+Route::get('/suppliers', [SupplierController::class, 'index'])
+    ->name('supplier.index');
+
+Route::get('/suppliers/{supplier}/items/search', [SupplierController::class, 'searchItem'])
+    ->name('supplier.items.search');
+
+Route::get('/suppliers/{supplier}', [SupplierController::class, 'show'])
+    ->name('supplier.show');
+
 
 Route::get('/cashiers', [CashierController::class, 'index'])
     ->middleware('guest')
@@ -153,9 +166,6 @@ Route::middleware('auth.multi')->group(function () {
     Route::post('/change-password', [AuthenticatedSessionController::class, 'changePassword'])
         ->name('password.change');
 });
-
-
-
 
 
 

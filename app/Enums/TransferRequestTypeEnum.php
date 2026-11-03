@@ -9,13 +9,17 @@ enum TransferRequestTypeEnum: string
     case TransferOut = 'TransferOut';
     case ReturnToSupplier = 'ReturnToSupplier';
 
-    public function number(): int|string|array
+    /**
+     * POType value for this request type. Return to Supplier shares 3 with
+     * Transfer Out (told apart by SupplierID vs OtherStoreID).
+     */
+    public function number(): int
     {
         return match ($this) {
-            self::TransferIN => 2,
-            self::TransferOut => 3,
-            default => [],
+            self::PO => PurchaseOrderTypeEnum::PO->value,
+            self::TransferIN => PurchaseOrderTypeEnum::TransferIN->value,
+            self::TransferOut,
+            self::ReturnToSupplier => PurchaseOrderTypeEnum::TransferOut->value,
         };
     }
-
 }

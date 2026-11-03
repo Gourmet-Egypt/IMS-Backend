@@ -1,0 +1,37 @@
+<?php
+
+return [
+    // Internal suppliers that can receive every item, regardless of SupplierList (code => name)
+    'all_items' => [
+        '0973' => 'Gourmet - Bonus',
+        '0933' => 'Gourmet - Butchery Supplies',
+        '0354' => 'Gourmet - Cheese & Meat Trimmi',
+        '0450' => 'Gourmet - Consumables',
+        '0315' => 'Gourmet - Consumed Items',
+        '0082' => 'Gourmet - Damaged',
+        '0098' => 'Gourmet - Donations',
+        '0081' => 'Gourmet - Expired',
+        '0946' => 'Gourmet - F&V',
+        '0350' => 'Gourmet - F.Sample Categories',
+        '0352' => 'Gourmet - F.Sample Cu.Gfits',
+        '0348' => 'Gourmet - F.Sample G.Office',
+        '0349' => 'Gourmet - F.Sample Marketing',
+        '0351' => 'Gourmet - F.Sample S.Tasting',
+        '0879' => 'Gourmet - Fish Raw materials',
+        '0353' => 'Gourmet - Government Sample',
+        '0395' => 'Gourmet – Head Office Canteen',
+        '1180' => 'Gourmet – Head Office IT',
+        '0974' => 'Gourmet - Kit Adjust',
+        '0237' => 'Gourmet - Manufacturing',
+        '0738' => 'Gourmet - Meat Adjust',
+        '0341' => 'Gourmet - QTY Adjust',
+        '0148' => 'Gourmet - Quality Control',
+        '1109' => 'Gourmet - Tare Weight',
+        '0764' => 'Gourmet customer complains',
+        '0875' => 'Gourmet Fresh Fish',
+        '0083' => 'Gourmet Office',
+        '0021' => 'Gourmet Production',
+        '0661' => 'Gourmet QSR Consumable',
+        '0413' => 'Gourmet-Prouduct Developemnt',
+    ],
+];

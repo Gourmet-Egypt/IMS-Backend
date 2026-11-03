@@ -13,4 +13,14 @@ class TransferCondition extends Model
 
     protected $guarded = [];
 
+    public function goodsType()
+    {
+        return $this->belongsTo(GoodsType::class, 'Goods_type');
+    }
+
+    public function getItemTempAttribute(): ?string
+    {
+        return $this->goodsType?->temperature_label;
+    }
+
 }
