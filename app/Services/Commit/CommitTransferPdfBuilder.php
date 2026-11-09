@@ -73,6 +73,12 @@ class CommitTransferPdfBuilder
         $items = [];
 
         foreach ($order->entries as $entry) {
+            $receivedToDate = (float) $entry->QuantityReceivedToDate;
+
+            if ($perspective === 'supplier' && (float) $entry->QuantityOrdered == 0 && $receivedToDate == 0) {
+                continue;
+            }
+
             $quantityRequested = $entry->QuantityOrdered;
 
             if ($entry->transferRequest && $entry->transferRequest->items) {
