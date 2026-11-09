@@ -73,6 +73,12 @@ class CommitTransferPdfBuilder
         $items = [];
 
         foreach ($order->entries as $entry) {
+            $receivedToDate = (float) $entry->QuantityReceivedToDate;
+
+            if ($perspective === 'supplier' && (float) $entry->QuantityOrdered == 0 && $receivedToDate == 0) {
+                continue;
+            }
+
             $quantityRequested = $entry->QuantityOrdered;
 
             if ($entry->transferRequest && $entry->transferRequest->items) {
@@ -98,7 +104,7 @@ class CommitTransferPdfBuilder
                 $diff = $index === $lastIndex
                     ? ($issuedVsOrdered
                         ? $cumulativeIssued - $quantityRequested
-                        : $cumulativeIN - $cumulativeIssued)
+                        : ($perspective === 'to_store' ? $receivedToDate : $cumulativeIN) - $cumulativeIssued)
                     : null;
 
                 $items[] = [
@@ -129,7 +135,11 @@ class CommitTransferPdfBuilder
                     'production_date' => null,
                     'expire_date' => null,
                     'quantity_issued' => 0,
-                    'diff' => $perspective !== 'to_store' && $perspective !== 'default' ? -$quantityRequested : 0,
+                    'diff' => match ($perspective) {
+                        'to_store' => $receivedToDate,
+                        'default'  => 0,
+                        default    => -$quantityRequested,
+                    },
                     'sn' => null,
                 ];
             }

@@ -10,7 +10,6 @@
 
 @section('qtyColumns')
     <th>Qty Ordered</th>
-    <th>Qty Returned</th>
 @endsection
 
 @section('itemRows')
