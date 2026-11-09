@@ -104,7 +104,7 @@ class CommitTransferPdfBuilder
                 $diff = $index === $lastIndex
                     ? ($issuedVsOrdered
                         ? $cumulativeIssued - $quantityRequested
-                        : ($perspective === 'to_store' ? $receivedToDate : $cumulativeIN) - $cumulativeIssued)
+                        : $cumulativeIN - $cumulativeIssued)
                     : null;
 
                 $items[] = [
@@ -135,11 +135,7 @@ class CommitTransferPdfBuilder
                     'production_date' => null,
                     'expire_date' => null,
                     'quantity_issued' => 0,
-                    'diff' => match ($perspective) {
-                        'to_store' => $receivedToDate,
-                        'default'  => 0,
-                        default    => -$quantityRequested,
-                    },
+                    'diff' => $perspective !== 'to_store' && $perspective !== 'default' ? -$quantityRequested : 0,
                     'sn' => null,
                 ];
             }

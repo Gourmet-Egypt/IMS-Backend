@@ -5,11 +5,7 @@
         <td>{{ $item->description }}</td>
         <td>{{ $item->quantity_requested !== null ? number_format($item->quantity_requested, 1) : '' }}</td>
         <td>{{ number_format($item->quantity_issued, 1) }}</td>
-        @if(($perspective ?? null) === 'to_store')
-            <td>{{ $item->quantity_received_to_date !== null ? number_format($item->quantity_received_to_date, 1) : '' }}</td>
-        @else
-            <td>{{ number_format($item->quantity_IN, 1) }}</td>
-        @endif
+        <td>{{ number_format($item->quantity_IN, 1) }}</td>
         <td>{{ $item->diff !== null ? number_format($item->diff, 1) : '' }}</td>
         <td>{{ $item->production_date ? \Carbon\Carbon::parse($item->production_date)->format('d/m/Y') : '' }}</td>
         <td>{{ $item->expire_date ? \Carbon\Carbon::parse($item->expire_date)->format('d/m/Y') : '' }}</td>
