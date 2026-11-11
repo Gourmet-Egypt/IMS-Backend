@@ -69,28 +69,43 @@ class CommitEmailService
             $senderName  = $policy->senderStoreName($order, $perspective);
             $pdf         = $this->pdfBuilder->build($order, $perspective);
 
-            foreach ($records as $record) {
-                $mail = Mail::to($record->email);
-                if (!empty($cc)) {
-                    $mail->cc($cc);
-                }
+            $to = $this->uniqueEmails($records->pluck('email')->all());
+            $toKeys = array_map('strtolower', $to);
+            $storeCc = array_values(array_filter(
+                $this->uniqueEmails($cc),
+                fn ($email) => !in_array(strtolower($email), $toKeys, true)
+            ));
 
-                try {
-                    $mail->send(new CommitPurchaseOrderNotification(
-                        $order,
-                        $pdf,
-                        $subject,
-                        $senderName,
-                        $fromStore,
-                        $toStore,
-                        $perspective,
-                        $invoices
-                    ));
-                } catch (\Throwable $e) {
-                    Log::error('Failed to send PO email to ' . $record->email . ': ' . $e->getMessage());
-                }
+            $mail = Mail::to($to);
+            if (!empty($storeCc)) {
+                $mail->cc($storeCc);
+            }
+
+            try {
+                $mail->send(new CommitPurchaseOrderNotification(
+                    $order,
+                    $pdf,
+                    $subject,
+                    $senderName,
+                    $fromStore,
+                    $toStore,
+                    $perspective,
+                    $invoices
+                ));
+            } catch (\Throwable $e) {
+                Log::error('Failed to send PO email to ' . implode(', ', $to) . ': ' . $e->getMessage());
             }
         }
+    }
+
+    private function uniqueEmails(array $emails): array
+    {
+        return collect($emails)
+            ->map(fn ($email) => trim((string) $email))
+            ->filter()
+            ->unique(fn ($email) => strtolower($email))
+            ->values()
+            ->all();
     }
 
     /**
