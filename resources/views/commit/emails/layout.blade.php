@@ -106,12 +106,12 @@
 
             @section('parties')
                 <div class="info-row">
-                    <span class="info-label">From Store:</span>
+                    <span class="info-label">From:</span>
                     <span class="info-value">{{ $fromStore }}</span>
                 </div>
 
                 <div class="info-row">
-                    <span class="info-label">To Store:</span>
+                    <span class="info-label">To:</span>
                     <span class="info-value">{{ $toStore }}</span>
                 </div>
             @show

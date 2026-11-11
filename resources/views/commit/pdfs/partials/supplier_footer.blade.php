@@ -1,12 +1,12 @@
-@if($perspective === 'supplier')
-    @php($received = $items->sum(fn ($i) => $i->quantity_received_to_date ?? 0))
-    @php($missing = $items->filter(fn ($i) => $i->quantity_requested !== null)->sum(fn ($i) => max(0, $i->quantity_requested - ($i->quantity_received_to_date ?? 0))))
+@if(in_array($perspective, ['supplier', 'return_to_supplier']))
+    @php($received = $items->filter(fn ($i) => ($i->quantity_received_to_date ?? 0) > 0)->count())
+    @php($missing = $items->filter(fn ($i) => $i->quantity_requested !== null && ($i->quantity_received_to_date ?? 0) < $i->quantity_requested)->count())
     <table class="info-table totals">
         <tr>
-            <td><span class="bold1">Total count of Received: </span>{{ number_format($received, 1) }}</td>
+            <td><span class="bold1">Total count of Received: </span>{{ $received }}</td>
         </tr>
         <tr>
-            <td><span class="bold1">Total count of Missing items: </span>{{ number_format($missing, 1) }}</td>
+            <td><span class="bold1">Total count of Missing items: </span>{{ $missing }}</td>
         </tr>
     </table>
 @endif
