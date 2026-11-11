@@ -22,6 +22,6 @@ class PrintJob implements ShouldQueue
 
     public function handle(CommitPrintService $printer): void
     {
-        $printer->print($this->order, 1);
+        $printer->print($this->order, 2);
     }
 }
