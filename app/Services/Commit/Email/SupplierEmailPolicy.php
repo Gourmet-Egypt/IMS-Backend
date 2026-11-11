@@ -26,8 +26,12 @@ class SupplierEmailPolicy implements EmailPolicy
 
     public function storeFlow(PurchaseOrder $order): array
     {
-        // Supplier PO has no other-store counterparty.
-        return [$order->currentStore->Name ?? 'Unknown', ''];
+        $store = $order->currentStore->Name ?? 'Unknown';
+        $supplier = $order->supplier->SupplierName ?? 'Unknown Supplier';
+
+        return $this->perspective($order, (int) $order->StoreID) === 'return_to_supplier'
+            ? [$store, $supplier]
+            : [$supplier, $store];
     }
 
     public function senderStoreName(PurchaseOrder $order, string $perspective): string

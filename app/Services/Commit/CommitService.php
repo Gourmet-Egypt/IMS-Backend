@@ -156,15 +156,21 @@ class CommitService
     }
 
     /**
-     * The post-commit saga: PDF -> email -> print, in order. The chain stops
-     * if a link fails (so no email/print without a PDF); the failure is logged.
+     * The post-commit saga: PDF first, then print and email as independent
+     * jobs, so a failure in one never blocks the other. Nothing runs without
+     * a PDF; failures are logged.
      */
     private function dispatchPostCommit(PurchaseOrder $order): void
     {
+        $orderId = $order->ID;
+
         Bus::chain([
             new GeneratePdfJob($order),
-            new SendEmailsJob($order),
-            new PrintJob($order),
+            function () use ($orderId) {
+                $order = PurchaseOrder::findOrFail($orderId);
+                PrintJob::dispatch($order);
+                SendEmailsJob::dispatch($order);
+            },
         ])->catch(function (\Throwable $e) use ($order) {
             Log::error("PO {$order->ID} post-commit chain failed", ['error' => $e->getMessage()]);
         })->dispatch();
