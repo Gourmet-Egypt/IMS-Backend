@@ -114,14 +114,11 @@ class CommitEmailService
      */
     private function subjectFor(PurchaseOrder $order, string $perspective, string $from, string $to): string
     {
-        $id = $order->ID;
-        $title = $order->title;
-
         return match ($perspective) {
-            'from_store' => "Stock Out Transfer Note from {$from} to {$to} - #{$id} - {$title}",
-            'to_store'   => "Stock Transfer Note from {$from} to {$to} - #{$id} - {$title}",
-            'return_to_supplier' => "Return to Supplier #{$id} - {$title}",
-            default      => "Purchase Order #{$id} - {$title}",
+            'from_store' => "Stock Out Transfer Note from {$from} to {$to}",
+            'to_store'   => "Stock Transfer Note from {$from} to {$to}",
+            'return_to_supplier' => "Return to Supplier from {$from} to {$to}",
+            default      => "Purchase Order from {$from} to {$to}",
         };
     }
 }
