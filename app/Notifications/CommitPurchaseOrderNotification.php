@@ -65,6 +65,7 @@ class CommitPurchaseOrderNotification extends Mailable
         return match ($this->perspective) {
             'from_store' => 'commit.emails.transfer_out',
             'to_store' => 'commit.emails.transfer_in',
+            'return_to_supplier' => 'commit.emails.return_to_supplier',
             default => 'commit.emails.default',
         };
     }
