@@ -28,13 +28,13 @@ class PurchaseOrderConditionsStrategy implements ConditionsStrategy
     public function rules(): array
     {
         return [
-            'supplier_invoice_number' => ['required', 'string', 'max:255'],
-            'vehicle_type'            => ['nullable', 'string'],
+            'supplier_invoice_number' => ['required', 'string', 'max:50'],
+            'vehicle_type'            => ['nullable', 'string', 'max:50'],
             'vehicle_tempOut'         => ['nullable', 'numeric', 'min:-50', 'max:50'],
             'vehicle_tempIN'          => ['nullable', 'numeric', 'min:-50', 'max:50'],
-            'delivery_permit_number'  => ['nullable', 'string', 'max:255'],
+            'delivery_permit_number'  => ['nullable', 'string', 'max:20'],
             'notes'                   => ['nullable', 'string', 'max:1000'],
-            'seal_number'             => ['nullable', 'string', 'max:1000'],
+            'seal_number'             => ['nullable', 'string', 'max:50'],
             'Driver_Name'             => ['nullable', 'string', 'max:255'],
             'Vehicle_Number'          => ['nullable', 'string', 'max:50'],
             'Goods_Type'              => ['nullable', 'integer'],
