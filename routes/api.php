@@ -13,6 +13,7 @@ use App\Http\Controllers\Dashboard\GoodTypeController;
 use App\Http\Controllers\Dashboard\PurchaseOrderEmailController;
 use App\Http\Controllers\Dashboard\ReasonController;
 use App\Http\Controllers\Dashboard\ReportController;
+use App\Http\Controllers\Dashboard\TransferReportController;
 use App\Http\Controllers\Dashboard\StoreController;
 use App\Http\Controllers\Dashboard\TemperatureRangeController;
 use App\Http\Controllers\Dashboard\UserController;
@@ -130,6 +131,15 @@ Route::middleware(['auth.multi'])->group(function () {
         Route::get('/transfer_status/{id}', [ReportController::class, 'transferStatus']);
         Route::get('/store', [ReportController::class, 'store']);
         Route::get('/all-stores', [ReportController::class, 'allStores']);
+
+        Route::prefix('transfers')->controller(TransferReportController::class)->group(function () {
+            Route::get('/net', 'netTransfer');
+            Route::get('/net-summary', 'netTransferSummary');
+            Route::get('/not-received', 'notReceived');
+            Route::get('/checklist/{direction}', 'checklist')->whereIn('direction', ['out', 'in']);
+            Route::get('/production-dates/{direction}', 'productionDates')->whereIn('direction', ['out', 'in']);
+            Route::get('/time/{direction}', 'processTime')->whereIn('direction', ['out', 'in']);
+        });
 
     });
 });
