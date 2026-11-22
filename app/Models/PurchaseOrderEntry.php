@@ -2,10 +2,18 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasStoreRelations;
+use App\Models\Relations\HasOneInStore;
 use Illuminate\Database\Eloquent\Model;
 
 class PurchaseOrderEntry extends Model
 {
+    use HasStoreRelations;
+
+    public function stock(): HasOneInStore
+    {
+        return $this->hasOneInStore(ItemDynamic::class, 'ItemID', 'ItemID');
+    }
 
     protected $table = 'PurchaseOrderEntry';
     protected $hidden = ['DBTimeStamp'];
