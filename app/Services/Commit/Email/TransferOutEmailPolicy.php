@@ -6,28 +6,18 @@ use App\Models\PurchaseOrder;
 use App\Services\Commit\Contracts\EmailPolicy;
 
 /**
- * TransferOut: flow is FROM current store TO other store; the label is
- * "Transfer OUT" for the current store.
+ * TransferOut: flow is FROM current store TO other store. Both the sending and
+ * the receiving store are notified, each with the stock-out note of what was issued.
  */
 class TransferOutEmailPolicy implements EmailPolicy
 {
     public function recipientStoreIds(PurchaseOrder $order, object $config): array
     {
-        return [$order->StoreID];
+        return [$order->StoreID, $order->OtherStoreID];
     }
 
     public function perspective(PurchaseOrder $order, int $recipientStoreId): string
     {
-        $current = (int) ($order->currentStore->ID ?? 0);
-        $other   = (int) ($order->otherStore->ID ?? 0);
-
-        if ($current && $recipientStoreId === $current) {
-            return 'from_store';
-        }
-        if ($other && $recipientStoreId === $other) {
-            return 'to_store';
-        }
-
         return 'from_store';
     }
 
@@ -42,8 +32,6 @@ class TransferOutEmailPolicy implements EmailPolicy
 
     public function senderStoreName(PurchaseOrder $order, string $perspective): string
     {
-        return $perspective === 'from_store'
-            ? ($order->currentStore->Name ?? 'Unknown Store')
-            : ($order->otherStore->Name ?? 'Unknown Store');
+        return $order->currentStore->Name ?? 'Unknown Store';
     }
 }
