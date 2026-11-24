@@ -1,0 +1,3147 @@
+{
+  "info": {
+    "name": "IMS — Reports (Excel)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Supply and transfer reports. Every request downloads an .xlsx file with all rows; there is no JSON response on success. Use **Send and Download** to save the file. All requests need a bearer token: set base_url and token, and optionally store_id, date_from and date_to (Y-m-d; empty dates mean the current month). Validation errors return JSON 422 with only the first error."
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost/IMS"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "store_id",
+      "value": ""
+    },
+    {
+      "key": "date_from",
+      "value": "2026-11-01"
+    },
+    {
+      "key": "date_to",
+      "value": "2026-11-30"
+    }
+  ],
+  "item": [
+    {
+      "name": "Supply reports",
+      "item": [
+        {
+          "name": "Purchase received",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/reports/supply/received?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reports",
+                "supply",
+                "received"
+              ],
+              "query": [
+                {
+                  "key": "store_id",
+                  "value": "{{store_id}}",
+                  "description": "Receiving store ID. Leave empty for all stores."
+                },
+                {
+                  "key": "date_from",
+                  "value": "{{date_from}}",
+                  "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                },
+                {
+                  "key": "date_to",
+                  "value": "{{date_to}}",
+                  "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                }
+              ]
+            },
+            "description": "Supplier POs (POType 0/1) created in the date range. One row per item; the order fields repeat on each item row. Diff Qty = received - ordered.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Supplier, Store, Rcv Date, Create Date, Po Number, Qty Order, Qty Rcv, Supplier Cost, Diff Qty"
+          },
+          "response": [
+            {
+              "name": "200 — Excel file",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/supply/received?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "supply",
+                    "received"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Receiving store ID. Leave empty for all stores."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "Supplier POs (POType 0/1) created in the date range. One row per item; the order fields repeat on each item row. Diff Qty = received - ordered.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Supplier, Store, Rcv Date, Create Date, Po Number, Qty Order, Qty Rcv, Supplier Cost, Diff Qty"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                },
+                {
+                  "key": "Content-Disposition",
+                  "value": "attachment; filename=purchase-received-2026-11-22.xlsx"
+                }
+              ],
+              "body": ""
+            },
+            {
+              "name": "422 — Invalid date",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/supply/received?date_from=bad",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "supply",
+                    "received"
+                  ],
+                  "query": [
+                    {
+                      "key": "date_from",
+                      "value": "bad"
+                    }
+                  ]
+                },
+                "description": "Supplier POs (POType 0/1) created in the date range. One row per item; the order fields repeat on each item row. Diff Qty = received - ordered.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Supplier, Store, Rcv Date, Create Date, Po Number, Qty Order, Qty Rcv, Supplier Cost, Diff Qty"
+              },
+              "status": "Unprocessable Content",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": 422,\n  \"message\": \"The date from field must be a valid date.\",\n  \"data\": null\n}"
+            },
+            {
+              "name": "401 — Missing or invalid token",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/supply/received?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "supply",
+                    "received"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Receiving store ID. Leave empty for all stores."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "Supplier POs (POType 0/1) created in the date range. One row per item; the order fields repeat on each item row. Diff Qty = received - ordered.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Supplier, Store, Rcv Date, Create Date, Po Number, Qty Order, Qty Rcv, Supplier Cost, Diff Qty"
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"Unauthenticated.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Purchase returned",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/reports/supply/returned?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reports",
+                "supply",
+                "returned"
+              ],
+              "query": [
+                {
+                  "key": "store_id",
+                  "value": "{{store_id}}",
+                  "description": "Returning store ID. Leave empty for all stores."
+                },
+                {
+                  "key": "date_from",
+                  "value": "{{date_from}}",
+                  "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                },
+                {
+                  "key": "date_to",
+                  "value": "{{date_to}}",
+                  "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                }
+              ]
+            },
+            "description": "Returns to supplier (POType 3/5 with a supplier) created in the date range. One row per item.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Supplier, Store, Rcv Date, Create Date, Return Number, Qty Issue, Supplier Cost, Diff Qty"
+          },
+          "response": [
+            {
+              "name": "200 — Excel file",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/supply/returned?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "supply",
+                    "returned"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Returning store ID. Leave empty for all stores."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "Returns to supplier (POType 3/5 with a supplier) created in the date range. One row per item.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Supplier, Store, Rcv Date, Create Date, Return Number, Qty Issue, Supplier Cost, Diff Qty"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                },
+                {
+                  "key": "Content-Disposition",
+                  "value": "attachment; filename=purchase-returned-2026-11-22.xlsx"
+                }
+              ],
+              "body": ""
+            },
+            {
+              "name": "422 — Invalid date",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/supply/returned?date_from=bad",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "supply",
+                    "returned"
+                  ],
+                  "query": [
+                    {
+                      "key": "date_from",
+                      "value": "bad"
+                    }
+                  ]
+                },
+                "description": "Returns to supplier (POType 3/5 with a supplier) created in the date range. One row per item.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Supplier, Store, Rcv Date, Create Date, Return Number, Qty Issue, Supplier Cost, Diff Qty"
+              },
+              "status": "Unprocessable Content",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": 422,\n  \"message\": \"The date from field must be a valid date.\",\n  \"data\": null\n}"
+            },
+            {
+              "name": "401 — Missing or invalid token",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/supply/returned?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "supply",
+                    "returned"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Returning store ID. Leave empty for all stores."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "Returns to supplier (POType 3/5 with a supplier) created in the date range. One row per item.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Supplier, Store, Rcv Date, Create Date, Return Number, Qty Issue, Supplier Cost, Diff Qty"
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"Unauthenticated.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Production date of POs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/reports/supply/production-dates?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reports",
+                "supply",
+                "production-dates"
+              ],
+              "query": [
+                {
+                  "key": "store_id",
+                  "value": "{{store_id}}",
+                  "description": "Store ID. Leave empty for all stores."
+                },
+                {
+                  "key": "date_from",
+                  "value": "{{date_from}}",
+                  "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                },
+                {
+                  "key": "date_to",
+                  "value": "{{date_to}}",
+                  "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                }
+              ]
+            },
+            "description": "One row per batch scanned on the handheld for supplier POs. Display Period Days = expiration date - received date. GE Rtn Policy is always empty (no data source yet).\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Store, Supplier, Rcv Date, Rcv Qty, Po Number, Production Date, Expiration Date, Ge Rtn Policy, Display Period Days, Store On Hand"
+          },
+          "response": [
+            {
+              "name": "200 — Excel file",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/supply/production-dates?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "supply",
+                    "production-dates"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Store ID. Leave empty for all stores."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "One row per batch scanned on the handheld for supplier POs. Display Period Days = expiration date - received date. GE Rtn Policy is always empty (no data source yet).\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Store, Supplier, Rcv Date, Rcv Qty, Po Number, Production Date, Expiration Date, Ge Rtn Policy, Display Period Days, Store On Hand"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                },
+                {
+                  "key": "Content-Disposition",
+                  "value": "attachment; filename=production-date-of-pos-2026-11-22.xlsx"
+                }
+              ],
+              "body": ""
+            },
+            {
+              "name": "422 — Invalid date",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/supply/production-dates?date_from=bad",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "supply",
+                    "production-dates"
+                  ],
+                  "query": [
+                    {
+                      "key": "date_from",
+                      "value": "bad"
+                    }
+                  ]
+                },
+                "description": "One row per batch scanned on the handheld for supplier POs. Display Period Days = expiration date - received date. GE Rtn Policy is always empty (no data source yet).\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Store, Supplier, Rcv Date, Rcv Qty, Po Number, Production Date, Expiration Date, Ge Rtn Policy, Display Period Days, Store On Hand"
+              },
+              "status": "Unprocessable Content",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": 422,\n  \"message\": \"The date from field must be a valid date.\",\n  \"data\": null\n}"
+            },
+            {
+              "name": "401 — Missing or invalid token",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/supply/production-dates?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "supply",
+                    "production-dates"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Store ID. Leave empty for all stores."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "One row per batch scanned on the handheld for supplier POs. Display Period Days = expiration date - received date. GE Rtn Policy is always empty (no data source yet).\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Store, Supplier, Rcv Date, Rcv Qty, Po Number, Production Date, Expiration Date, Ge Rtn Policy, Display Period Days, Store On Hand"
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"Unauthenticated.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Item missing on order",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/reports/supply/missing-on-order?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reports",
+                "supply",
+                "missing-on-order"
+              ],
+              "query": [
+                {
+                  "key": "store_id",
+                  "value": "{{store_id}}",
+                  "description": "Store ID. Leave empty for all stores."
+                },
+                {
+                  "key": "date_from",
+                  "value": "{{date_from}}",
+                  "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                },
+                {
+                  "key": "date_to",
+                  "value": "{{date_to}}",
+                  "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                }
+              ]
+            },
+            "description": "Supplier POs that were partly or fully received, with only the lines where ordered > received. Total Cost = missing qty x supplier cost.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Store, Supplier, Rcv Date, Po Number, Qty Missing, Supplier Cost, Total Cost"
+          },
+          "response": [
+            {
+              "name": "200 — Excel file",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/supply/missing-on-order?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "supply",
+                    "missing-on-order"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Store ID. Leave empty for all stores."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "Supplier POs that were partly or fully received, with only the lines where ordered > received. Total Cost = missing qty x supplier cost.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Store, Supplier, Rcv Date, Po Number, Qty Missing, Supplier Cost, Total Cost"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                },
+                {
+                  "key": "Content-Disposition",
+                  "value": "attachment; filename=item-missing-on-order-2026-11-22.xlsx"
+                }
+              ],
+              "body": ""
+            },
+            {
+              "name": "422 — Invalid date",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/supply/missing-on-order?date_from=bad",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "supply",
+                    "missing-on-order"
+                  ],
+                  "query": [
+                    {
+                      "key": "date_from",
+                      "value": "bad"
+                    }
+                  ]
+                },
+                "description": "Supplier POs that were partly or fully received, with only the lines where ordered > received. Total Cost = missing qty x supplier cost.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Store, Supplier, Rcv Date, Po Number, Qty Missing, Supplier Cost, Total Cost"
+              },
+              "status": "Unprocessable Content",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": 422,\n  \"message\": \"The date from field must be a valid date.\",\n  \"data\": null\n}"
+            },
+            {
+              "name": "401 — Missing or invalid token",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/supply/missing-on-order?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "supply",
+                    "missing-on-order"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Store ID. Leave empty for all stores."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "Supplier POs that were partly or fully received, with only the lines where ordered > received. Total Cost = missing qty x supplier cost.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Store, Supplier, Rcv Date, Po Number, Qty Missing, Supplier Cost, Total Cost"
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"Unauthenticated.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "POs checklist",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/reports/supply/checklist?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reports",
+                "supply",
+                "checklist"
+              ],
+              "query": [
+                {
+                  "key": "store_id",
+                  "value": "{{store_id}}",
+                  "description": "Store ID. Leave empty for all stores."
+                },
+                {
+                  "key": "date_from",
+                  "value": "{{date_from}}",
+                  "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                },
+                {
+                  "key": "date_to",
+                  "value": "{{date_to}}",
+                  "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                }
+              ]
+            },
+            "description": "Vehicle checklist captured on the handheld for each supplier PO. Car Temp is the temperature on arrival. Department lists the departments of the items on the order.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Store Rcv Name, Supplier Name, Order Number, Car Temp, Item Temp, Seal Number, Driver Name, Car Number, Date, Standard Temp, Department, Supplier Invoice Number"
+          },
+          "response": [
+            {
+              "name": "200 — Excel file",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/supply/checklist?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "supply",
+                    "checklist"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Store ID. Leave empty for all stores."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "Vehicle checklist captured on the handheld for each supplier PO. Car Temp is the temperature on arrival. Department lists the departments of the items on the order.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Store Rcv Name, Supplier Name, Order Number, Car Temp, Item Temp, Seal Number, Driver Name, Car Number, Date, Standard Temp, Department, Supplier Invoice Number"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                },
+                {
+                  "key": "Content-Disposition",
+                  "value": "attachment; filename=pos-checklist-2026-11-22.xlsx"
+                }
+              ],
+              "body": ""
+            },
+            {
+              "name": "422 — Invalid date",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/supply/checklist?date_from=bad",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "supply",
+                    "checklist"
+                  ],
+                  "query": [
+                    {
+                      "key": "date_from",
+                      "value": "bad"
+                    }
+                  ]
+                },
+                "description": "Vehicle checklist captured on the handheld for each supplier PO. Car Temp is the temperature on arrival. Department lists the departments of the items on the order.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Store Rcv Name, Supplier Name, Order Number, Car Temp, Item Temp, Seal Number, Driver Name, Car Number, Date, Standard Temp, Department, Supplier Invoice Number"
+              },
+              "status": "Unprocessable Content",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": 422,\n  \"message\": \"The date from field must be a valid date.\",\n  \"data\": null\n}"
+            },
+            {
+              "name": "401 — Missing or invalid token",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/supply/checklist?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "supply",
+                    "checklist"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Store ID. Leave empty for all stores."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "Vehicle checklist captured on the handheld for each supplier PO. Car Temp is the temperature on arrival. Department lists the departments of the items on the order.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Store Rcv Name, Supplier Name, Order Number, Car Temp, Item Temp, Seal Number, Driver Name, Car Number, Date, Standard Temp, Department, Supplier Invoice Number"
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"Unauthenticated.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Net purchase",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/reports/supply/net-purchase?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reports",
+                "supply",
+                "net-purchase"
+              ],
+              "query": [
+                {
+                  "key": "store_id",
+                  "value": "{{store_id}}",
+                  "description": "Store ID. Leave empty for all stores."
+                },
+                {
+                  "key": "date_from",
+                  "value": "{{date_from}}",
+                  "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                },
+                {
+                  "key": "date_to",
+                  "value": "{{date_to}}",
+                  "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                }
+              ]
+            },
+            "description": "Per item, supplier, store and month: received quantity and cost minus returned quantity and cost.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Supplier, Store, Month, Net Qty, Net Total Cost"
+          },
+          "response": [
+            {
+              "name": "200 — Excel file",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/supply/net-purchase?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "supply",
+                    "net-purchase"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Store ID. Leave empty for all stores."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "Per item, supplier, store and month: received quantity and cost minus returned quantity and cost.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Supplier, Store, Month, Net Qty, Net Total Cost"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                },
+                {
+                  "key": "Content-Disposition",
+                  "value": "attachment; filename=net-purchase-2026-11-22.xlsx"
+                }
+              ],
+              "body": ""
+            },
+            {
+              "name": "422 — Invalid date",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/supply/net-purchase?date_from=bad",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "supply",
+                    "net-purchase"
+                  ],
+                  "query": [
+                    {
+                      "key": "date_from",
+                      "value": "bad"
+                    }
+                  ]
+                },
+                "description": "Per item, supplier, store and month: received quantity and cost minus returned quantity and cost.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Supplier, Store, Month, Net Qty, Net Total Cost"
+              },
+              "status": "Unprocessable Content",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": 422,\n  \"message\": \"The date from field must be a valid date.\",\n  \"data\": null\n}"
+            },
+            {
+              "name": "401 — Missing or invalid token",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/supply/net-purchase?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "supply",
+                    "net-purchase"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Store ID. Leave empty for all stores."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "Per item, supplier, store and month: received quantity and cost minus returned quantity and cost.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Supplier, Store, Month, Net Qty, Net Total Cost"
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"Unauthenticated.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Count of supply",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/reports/supply/counts?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reports",
+                "supply",
+                "counts"
+              ],
+              "query": [
+                {
+                  "key": "store_id",
+                  "value": "{{store_id}}",
+                  "description": "Store ID. Leave empty for all stores."
+                },
+                {
+                  "key": "date_from",
+                  "value": "{{date_from}}",
+                  "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                },
+                {
+                  "key": "date_to",
+                  "value": "{{date_to}}",
+                  "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                }
+              ]
+            },
+            "description": "One row: number of POs, returns, POs created from the handheld (PONumber starts with HH_), POs created by GE (POType 1, created at HQ) and partially received POs. Count Of Bonus is always empty (not defined yet).\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Count Of Pos, Count Of Bonus, Count Of Returns, Count Of Pos Created From Hh, Count Of Pos Created By Ge, Count Of Orders Received With Partial Ord, Store Id, Date From, Date To"
+          },
+          "response": [
+            {
+              "name": "200 — Excel file",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/supply/counts?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "supply",
+                    "counts"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Store ID. Leave empty for all stores."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "One row: number of POs, returns, POs created from the handheld (PONumber starts with HH_), POs created by GE (POType 1, created at HQ) and partially received POs. Count Of Bonus is always empty (not defined yet).\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Count Of Pos, Count Of Bonus, Count Of Returns, Count Of Pos Created From Hh, Count Of Pos Created By Ge, Count Of Orders Received With Partial Ord, Store Id, Date From, Date To"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                },
+                {
+                  "key": "Content-Disposition",
+                  "value": "attachment; filename=count-of-supply-2026-11-22.xlsx"
+                }
+              ],
+              "body": ""
+            },
+            {
+              "name": "422 — Invalid date",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/supply/counts?date_from=bad",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "supply",
+                    "counts"
+                  ],
+                  "query": [
+                    {
+                      "key": "date_from",
+                      "value": "bad"
+                    }
+                  ]
+                },
+                "description": "One row: number of POs, returns, POs created from the handheld (PONumber starts with HH_), POs created by GE (POType 1, created at HQ) and partially received POs. Count Of Bonus is always empty (not defined yet).\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Count Of Pos, Count Of Bonus, Count Of Returns, Count Of Pos Created From Hh, Count Of Pos Created By Ge, Count Of Orders Received With Partial Ord, Store Id, Date From, Date To"
+              },
+              "status": "Unprocessable Content",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": 422,\n  \"message\": \"The date from field must be a valid date.\",\n  \"data\": null\n}"
+            },
+            {
+              "name": "401 — Missing or invalid token",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/supply/counts?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "supply",
+                    "counts"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Store ID. Leave empty for all stores."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "One row: number of POs, returns, POs created from the handheld (PONumber starts with HH_), POs created by GE (POType 1, created at HQ) and partially received POs. Count Of Bonus is always empty (not defined yet).\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Count Of Pos, Count Of Bonus, Count Of Returns, Count Of Pos Created From Hh, Count Of Pos Created By Ge, Count Of Orders Received With Partial Ord, Store Id, Date From, Date To"
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"Unauthenticated.\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Transfer reports",
+      "item": [
+        {
+          "name": "Net transfer",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/reports/transfers/net?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reports",
+                "transfers",
+                "net"
+              ],
+              "query": [
+                {
+                  "key": "store_id",
+                  "value": "{{store_id}}",
+                  "description": "Store ID, matched as either the issuing or the receiving store. Leave empty for all stores."
+                },
+                {
+                  "key": "date_from",
+                  "value": "{{date_from}}",
+                  "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                },
+                {
+                  "key": "date_to",
+                  "value": "{{date_to}}",
+                  "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                }
+              ]
+            },
+            "description": "Store-to-store transfers out created in the date range, matched to their transfer in. One row per item. Diff Cost = received cost - issued cost. Username = the cashier who posted the transfer.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Store Issue, Store Received, Rcv Date, Create Date, Transfer Number, Qty Issue, Qty Rcv, Received Cost, Total Cost Rcv, Issue Cost, Total Cost Issue, Username, Diff Cost"
+          },
+          "response": [
+            {
+              "name": "200 — Excel file",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/transfers/net?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "transfers",
+                    "net"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Store ID, matched as either the issuing or the receiving store. Leave empty for all stores."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "Store-to-store transfers out created in the date range, matched to their transfer in. One row per item. Diff Cost = received cost - issued cost. Username = the cashier who posted the transfer.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Store Issue, Store Received, Rcv Date, Create Date, Transfer Number, Qty Issue, Qty Rcv, Received Cost, Total Cost Rcv, Issue Cost, Total Cost Issue, Username, Diff Cost"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                },
+                {
+                  "key": "Content-Disposition",
+                  "value": "attachment; filename=net-transfer-2026-11-22.xlsx"
+                }
+              ],
+              "body": ""
+            },
+            {
+              "name": "422 — Invalid date",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/transfers/net?date_from=bad",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "transfers",
+                    "net"
+                  ],
+                  "query": [
+                    {
+                      "key": "date_from",
+                      "value": "bad"
+                    }
+                  ]
+                },
+                "description": "Store-to-store transfers out created in the date range, matched to their transfer in. One row per item. Diff Cost = received cost - issued cost. Username = the cashier who posted the transfer.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Store Issue, Store Received, Rcv Date, Create Date, Transfer Number, Qty Issue, Qty Rcv, Received Cost, Total Cost Rcv, Issue Cost, Total Cost Issue, Username, Diff Cost"
+              },
+              "status": "Unprocessable Content",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": 422,\n  \"message\": \"The date from field must be a valid date.\",\n  \"data\": null\n}"
+            },
+            {
+              "name": "401 — Missing or invalid token",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/transfers/net?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "transfers",
+                    "net"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Store ID, matched as either the issuing or the receiving store. Leave empty for all stores."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "Store-to-store transfers out created in the date range, matched to their transfer in. One row per item. Diff Cost = received cost - issued cost. Username = the cashier who posted the transfer.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Store Issue, Store Received, Rcv Date, Create Date, Transfer Number, Qty Issue, Qty Rcv, Received Cost, Total Cost Rcv, Issue Cost, Total Cost Issue, Username, Diff Cost"
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"Unauthenticated.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Net transfer summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/reports/transfers/net-summary?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reports",
+                "transfers",
+                "net-summary"
+              ],
+              "query": [
+                {
+                  "key": "store_id",
+                  "value": "{{store_id}}",
+                  "description": "Store ID, matched as either the issuing or the receiving store. Leave empty for all stores."
+                },
+                {
+                  "key": "date_from",
+                  "value": "{{date_from}}",
+                  "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                },
+                {
+                  "key": "date_to",
+                  "value": "{{date_to}}",
+                  "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                }
+              ]
+            },
+            "description": "Per item, store pair and month: issued vs received quantity and cost.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Store Issue, Store Received, Month, Net Qty, Net Total Cost, Qty Issue, Qty Received"
+          },
+          "response": [
+            {
+              "name": "200 — Excel file",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/transfers/net-summary?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "transfers",
+                    "net-summary"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Store ID, matched as either the issuing or the receiving store. Leave empty for all stores."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "Per item, store pair and month: issued vs received quantity and cost.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Store Issue, Store Received, Month, Net Qty, Net Total Cost, Qty Issue, Qty Received"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                },
+                {
+                  "key": "Content-Disposition",
+                  "value": "attachment; filename=net-transfer-summary-2026-11-22.xlsx"
+                }
+              ],
+              "body": ""
+            },
+            {
+              "name": "422 — Invalid date",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/transfers/net-summary?date_from=bad",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "transfers",
+                    "net-summary"
+                  ],
+                  "query": [
+                    {
+                      "key": "date_from",
+                      "value": "bad"
+                    }
+                  ]
+                },
+                "description": "Per item, store pair and month: issued vs received quantity and cost.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Store Issue, Store Received, Month, Net Qty, Net Total Cost, Qty Issue, Qty Received"
+              },
+              "status": "Unprocessable Content",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": 422,\n  \"message\": \"The date from field must be a valid date.\",\n  \"data\": null\n}"
+            },
+            {
+              "name": "401 — Missing or invalid token",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/transfers/net-summary?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "transfers",
+                    "net-summary"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Store ID, matched as either the issuing or the receiving store. Leave empty for all stores."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "Per item, store pair and month: issued vs received quantity and cost.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Store Issue, Store Received, Month, Net Qty, Net Total Cost, Qty Issue, Qty Received"
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"Unauthenticated.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Transfer issue not received",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/reports/transfers/not-received?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reports",
+                "transfers",
+                "not-received"
+              ],
+              "query": [
+                {
+                  "key": "store_id",
+                  "value": "{{store_id}}",
+                  "description": "Receiving store ID. Leave empty for all stores."
+                },
+                {
+                  "key": "date_from",
+                  "value": "{{date_from}}",
+                  "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                },
+                {
+                  "key": "date_to",
+                  "value": "{{date_to}}",
+                  "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                }
+              ]
+            },
+            "description": "Transfers out with no transfer in yet (not_synced) or whose transfer in is still open.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Store, Order Number, Order Date, Store Issue Name, Hh Issue Log, Receiving Status"
+          },
+          "response": [
+            {
+              "name": "200 — Excel file",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/transfers/not-received?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "transfers",
+                    "not-received"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Receiving store ID. Leave empty for all stores."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "Transfers out with no transfer in yet (not_synced) or whose transfer in is still open.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Store, Order Number, Order Date, Store Issue Name, Hh Issue Log, Receiving Status"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                },
+                {
+                  "key": "Content-Disposition",
+                  "value": "attachment; filename=transfer-issue-not-received-2026-11-22.xlsx"
+                }
+              ],
+              "body": ""
+            },
+            {
+              "name": "422 — Invalid date",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/transfers/not-received?date_from=bad",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "transfers",
+                    "not-received"
+                  ],
+                  "query": [
+                    {
+                      "key": "date_from",
+                      "value": "bad"
+                    }
+                  ]
+                },
+                "description": "Transfers out with no transfer in yet (not_synced) or whose transfer in is still open.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Store, Order Number, Order Date, Store Issue Name, Hh Issue Log, Receiving Status"
+              },
+              "status": "Unprocessable Content",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": 422,\n  \"message\": \"The date from field must be a valid date.\",\n  \"data\": null\n}"
+            },
+            {
+              "name": "401 — Missing or invalid token",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/transfers/not-received?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "transfers",
+                    "not-received"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Receiving store ID. Leave empty for all stores."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "Transfers out with no transfer in yet (not_synced) or whose transfer in is still open.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Store, Order Number, Order Date, Store Issue Name, Hh Issue Log, Receiving Status"
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"Unauthenticated.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Transfer out checklist",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/reports/transfers/checklist/out?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reports",
+                "transfers",
+                "checklist",
+                "out"
+              ],
+              "query": [
+                {
+                  "key": "store_id",
+                  "value": "{{store_id}}",
+                  "description": "Issuing store ID. Leave empty for all stores."
+                },
+                {
+                  "key": "date_from",
+                  "value": "{{date_from}}",
+                  "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                },
+                {
+                  "key": "date_to",
+                  "value": "{{date_to}}",
+                  "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                }
+              ]
+            },
+            "description": "Vehicle checklist for each transfer out. Car Temp is the temperature on leaving.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Store Issue Name, Order Number, Car Temp, Item Temp, Seal Number, Driver Name, Car Number, Date, Standard Temp, Department"
+          },
+          "response": [
+            {
+              "name": "200 — Excel file",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/transfers/checklist/out?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "transfers",
+                    "checklist",
+                    "out"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Issuing store ID. Leave empty for all stores."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "Vehicle checklist for each transfer out. Car Temp is the temperature on leaving.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Store Issue Name, Order Number, Car Temp, Item Temp, Seal Number, Driver Name, Car Number, Date, Standard Temp, Department"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                },
+                {
+                  "key": "Content-Disposition",
+                  "value": "attachment; filename=transfer-out-checklist-2026-11-22.xlsx"
+                }
+              ],
+              "body": ""
+            },
+            {
+              "name": "422 — Invalid date",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/transfers/checklist/out?date_from=bad",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "transfers",
+                    "checklist",
+                    "out"
+                  ],
+                  "query": [
+                    {
+                      "key": "date_from",
+                      "value": "bad"
+                    }
+                  ]
+                },
+                "description": "Vehicle checklist for each transfer out. Car Temp is the temperature on leaving.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Store Issue Name, Order Number, Car Temp, Item Temp, Seal Number, Driver Name, Car Number, Date, Standard Temp, Department"
+              },
+              "status": "Unprocessable Content",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": 422,\n  \"message\": \"The date from field must be a valid date.\",\n  \"data\": null\n}"
+            },
+            {
+              "name": "401 — Missing or invalid token",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/transfers/checklist/out?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "transfers",
+                    "checklist",
+                    "out"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Issuing store ID. Leave empty for all stores."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "Vehicle checklist for each transfer out. Car Temp is the temperature on leaving.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Store Issue Name, Order Number, Car Temp, Item Temp, Seal Number, Driver Name, Car Number, Date, Standard Temp, Department"
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"Unauthenticated.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Transfer in checklist",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/reports/transfers/checklist/in?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reports",
+                "transfers",
+                "checklist",
+                "in"
+              ],
+              "query": [
+                {
+                  "key": "store_id",
+                  "value": "{{store_id}}",
+                  "description": "Receiving store ID. Leave empty for all stores."
+                },
+                {
+                  "key": "date_from",
+                  "value": "{{date_from}}",
+                  "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                },
+                {
+                  "key": "date_to",
+                  "value": "{{date_to}}",
+                  "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                }
+              ]
+            },
+            "description": "Vehicle checklist for each transfer in. Falls back to the transfer out checklist when the transfer in has none.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Store Rcv Name, Order Number, Car Temp, Item Temp, Seal Number, Driver Name, Car Number, Date, Standard Temp, Department"
+          },
+          "response": [
+            {
+              "name": "200 — Excel file",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/transfers/checklist/in?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "transfers",
+                    "checklist",
+                    "in"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Receiving store ID. Leave empty for all stores."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "Vehicle checklist for each transfer in. Falls back to the transfer out checklist when the transfer in has none.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Store Rcv Name, Order Number, Car Temp, Item Temp, Seal Number, Driver Name, Car Number, Date, Standard Temp, Department"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                },
+                {
+                  "key": "Content-Disposition",
+                  "value": "attachment; filename=transfer-in-checklist-2026-11-22.xlsx"
+                }
+              ],
+              "body": ""
+            },
+            {
+              "name": "422 — Invalid date",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/transfers/checklist/in?date_from=bad",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "transfers",
+                    "checklist",
+                    "in"
+                  ],
+                  "query": [
+                    {
+                      "key": "date_from",
+                      "value": "bad"
+                    }
+                  ]
+                },
+                "description": "Vehicle checklist for each transfer in. Falls back to the transfer out checklist when the transfer in has none.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Store Rcv Name, Order Number, Car Temp, Item Temp, Seal Number, Driver Name, Car Number, Date, Standard Temp, Department"
+              },
+              "status": "Unprocessable Content",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": 422,\n  \"message\": \"The date from field must be a valid date.\",\n  \"data\": null\n}"
+            },
+            {
+              "name": "401 — Missing or invalid token",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/transfers/checklist/in?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "transfers",
+                    "checklist",
+                    "in"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Receiving store ID. Leave empty for all stores."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "Vehicle checklist for each transfer in. Falls back to the transfer out checklist when the transfer in has none.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Store Rcv Name, Order Number, Car Temp, Item Temp, Seal Number, Driver Name, Car Number, Date, Standard Temp, Department"
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"Unauthenticated.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Production date of transfer out",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/reports/transfers/production-dates/out?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reports",
+                "transfers",
+                "production-dates",
+                "out"
+              ],
+              "query": [
+                {
+                  "key": "store_id",
+                  "value": "{{store_id}}",
+                  "description": "Issuing store ID. Leave empty for all stores."
+                },
+                {
+                  "key": "date_from",
+                  "value": "{{date_from}}",
+                  "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                },
+                {
+                  "key": "date_to",
+                  "value": "{{date_to}}",
+                  "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                }
+              ]
+            },
+            "description": "One row per batch scanned on transfers out. Display Period Days = expiration date - issue date.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Store Issue, Store Received, Issue Date, Issue Qty, Transfer Number, Production Date, Expiration Date, Ge Rtn Policy, Display Period Days, Store On Hand"
+          },
+          "response": [
+            {
+              "name": "200 — Excel file",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/transfers/production-dates/out?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "transfers",
+                    "production-dates",
+                    "out"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Issuing store ID. Leave empty for all stores."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "One row per batch scanned on transfers out. Display Period Days = expiration date - issue date.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Store Issue, Store Received, Issue Date, Issue Qty, Transfer Number, Production Date, Expiration Date, Ge Rtn Policy, Display Period Days, Store On Hand"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                },
+                {
+                  "key": "Content-Disposition",
+                  "value": "attachment; filename=production-date-of-transfer-out-2026-11-22.xlsx"
+                }
+              ],
+              "body": ""
+            },
+            {
+              "name": "422 — Invalid date",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/transfers/production-dates/out?date_from=bad",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "transfers",
+                    "production-dates",
+                    "out"
+                  ],
+                  "query": [
+                    {
+                      "key": "date_from",
+                      "value": "bad"
+                    }
+                  ]
+                },
+                "description": "One row per batch scanned on transfers out. Display Period Days = expiration date - issue date.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Store Issue, Store Received, Issue Date, Issue Qty, Transfer Number, Production Date, Expiration Date, Ge Rtn Policy, Display Period Days, Store On Hand"
+              },
+              "status": "Unprocessable Content",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": 422,\n  \"message\": \"The date from field must be a valid date.\",\n  \"data\": null\n}"
+            },
+            {
+              "name": "401 — Missing or invalid token",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/transfers/production-dates/out?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "transfers",
+                    "production-dates",
+                    "out"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Issuing store ID. Leave empty for all stores."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "One row per batch scanned on transfers out. Display Period Days = expiration date - issue date.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Store Issue, Store Received, Issue Date, Issue Qty, Transfer Number, Production Date, Expiration Date, Ge Rtn Policy, Display Period Days, Store On Hand"
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"Unauthenticated.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Production date of transfer in",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/reports/transfers/production-dates/in?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reports",
+                "transfers",
+                "production-dates",
+                "in"
+              ],
+              "query": [
+                {
+                  "key": "store_id",
+                  "value": "{{store_id}}",
+                  "description": "Receiving store ID. Leave empty for all stores."
+                },
+                {
+                  "key": "date_from",
+                  "value": "{{date_from}}",
+                  "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                },
+                {
+                  "key": "date_to",
+                  "value": "{{date_to}}",
+                  "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                }
+              ]
+            },
+            "description": "One row per batch received on transfers in. Display Period Days = expiration date - received date.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Store Issue, Store Received, Rcv Date, Rcv Qty, Transfer Number, Production Date, Expiration Date, Ge Rtn Policy, Display Period Days, Store On Hand"
+          },
+          "response": [
+            {
+              "name": "200 — Excel file",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/transfers/production-dates/in?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "transfers",
+                    "production-dates",
+                    "in"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Receiving store ID. Leave empty for all stores."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "One row per batch received on transfers in. Display Period Days = expiration date - received date.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Store Issue, Store Received, Rcv Date, Rcv Qty, Transfer Number, Production Date, Expiration Date, Ge Rtn Policy, Display Period Days, Store On Hand"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                },
+                {
+                  "key": "Content-Disposition",
+                  "value": "attachment; filename=production-date-of-transfer-in-2026-11-22.xlsx"
+                }
+              ],
+              "body": ""
+            },
+            {
+              "name": "422 — Invalid date",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/transfers/production-dates/in?date_from=bad",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "transfers",
+                    "production-dates",
+                    "in"
+                  ],
+                  "query": [
+                    {
+                      "key": "date_from",
+                      "value": "bad"
+                    }
+                  ]
+                },
+                "description": "One row per batch received on transfers in. Display Period Days = expiration date - received date.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Store Issue, Store Received, Rcv Date, Rcv Qty, Transfer Number, Production Date, Expiration Date, Ge Rtn Policy, Display Period Days, Store On Hand"
+              },
+              "status": "Unprocessable Content",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": 422,\n  \"message\": \"The date from field must be a valid date.\",\n  \"data\": null\n}"
+            },
+            {
+              "name": "401 — Missing or invalid token",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/transfers/production-dates/in?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "transfers",
+                    "production-dates",
+                    "in"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Receiving store ID. Leave empty for all stores."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "One row per batch received on transfers in. Display Period Days = expiration date - received date.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Item Lookup Code, Description, Store Issue, Store Received, Rcv Date, Rcv Qty, Transfer Number, Production Date, Expiration Date, Ge Rtn Policy, Display Period Days, Store On Hand"
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"Unauthenticated.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Transfer issue time",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/reports/transfers/time/out?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reports",
+                "transfers",
+                "time",
+                "out"
+              ],
+              "query": [
+                {
+                  "key": "store_id",
+                  "value": "{{store_id}}",
+                  "description": "Ignored: this report only covers the store this IMS server is configured for."
+                },
+                {
+                  "key": "date_from",
+                  "value": "{{date_from}}",
+                  "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                },
+                {
+                  "key": "date_to",
+                  "value": "{{date_to}}",
+                  "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                }
+              ]
+            },
+            "description": "Handheld start-to-end time per transfer out, in minutes, plus the average for the period on every row.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Store Issue, Order Number, Start Time, End Time, Duration Minutes, Average Issue Time Minutes"
+          },
+          "response": [
+            {
+              "name": "200 — Excel file",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/transfers/time/out?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "transfers",
+                    "time",
+                    "out"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Ignored: this report only covers the store this IMS server is configured for."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "Handheld start-to-end time per transfer out, in minutes, plus the average for the period on every row.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Store Issue, Order Number, Start Time, End Time, Duration Minutes, Average Issue Time Minutes"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                },
+                {
+                  "key": "Content-Disposition",
+                  "value": "attachment; filename=transfer-issue-time-2026-11-22.xlsx"
+                }
+              ],
+              "body": ""
+            },
+            {
+              "name": "422 — Invalid date",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/transfers/time/out?date_from=bad",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "transfers",
+                    "time",
+                    "out"
+                  ],
+                  "query": [
+                    {
+                      "key": "date_from",
+                      "value": "bad"
+                    }
+                  ]
+                },
+                "description": "Handheld start-to-end time per transfer out, in minutes, plus the average for the period on every row.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Store Issue, Order Number, Start Time, End Time, Duration Minutes, Average Issue Time Minutes"
+              },
+              "status": "Unprocessable Content",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": 422,\n  \"message\": \"The date from field must be a valid date.\",\n  \"data\": null\n}"
+            },
+            {
+              "name": "401 — Missing or invalid token",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/transfers/time/out?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "transfers",
+                    "time",
+                    "out"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Ignored: this report only covers the store this IMS server is configured for."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "Handheld start-to-end time per transfer out, in minutes, plus the average for the period on every row.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Store Issue, Order Number, Start Time, End Time, Duration Minutes, Average Issue Time Minutes"
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"Unauthenticated.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Transfer received time",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/reports/transfers/time/in?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "reports",
+                "transfers",
+                "time",
+                "in"
+              ],
+              "query": [
+                {
+                  "key": "store_id",
+                  "value": "{{store_id}}",
+                  "description": "Ignored: this report only covers the store this IMS server is configured for."
+                },
+                {
+                  "key": "date_from",
+                  "value": "{{date_from}}",
+                  "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                },
+                {
+                  "key": "date_to",
+                  "value": "{{date_to}}",
+                  "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                }
+              ]
+            },
+            "description": "Handheld start-to-end time per transfer in, in minutes, plus the average for the period on every row.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Store Received, Order Number, Start Time, End Time, Duration Minutes, Average Receiving Time Minutes"
+          },
+          "response": [
+            {
+              "name": "200 — Excel file",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/transfers/time/in?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "transfers",
+                    "time",
+                    "in"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Ignored: this report only covers the store this IMS server is configured for."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "Handheld start-to-end time per transfer in, in minutes, plus the average for the period on every row.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Store Received, Order Number, Start Time, End Time, Duration Minutes, Average Receiving Time Minutes"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                },
+                {
+                  "key": "Content-Disposition",
+                  "value": "attachment; filename=transfer-received-time-2026-11-22.xlsx"
+                }
+              ],
+              "body": ""
+            },
+            {
+              "name": "422 — Invalid date",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/transfers/time/in?date_from=bad",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "transfers",
+                    "time",
+                    "in"
+                  ],
+                  "query": [
+                    {
+                      "key": "date_from",
+                      "value": "bad"
+                    }
+                  ]
+                },
+                "description": "Handheld start-to-end time per transfer in, in minutes, plus the average for the period on every row.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Store Received, Order Number, Start Time, End Time, Duration Minutes, Average Receiving Time Minutes"
+              },
+              "status": "Unprocessable Content",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": 422,\n  \"message\": \"The date from field must be a valid date.\",\n  \"data\": null\n}"
+            },
+            {
+              "name": "401 — Missing or invalid token",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/reports/transfers/time/in?store_id={{store_id}}&date_from={{date_from}}&date_to={{date_to}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "transfers",
+                    "time",
+                    "in"
+                  ],
+                  "query": [
+                    {
+                      "key": "store_id",
+                      "value": "{{store_id}}",
+                      "description": "Ignored: this report only covers the store this IMS server is configured for."
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "{{date_from}}",
+                      "description": "Start date, Y-m-d. Defaults to the first day of the current month."
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "{{date_to}}",
+                      "description": "End date, Y-m-d. Defaults to today. Must be on or after date_from."
+                    }
+                  ]
+                },
+                "description": "Handheld start-to-end time per transfer in, in minutes, plus the average for the period on every row.\n\nDownloads an .xlsx file with every row (no pagination). In Postman use **Send and Download** to save it.\n\nColumns: Store Received, Order Number, Start Time, End Time, Duration Minutes, Average Receiving Time Minutes"
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"Unauthenticated.\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

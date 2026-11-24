@@ -15,6 +15,14 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(CommitApiClient::class, HttpCommitApiClient::class);
+        $this->app->bind(
+            \App\Repositories\Reports\TransferReportRepositoryInterface::class,
+            \App\Repositories\Reports\TransferReportRepository::class,
+        );
+        $this->app->bind(
+            \App\Repositories\Reports\SupplyReportRepositoryInterface::class,
+            \App\Repositories\Reports\SupplyReportRepository::class,
+        );
     }
 
     /**

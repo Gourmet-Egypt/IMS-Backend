@@ -9,11 +9,11 @@ class TransferOutValidator implements CommitValidator
     public function rules(): array
     {
         return [
-            'VehicleType'          => ['required', 'string'],
+            'VehicleType'          => ['required', 'string', 'max:50'],
             'Vehicle_tempOut'      => ['nullable', 'numeric', 'min:-50', 'max:50'],
-            'DeliveryPermitNumber' => ['nullable', 'string', 'max:255'],
+            'DeliveryPermitNumber' => ['nullable', 'string', 'max:20'],
             'Notes'                => ['nullable', 'string', 'max:1000'],
-            'seal_number'          => ['required', 'string', 'max:1000'],
+            'seal_number'          => ['required', 'string', 'max:50'],
             'goods_type'           => ['nullable', 'integer'],
             'driver_name'          => ['nullable', 'string', 'max:255'],
             'vehicle_number'       => ['nullable', 'string', 'max:50'],

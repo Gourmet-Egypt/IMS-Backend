@@ -91,6 +91,12 @@ class CommitTransferPdfBuilder
                 }
             }
 
+            if ($perspective === 'from_store'
+                && (float) $quantityRequested == 0
+                && (float) $entry->infos->sum('quantity_issued') == 0) {
+                continue;
+            }
+
             $cumulativeIssued = 0;
             $cumulativeIN = 0;
             $isFirstRow = true;

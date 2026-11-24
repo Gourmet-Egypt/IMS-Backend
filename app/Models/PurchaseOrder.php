@@ -2,7 +2,12 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasStoreRelations;
+use App\Models\Relations\HasManyInStore;
+use App\Models\Relations\HasOneInStore;
 use App\Traits\Responses;
+use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,12 +16,17 @@ use Illuminate\Support\Facades\DB;
 
 class PurchaseOrder extends Model
 {
-    use HasFactory, Responses;
+    use HasFactory, Responses, HasStoreRelations;
 
     protected $table = 'PurchaseOrder';
     protected $primaryKey = 'ID';
 
     protected $hidden = ['DBTimeStamp'];
+
+    public const TRANSFER_IN_TYPES = [2, 4];
+    public const TRANSFER_OUT_TYPES = [3, 5];
+    public const SUPPLIER_ORDER_TYPES = [0, 1];
+    public const SUPPLIER_RETURN_TYPES = [3, 5];
 
     protected $casts = [
         'DateCreated' => 'date:Y-m-d',
@@ -242,6 +252,108 @@ class PurchaseOrder extends Model
         }
 
         return $query->whereIn('POType', (array) $type);
+    }
+
+    public function scopeStoreTransfer(Builder $query, array $types, string $alias = 'PurchaseOrder'): Builder
+    {
+        return $query->whereIn("$alias.POType", $types)
+            ->where("$alias.SupplierID", 0)
+            ->where("$alias.OtherStoreID", '<>', 0);
+    }
+
+    public function scopeSupplierOrder(Builder $query, array $types, string $alias = 'PurchaseOrder'): Builder
+    {
+        return $query->whereIn("$alias.POType", $types)
+            ->where("$alias.SupplierID", '<>', 0)
+            ->where("$alias.OtherStoreID", 0);
+    }
+
+    public function scopeCreatedBetween(Builder $query, $from, $to, string $alias = 'PurchaseOrder'): Builder
+    {
+        return $query->whereBetween("$alias.DateCreated", [$from, $to]);
+    }
+
+    public function storeEntries(): HasManyInStore
+    {
+        return $this->hasManyInStore(PurchaseOrderEntry::class, 'PurchaseOrderID', 'ID');
+    }
+
+    public function storeCondition(): HasOneInStore
+    {
+        return $this->hasOneInStore(TransferCondition::class, 'purchase_order_id', 'ID');
+    }
+
+    public function inventoryLog(): HasOneInStore
+    {
+        return $this->hasOneInStore(InventoryTransferLog::class, 'ReferenceID', 'ID')
+            ->where('Type', InventoryTransferLog::TYPE_PURCHASE_ORDER)
+            ->latest('DateTransferred')
+            ->orderByDesc('ID');
+    }
+
+    public function receivingOrder(): HasOneInStore
+    {
+        return $this->hasOneInStore(
+            self::class, 'PONumber', 'receiving_po_number', 'StoreID', 'OtherStoreID',
+            fn (string $related, string $parent) => "$related.PONumber = RIGHT('00000' + CAST($parent.StoreID AS varchar(10)), 5) + '_' + $parent.PONumber",
+        )->whereIn('POType', self::TRANSFER_IN_TYPES);
+    }
+
+    public function issuingOrder(): HasOneInStore
+    {
+        return $this->hasOneInStore(
+            self::class, 'PONumber', 'issuing_po_number', 'StoreID', 'OtherStoreID',
+            fn (string $related, string $parent) => "$parent.PONumber = RIGHT('00000' + CAST($related.StoreID AS varchar(10)), 5) + '_' + $related.PONumber",
+        )->whereIn('POType', self::TRANSFER_OUT_TYPES);
+    }
+
+    public function getReceivingPoNumberAttribute(): string
+    {
+        return sprintf('%05d_%s', $this->StoreID, $this->PONumber);
+    }
+
+    public function getIssuingPoNumberAttribute(): ?string
+    {
+        return preg_match('/^\d{5}_(.+)$/', (string) $this->PONumber, $m) ? $m[1] : null;
+    }
+
+    public function createdAt(): ?Carbon
+    {
+        $value = $this->getRawOriginal('DateCreated');
+
+        return $value ? Carbon::parse($value) : null;
+    }
+
+    public function receivedAt(): ?Carbon
+    {
+        $value = $this->getRawOriginal('LastUpdated');
+
+        return $this->Status > 0 && $value ? Carbon::parse($value) : null;
+    }
+
+    public function transferLines(): Collection
+    {
+        $received = $this->receivingOrder?->storeEntries->keyBy('ItemID') ?? collect();
+
+        return $this->storeEntries->map(function (PurchaseOrderEntry $entry) use ($received) {
+            $in = $received->get($entry->ItemID);
+            $qtyIssue = (float) $entry->QuantityReceivedToDate;
+            $qtyReceived = (float) ($in?->QuantityReceivedToDate ?? 0);
+            $issueCost = (float) $entry->Price;
+            $receivedCost = (float) ($in?->Price ?? $entry->Price);
+
+            return [
+                'item_lookup_code' => $entry->itemById?->ItemLookupCode,
+                'description' => $entry->ItemDescription,
+                'qty_issue' => $qtyIssue,
+                'qty_rcv' => $qtyReceived,
+                'issue_cost' => $issueCost,
+                'received_cost' => $receivedCost,
+                'total_cost_issue' => round($issueCost * $qtyIssue, 4),
+                'total_cost_rcv' => round($receivedCost * $qtyReceived, 4),
+                'diff_cost' => round($receivedCost * $qtyReceived - $issueCost * $qtyIssue, 4),
+            ];
+        });
     }
 
     public function processStart()
