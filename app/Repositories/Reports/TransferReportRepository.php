@@ -88,9 +88,7 @@ class TransferReportRepository implements TransferReportRepositoryInterface
 
     public function processTime(ReportFilters $filters, string $direction): Collection
     {
-        $storeId = (int) DB::table('Configuration')->value('StoreID');
-
-        $starts = PurchaseOrderProcessStart::query()
+        $starts = PurchaseOrderProcessStart::on('sqlsrv_rms')
             ->whereNotNull('end_date')
             ->whereBetween('start_date', [$filters->from, $filters->to])
             ->get()
@@ -98,7 +96,7 @@ class TransferReportRepository implements TransferReportRepositoryInterface
 
         $orders = $starts->isEmpty() ? collect() : PurchaseOrder::onSecondary()
             ->with('currentStore')
-            ->where('StoreID', $storeId)
+            ->when($filters->storeId, fn (Builder $q) => $q->where('StoreID', $filters->storeId))
             ->whereIn('ID', $starts->keys())
             ->storeTransfer($direction === 'out' ? PurchaseOrder::TRANSFER_OUT_TYPES : PurchaseOrder::TRANSFER_IN_TYPES)
             ->get();
